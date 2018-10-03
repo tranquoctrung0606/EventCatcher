@@ -13,8 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ public class MapsActivity
 
     //widgets
     private AutoCompleteTextView mSearchText;
+    private ImageView iwMyLocation;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -69,10 +72,24 @@ public class MapsActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mSearchText = findViewById(R.id.input_search);
-
-
         getLocationPermission();
+
+        addControls();
+        addEvents();
+    }
+
+    private void addEvents() {
+        iwMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDeviceLocation();
+            }
+        });
+    }
+
+    private void addControls() {
+        mSearchText = findViewById(R.id.input_search);
+        iwMyLocation = findViewById(R.id.iwMyLocation);
     }
 
     @Override
