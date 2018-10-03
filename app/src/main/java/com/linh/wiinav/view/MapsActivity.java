@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -64,6 +65,8 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
+    private FloatingActionButton mFloatingActionButton;
+    private NavigationView navigationView;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -81,16 +84,24 @@ public class MapsActivity
 
         addControls();
         addEvents();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
+
 
     }
 
     private void addEvents() {
+        navigationView.setNavigationItemSelectedListener(this);
         iwMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getDeviceLocation();
+            }
+        });
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
@@ -98,6 +109,8 @@ public class MapsActivity
     private void addControls() {
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
+        mFloatingActionButton = findViewById(R.id.floatingActionButton);
+        navigationView= (NavigationView) findViewById(R.id.nav_view);
     }
 
     @Override
