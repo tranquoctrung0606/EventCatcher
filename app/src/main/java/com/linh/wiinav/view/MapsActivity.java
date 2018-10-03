@@ -1,6 +1,7 @@
 package com.linh.wiinav.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -8,11 +9,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
@@ -44,7 +49,7 @@ import java.util.List;
 public class MapsActivity
         extends AppCompatActivity
     implements OnMapReadyCallback,
-               GoogleApiClient.OnConnectionFailedListener
+               GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener
 {
     private static final String TAG = "MapsActivity";
 
@@ -76,6 +81,9 @@ public class MapsActivity
 
         addControls();
         addEvents();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     private void addEvents() {
@@ -273,6 +281,47 @@ public class MapsActivity
 
         }
 
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_place) {
+            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_contribution) {
+
+        } else if (id == R.id.nav_profile) {
+
+        } else if (id == R.id.nav_contact) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_feedback) {
+
+        } else if (id == R.id.nav_term) {
+
+        } else if (id == R.id.nav_logout) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 
