@@ -14,17 +14,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,7 +41,8 @@ import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
-    implements OnMapReadyCallback
+    implements OnMapReadyCallback,
+               GoogleApiClient.OnConnectionFailedListener
 {
     private static final String TAG = "MapsActivity";
 
@@ -44,14 +50,19 @@ public class MapsActivity
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
+            new LatLng(-40,-168), new LatLng(71,136)
+    );
 
     //widgets
-    private EditText mSearchText;
+    private AutoCompleteTextView mSearchText;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
+    private GeoDataClient mGeoDataClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -62,6 +73,12 @@ public class MapsActivity
 
 
         getLocationPermission();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull final ConnectionResult connectionResult)
+    {
+
     }
 
     @Override
@@ -87,7 +104,14 @@ public class MapsActivity
 
     private void init(){
         Log.d(TAG, "init: initializing");
+        mGeoDataClient = Places.getGeoDataClient(this);
 
+        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this,
+                                                                 mGeoDataClient,
+                                                                 LAT_LNG_BOUNDS,
+                                                                 null);
+
+        mSearchText.setAdapter(mPlaceAutocompleteAdapter);
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -110,6 +134,7 @@ public class MapsActivity
         Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = mSearchText.getText().toString();
+        Log.d(TAG, "geoLocate: ");
         Geocoder geocoder = new Geocoder(MapsActivity.this);
         List<Address> list = new ArrayList<>();
 
@@ -138,24 +163,24 @@ public class MapsActivity
         try {
             if (mLocationPermissionGranted) {
                 Task location = mFusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener()
-                {
-                    @Override
-                    public void onComplete(@NonNull final Task task)
+                    location.addOnCompleteListener(new OnCompleteListener()
                     {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: found location");
-                            Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(),
-                                                  currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                       "My location");
-                        } else {
-                            Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
-                                 .show();
+                        @Override
+                        public void onComplete(@NonNull final Task task)
+                        {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                Log.d(TAG, "onComplete: found location");
+                                Location currentLocation = (Location) task.getResult();
+                                moveCamera(new LatLng(currentLocation.getLatitude(),
+                                                      currentLocation.getLongitude()), DEFAULT_ZOOM,
+                                           "My location");
+                            } else {
+                                Log.d(TAG, "onComplete: current location is null");
+                                Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
+                                     .show();
+                            }
                         }
-                    }
-                });
+                    });
             }
 
         } catch (SecurityException e) {
@@ -220,7 +245,7 @@ public class MapsActivity
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGranted = false;
                             Log.d(TAG, "onRequestPermissionsResult: permission failed.");
-                            break;
+                            return;
                         }
                     }
                     mLocationPermissionGranted = true;
@@ -232,6 +257,7 @@ public class MapsActivity
         }
 
     }
+
 
 
 }
