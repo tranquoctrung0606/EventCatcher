@@ -28,6 +28,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -70,8 +72,6 @@ public class MapsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mSearchText = findViewById(R.id.input_search);
-
-
         getLocationPermission();
     }
 
@@ -98,7 +98,9 @@ public class MapsActivity
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-
+        addNewMarker(mMap,"Hư xe","Tôi bị hư xe",marker1);
+        addNewMarker(mMap,"Hết xăng","Tôi bị gãy chân, không có xe",marker2);
+        addNewMarker(mMap,"Cần quá giang","Tôi bị lủng lốp",marker3);
         init();
     }
 
@@ -257,7 +259,13 @@ public class MapsActivity
         }
 
     }
-
+    private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
+    private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
+    private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
+    public void addNewMarker(GoogleMap googleMap, String problem,String description,LatLng position){
+        mMap = googleMap;
+        mMap.addMarker(new MarkerOptions().title(problem).snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem)));
+    }
 
 
 }
