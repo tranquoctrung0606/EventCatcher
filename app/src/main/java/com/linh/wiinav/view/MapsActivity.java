@@ -1,6 +1,7 @@
 package com.linh.wiinav.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -8,13 +9,20 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +52,7 @@ import java.util.List;
 public class MapsActivity
         extends AppCompatActivity
     implements OnMapReadyCallback,
-               GoogleApiClient.OnConnectionFailedListener
+               GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener
 {
     private static final String TAG = "MapsActivity";
 
@@ -58,6 +66,9 @@ public class MapsActivity
 
     //widgets
     private AutoCompleteTextView mSearchText;
+    private ImageView iwMyLocation;
+    private FloatingActionButton mFloatingActionButton;
+    private NavigationView navigationView;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -73,6 +84,35 @@ public class MapsActivity
         setContentView(R.layout.activity_map);
         mSearchText = findViewById(R.id.input_search);
         getLocationPermission();
+        addControls();
+        addEvents();
+
+
+
+    }
+
+    private void addEvents() {
+        navigationView.setNavigationItemSelectedListener(this);
+        iwMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDeviceLocation();
+            }
+        });
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void addControls() {
+        mSearchText = findViewById(R.id.input_search);
+        iwMyLocation = findViewById(R.id.iwMyLocation);
+        mFloatingActionButton = findViewById(R.id.floatingActionButton);
+        navigationView= (NavigationView) findViewById(R.id.nav_view);
     }
 
     @Override
@@ -259,6 +299,7 @@ public class MapsActivity
         }
 
     }
+
     private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
@@ -266,6 +307,48 @@ public class MapsActivity
         mMap = googleMap;
         mMap.addMarker(new MarkerOptions().title(problem).snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem)));
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_place) {
+            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_contribution) {
+
+        } else if (id == R.id.nav_profile) {
+
+        } else if (id == R.id.nav_contact) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_feedback) {
+
+        } else if (id == R.id.nav_term) {
+
+        } else if (id == R.id.nav_logout) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 
 
 }
