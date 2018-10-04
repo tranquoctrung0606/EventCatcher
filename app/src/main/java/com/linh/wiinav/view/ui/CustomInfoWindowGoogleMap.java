@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.linh.wiinav.R;
+import com.linh.wiinav.view.model.ReportedData;
 
 public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
     private Context context;
@@ -22,7 +23,7 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
+        ReportedData infoWindowData = (ReportedData) marker.getTag();
         View view = null;
         if ("problem".equals(infoWindowData.getType())){
             view = ((Activity) context).getLayoutInflater()

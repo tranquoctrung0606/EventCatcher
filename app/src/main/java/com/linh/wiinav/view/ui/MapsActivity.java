@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,8 +46,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
+import com.linh.wiinav.view.InfoProblemReportActivity;
 import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
-import com.linh.wiinav.view.model.ReportData;
+import com.linh.wiinav.view.model.ReportedData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -400,31 +400,37 @@ public class MapsActivity
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
 
-    public void addNewMarker(GoogleMap googleMap, String type, String problem, String description, LatLng position, ReportData reportData) {
+    public void addNewMarker(GoogleMap googleMap, String type, String problem, String description, LatLng position, ReportedData reportedData) {
         mMap = googleMap;
         MarkerOptions markerOptions = new MarkerOptions().title(problem)
                 .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set reportData --> This is temporary
-        ReportData reportData1 = new ReportData();
+        //Set reportedData --> This is temporary
+//        ReportedData reportedData = reportedData;
+        reportedData = new ReportedData();
 
         //Set type of problem
-        reportData1.setType(type);
+        reportedData.setType(type);
 
         //Set user's information for InfoWindowData -->This is temporary (static data)
-        reportData1.setPhoneNumber("01288446176");
+        reportedData.setTitle(markerOptions.getTitle());
+        reportedData.setSnippet(markerOptions.getSnippet());
+        reportedData.setPhoneNumber("01288446176");
 
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
         mMap.setOnInfoWindowClickListener(this);
-        marker.setTag(reportData1);
+        marker.setTag(reportedData);
         marker.showInfoWindow();
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
+        Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
+        ReportedData reportedData = (ReportedData) marker.getTag();
+        intent.putExtra("reportedData",reportedData);
+        startActivity(intent);
     }
 
     @Override
