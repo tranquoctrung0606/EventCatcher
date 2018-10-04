@@ -301,43 +301,49 @@ public class MapsActivity
     private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
-    public void addNewMarker(GoogleMap googleMap, String type,String problem,String description,LatLng position,InfoWindowData infoWindowData){
+    public void addNewMarker(GoogleMap googleMap, String type,String problem,String description,LatLng position,ReportedData reportedData){
         mMap = googleMap;
         MarkerOptions markerOptions = new MarkerOptions().title(problem)
                 .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set infoWindowData --> This is temporary
-        InfoWindowData info = infoWindowData;
-        info = new InfoWindowData();
+        //Set reportedData --> This is temporary
+//        ReportedData reportedData = reportedData;
+        reportedData = new ReportedData();
 
         //Set type of problem
-        info.setType(type);
+        reportedData.setType(type);
 
         //Set user's information for InfoWindowData -->This is temporary (static data)
-        info.setPhoneNumber("01288446176");
+        reportedData.setTitle(markerOptions.getTitle());
+        reportedData.setSnippet(markerOptions.getSnippet());
+        reportedData.setPhoneNumber("01288446176");
 
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
         mMap.setOnInfoWindowClickListener(this);
-        marker.setTag(info);
+        marker.setTag(reportedData);
         marker.showInfoWindow();
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
-        if ("problem".equals(infoWindowData.getType()))
-        {
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse("tel:" + infoWindowData.getPhoneNumber()));
-            try{
-                startActivity(intent);
-            }
-            catch (android.content.ActivityNotFoundException ex){
-                Toast.makeText(MapsActivity.this,"yourActivity is not founded",Toast.LENGTH_SHORT).show();
-            }
-        }
+        Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
+        ReportedData reportedData = (ReportedData) marker.getTag();
+        intent.putExtra("reportedData",reportedData);
+        startActivity(intent);
+//        ReportedData reportedData = (ReportedData) marker.getTag();
+//        if ("problem".equals(reportedData.getType()))
+//        {
+//            Intent intent = new Intent(Intent.ACTION_CALL);
+//            intent.setData(Uri.parse("tel:" + reportedData.getPhoneNumber()));
+//            try{
+//                startActivity(intent);
+//            }
+//            catch (android.content.ActivityNotFoundException ex){
+//                Toast.makeText(MapsActivity.this,"yourActivity is not founded",Toast.LENGTH_SHORT).show();
+//            }
+//        }
     }
 
     @Override

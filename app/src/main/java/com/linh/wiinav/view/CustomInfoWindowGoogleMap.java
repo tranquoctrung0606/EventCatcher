@@ -30,7 +30,7 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
+        ReportedData infoWindowData = (ReportedData) marker.getTag();
         View view = null;
         if ("problem".equals(infoWindowData.getType())){
             view = ((Activity) context).getLayoutInflater()
@@ -38,25 +38,10 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
             TextView tvTitle = view.findViewById(R.id.title);
             TextView tvSnippet = view.findViewById(R.id.snippet);
-            Button btnCall = view.findViewById(R.id.btnCall);
 
             tvTitle.setText(marker.getTitle());
             tvSnippet.setText(marker.getSnippet());
 
-            btnCall.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + "0906447095"));
-                try{
-                    context.startActivity(intent);
-                }
-                catch (android.content.ActivityNotFoundException ex){
-                    Toast.makeText(context,"yourActivity is not founded",Toast.LENGTH_SHORT).show();
-                }
-                }
-            });
         }
         return view;
     }
