@@ -1,4 +1,4 @@
-package com.linh.wiinav.view;
+package com.linh.wiinav.view.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;

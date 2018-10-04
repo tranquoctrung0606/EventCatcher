@@ -1,4 +1,4 @@
-package com.linh.wiinav.view;
+package com.linh.wiinav.view.ui;
 
 import android.Manifest;
 import android.app.Activity;
@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
+import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;

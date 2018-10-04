@@ -13,7 +13,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:id="@+id/map"
-              tools:context=".view.MapsActivity"
+              tools:context=".view.ui.MapsActivity"
               android:name="com.google.android.gms.maps.SupportMapFragment" />
 
     <RelativeLayout android:layout_width="match_parent"
@@ -41,7 +41,6 @@
                               android:hint="Enter Address, City or Zip Code"
                               android:imeOptions="actionSearch"
                               android:singleLine="true"/>
-
 
     </RelativeLayout>
 

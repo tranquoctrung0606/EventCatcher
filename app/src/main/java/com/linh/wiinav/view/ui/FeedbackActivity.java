@@ -1,10 +1,10 @@
-package com.linh.wiinav.view;
+package com.linh.wiinav.view.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.linh.wiinav.R;
 
-public class TermActivity
+public class FeedbackActivity
         extends AppCompatActivity
 {
 
@@ -12,6 +12,6 @@ public class TermActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_term);
+        setContentView(R.layout.activity_feedback);
     }
 }
