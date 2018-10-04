@@ -31,7 +31,7 @@
             android:layout_marginBottom="50dp"
             android:layout_marginEnd="80dp"
             android:clickable="true"
-            android:src="@drawable/ic_pin"
+            android:src="@drawable/ic_place"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_report4"
@@ -41,7 +41,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="100dp"
             android:clickable="true"
-            android:src="@drawable/ic_info"
+            android:src="@drawable/ic_profile"
             app:backgroundTint="#ffffff"/>
 
 </FrameLayout>

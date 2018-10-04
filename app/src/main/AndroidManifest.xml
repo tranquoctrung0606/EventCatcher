@@ -25,7 +25,8 @@
                 android:name="org.apache.http.legacy"
                 android:required="false"/>
 
-        <activity android:name=".view.MainActivity">
+        <activity android:name=".view.MainActivity"
+                  android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -39,7 +40,8 @@
         </activity>
         <activity
                 android:name=".view.SettingActivity"
-                android:label="@string/title_activity_setting">
+                android:label="@string/title_activity_setting"
+                android:theme="@style/AppThemeActionBar">
         </activity>
     </application>
 
