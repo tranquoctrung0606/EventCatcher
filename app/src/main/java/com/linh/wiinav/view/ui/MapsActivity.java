@@ -1,7 +1,6 @@
 package com.linh.wiinav.view.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -25,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,12 +66,19 @@ public class MapsActivity
             new LatLng(-40,-168), new LatLng(71,136)
     );
 
+    private LatLng oriLatLng;
+    private LatLng desLatLng;
+
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
     private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
     private NavigationView navigationView;
     private boolean showHide = false;
+    private RelativeLayout rlDirection;
+    private ImageView iwSearch1, iwSearch2, iwDirection;
+    private AutoCompleteTextView mSearchDestinationText;
+
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -89,9 +96,6 @@ public class MapsActivity
         getLocationPermission();
         addControls();
         addEvents();
-
-
-
     }
 
     private void addEvents() {
@@ -118,6 +122,40 @@ public class MapsActivity
                 }
             }
         });
+        rlDirection.setVisibility(View.GONE);
+        iwDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!rlDirection.isShown()){
+                    rlDirection.setVisibility(View.VISIBLE);
+
+                }else{
+                    rlDirection.setVisibility(View.GONE);
+
+                }
+            }
+        });
+
+        mSearchDestinationText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH
+                        || actionId == EditorInfo.IME_ACTION_DONE
+                        || keyEvent.getAction() == KeyEvent.ACTION_DOWN
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                    //searching
+                    geoLocate(1);
+                    hideKeyboard();
+                }
+
+                return false;
+            }
+        });
+    }
+
+    private void direction() {
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(oriLatLng, desLatLng);
     }
 
     private void addControls() {
@@ -129,12 +167,46 @@ public class MapsActivity
         fab_report3 = findViewById(R.id.fab_report3);
         fab_report4 = findViewById(R.id.fab_report4);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
+        rlDirection = findViewById(R.id.relLayout2);
+        iwDirection = findViewById(R.id.iwDirection);
+        iwSearch1 = findViewById(R.id.iwSearch1);
+        iwSearch2 = findViewById(R.id.iwSearch2);
+        mSearchDestinationText = findViewById(R.id.input_search_destination);
     }
+
+
+
+
 
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult)
     {
 
+    }
+
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+        String mode = "mode=driving";
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+
+        return url;
     }
 
     @Override
@@ -169,6 +241,7 @@ public class MapsActivity
                                                                  LAT_LNG_BOUNDS,
                                                                  null);
 
+        mSearchDestinationText.setAdapter(mPlaceAutocompleteAdapter);
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
@@ -180,18 +253,32 @@ public class MapsActivity
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
                     //searching
-                    geoLocate();
+                    geoLocate(0);
+                    hideKeyboard();
                 }
                 return false;
             }
         });
     }
 
-    private void geoLocate()
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(MapsActivity.INPUT_METHOD_SERVICE);
+
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),0);
+    }
+
+    private void geoLocate(int i)
     {
         Log.d(TAG, "geoLocate: geolocating");
-
-        String searchString = mSearchText.getText().toString();
+        String searchString = "";
+        switch (i) {
+            case 0:
+                searchString = mSearchText.getText().toString();
+                break;
+            case 1:
+                searchString = mSearchDestinationText.getText().toString();
+                break;
+        }
         Log.d(TAG, "geoLocate: ");
         Geocoder geocoder = new Geocoder(MapsActivity.this);
         List<Address> list = new ArrayList<>();
@@ -204,12 +291,20 @@ public class MapsActivity
 
         if(list.size() > 0){
             Address address = list.get(0);
-
             Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
-
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
-                       address.getAddressLine(0));
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            switch (i){
+                case 0:
+                    oriLatLng = latLng;
+                    break;
+                case 1:
+                    desLatLng = latLng;
+                    direction();
+                    break;
+            }
+            moveCamera(latLng, DEFAULT_ZOOM,
+                    address.getAddressLine(0));
         }
     }
 

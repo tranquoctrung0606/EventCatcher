@@ -22,17 +22,11 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/white_border"
-                    android:id="@+id/relLayout">
-        <ImageView android:layout_width="15dp"
-                   android:layout_height="15dp"
-                   android:id="@+id/ic_magnify"
-                   android:layout_centerVertical="true"
-                   android:layout_marginLeft="10dp"
-                   android:src="@drawable/ic_magnify"
-        />
+                    android:id="@+id/relLayout1">
+
         <AutoCompleteTextView android:layout_width="match_parent"
                               android:layout_height="match_parent"
-                              android:layout_toRightOf="@id/ic_magnify"
+
                               android:layout_centerVertical="true"
                               android:textSize="15sp"
                               android:textColor="#000"
@@ -41,8 +35,61 @@
                               android:hint="Enter Address, City or Zip Code"
                               android:imeOptions="actionSearch"
                               android:singleLine="true"/>
+    </RelativeLayout>
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="55dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/white_border"
+        android:id="@+id/relLayout2"
+        >
+
+        <AutoCompleteTextView android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:textColor="#000"
+            android:id="@+id/input_search_destination"
+            android:background="@null"
+            android:hint="Enter your destination"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"/>
 
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iwDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentTop="false"
+        android:layout_gravity="right"
+        android:layout_marginRight="55dp"
+        android:layout_marginTop="19dp"
+        app:srcCompat="@android:drawable/ic_menu_directions" />
+
+    <ImageView
+        android:id="@+id/iwSearch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="right"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="22dp"
+        app:srcCompat="@drawable/ic_magnify" />
+
+    <ImageView
+        android:id="@+id/iwSearch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="right"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="22dp"
+        app:srcCompat="@drawable/ic_magnify" />
 
     <ImageView
             android:id="@+id/iwMyLocation"
@@ -51,7 +98,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="18dp"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="110dp"
             app:srcCompat="@android:drawable/ic_menu_mylocation"
             android:layout_gravity="right"/>
 
@@ -65,6 +112,7 @@
         android:clickable="true"
         app:srcCompat="@drawable/ic_baseline_report_problem_24px"
         />
-    <include layout="@layout/fab_layout"/>
+
+    <include layout="@layout/fab_layout" />
 
 </android.support.design.widget.CoordinatorLayout>
