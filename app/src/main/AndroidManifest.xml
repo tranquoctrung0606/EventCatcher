@@ -36,7 +36,7 @@
             android:required="false" />
 
 
-        <activity android:name=".view.MainActivity"
+        <activity android:name=".view.ui.MainActivity"
                   android:theme="@style/SplashTheme">
 
             <intent-filter>
@@ -49,7 +49,7 @@
         <activity android:name=".view.ui.TermActivity"></activity>
         <activity android:name=".view.ui.FeedbackActivity"></activity>
         <activity
-                android:name=".view.SettingActivity"
+                android:name=".view.ui.SettingActivity"
                 android:label="@string/title_activity_setting"
                 android:theme="@style/AppThemeActionBar">
         </activity>
