@@ -1,6 +1,7 @@
 package com.linh.wiinav.view;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -21,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,8 +69,9 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton;
+    private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
     private NavigationView navigationView;
+    private boolean showHide = false;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -82,7 +85,7 @@ public class MapsActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mSearchText = findViewById(R.id.input_search);
+
         getLocationPermission();
         addControls();
         addEvents();
@@ -99,11 +102,31 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-
+        hideFabLayout();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(showHide == false)
+                {
+                    showFabLayout();
+                    showHide = true;
+                }
+                else
+                {
+                    hideFabLayout();
+                    showHide = false;
+                }
+            }
+        });
 
+        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(final View v, final boolean hasFocus)
+            {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
             }
         });
     }
@@ -112,6 +135,10 @@ public class MapsActivity
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
+        fab_report1 = findViewById(R.id.fab_report1);
+        fab_report2 = findViewById(R.id.fab_report2);
+        fab_report3 = findViewById(R.id.fab_report3);
+        fab_report4 = findViewById(R.id.fab_report4);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
     }
 
@@ -327,7 +354,7 @@ public class MapsActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_place) {
-            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
+
         } else if (id == R.id.nav_contribution) {
 
         } else if (id == R.id.nav_profile) {
@@ -335,11 +362,14 @@ public class MapsActivity
         } else if (id == R.id.nav_contact) {
 
         } else if (id == R.id.nav_setting) {
-
+            Intent settingActivity = new Intent(getApplicationContext(), SettingActivity.class);
+            displayNextScreen(settingActivity);
         } else if (id == R.id.nav_feedback) {
-
+            Intent feedbackActivity = new Intent(getApplicationContext(), FeedbackActivity.class);
+            displayNextScreen(feedbackActivity);
         } else if (id == R.id.nav_term) {
-
+            Intent termActivity = new Intent(getApplicationContext(), TermActivity.class);
+            displayNextScreen(termActivity);
         } else if (id == R.id.nav_logout) {
 
         }
@@ -349,6 +379,59 @@ public class MapsActivity
         return true;
     }
 
+    private void showFabLayout()
+    {
+        fab_report1.show();
+        fab_report2.show();
+        fab_report3.show();
+        fab_report4.show();
+    }
 
+    private void hideFabLayout()
+    {
+        fab_report1.hide();
+        fab_report2.hide();
+        fab_report3.hide();
+        fab_report4.hide();
+    }
+
+    private void hideKeyboard(final View view)
+    {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onWindowFocusChanged(final boolean hasFocus)
+    {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            hideSystemUI();
+        }
+    }
+
+    private void hideSystemUI()
+    {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hide and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    protected void displayNextScreen(final Intent nextScreen)
+    {
+        startActivity(nextScreen);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 
 }
