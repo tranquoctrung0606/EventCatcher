@@ -10,8 +10,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -38,7 +38,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -72,6 +71,7 @@ public class MapsActivity
     private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
     private NavigationView navigationView;
     private boolean showHide = false;
+    private ImageView iwUser;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -89,9 +89,6 @@ public class MapsActivity
         getLocationPermission();
         addControls();
         addEvents();
-
-
-
     }
 
     private void addEvents() {
@@ -129,6 +126,12 @@ public class MapsActivity
                 }
             }
         });
+        iwUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void addControls() {
@@ -140,6 +143,7 @@ public class MapsActivity
         fab_report3 = findViewById(R.id.fab_report3);
         fab_report4 = findViewById(R.id.fab_report4);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
+        iwUser = findViewById(R.id.iwUser);
     }
 
     @Override
