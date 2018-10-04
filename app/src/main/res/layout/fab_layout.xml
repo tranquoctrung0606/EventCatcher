@@ -4,7 +4,7 @@
              android:layout_height="match_parent">
 
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_report1"
+            android:id="@+id/fab_reportTraffic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -14,7 +14,7 @@
             android:src="@drawable/ic_feedback"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_report2"
+            android:id="@+id/fab_reportMapIssues"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -24,7 +24,7 @@
             android:src="@drawable/ic_contact"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_report3"
+            android:id="@+id/fab_reportPoliceMan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -34,7 +34,7 @@
             android:src="@drawable/ic_place"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_report4"
+            android:id="@+id/fab_reportPlaces"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
