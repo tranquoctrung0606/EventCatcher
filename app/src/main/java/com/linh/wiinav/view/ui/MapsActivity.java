@@ -69,7 +69,7 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
+    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces ;
     private NavigationView navigationView;
     private boolean showHide = false;
 
@@ -118,16 +118,68 @@ public class MapsActivity
                 }
             }
         });
+        fab_reportTraffic.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportTraffic();
+            }
+        });
+        fab_reportMapIssues.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportMapIssues();
+            }
+        });
+        fab_reportPoliceMan.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportPoliceMan();
+            }
+        });
+        fab_reportPlaces.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportPlaces();
+            }
+        });
+    }
+
+    private void selectReportPlaces()
+    {
+
+    }
+
+    private void selectReportPoliceMan()
+    {
+
+    }
+
+    private void selectReportMapIssues()
+    {
+
+    }
+
+    private void selectReportTraffic()
+    {
+
     }
 
     private void addControls() {
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
-        fab_report1 = findViewById(R.id.fab_report1);
-        fab_report2 = findViewById(R.id.fab_report2);
-        fab_report3 = findViewById(R.id.fab_report3);
-        fab_report4 = findViewById(R.id.fab_report4);
+        fab_reportTraffic = findViewById(R.id.fab_reportTraffic);
+        fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
+        fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
+        fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
     }
 
@@ -370,18 +422,18 @@ public class MapsActivity
 
     private void showFabLayout()
     {
-        fab_report1.show();
-        fab_report2.show();
-        fab_report3.show();
-        fab_report4.show();
+        fab_reportTraffic.show();
+        fab_reportMapIssues.show();
+        fab_reportPoliceMan.show();
+        fab_reportPlaces.show();
     }
 
     private void hideFabLayout()
     {
-        fab_report1.hide();
-        fab_report2.hide();
-        fab_report3.hide();
-        fab_report4.hide();
+        fab_reportTraffic.hide();
+        fab_reportMapIssues.hide();
+        fab_reportPoliceMan.hide();
+        fab_reportPlaces.hide();
     }
 
     protected void displayNextScreen(final Intent nextScreen)
