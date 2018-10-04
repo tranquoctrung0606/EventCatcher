@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
 >
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -40,6 +42,7 @@
                               android:imeOptions="actionSearch"
                               android:singleLine="true"/>
 
+
     </RelativeLayout>
 
     <ImageView
@@ -50,18 +53,18 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="18dp"
             android:layout_marginTop="68dp"
-            app:srcCompat="@android:drawable/ic_menu_mylocation" />
+            app:srcCompat="@android:drawable/ic_menu_mylocation" android:layout_gravity="right"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="33dp"
-        android:layout_marginEnd="32dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
         android:clickable="true"
         app:srcCompat="@drawable/ic_baseline_report_problem_24px"
         />
+    <include layout="@layout/fab_layout"/>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
