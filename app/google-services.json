@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "914561805188",
+    "firebase_url": "https://wiinav-b4bb0.firebaseio.com",
+    "project_id": "wiinav-b4bb0",
+    "storage_bucket": "wiinav-b4bb0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914561805188:android:82eb91c7dbf18328",
+        "android_client_info": {
+          "package_name": "com.linh.wiinav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "914561805188-2viupgf1gd7b157g986ok7d78ssh0mi5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTWFhXTvgVhGw-kHjV-wDWPTMsFENGzdg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
