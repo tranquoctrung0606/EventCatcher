@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,11 +42,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
 import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
+import com.linh.wiinav.view.model.ReportData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,9 +56,8 @@ import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
-    implements OnMapReadyCallback,
-               GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener
-{
+        implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnInfoWindowClickListener {
     private static final String TAG = "MapsActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -63,7 +65,7 @@ public class MapsActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
-            new LatLng(-40,-168), new LatLng(71,136)
+            new LatLng(-40, -168), new LatLng(71, 136)
     );
 
     private LatLng oriLatLng;
@@ -72,7 +74,7 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
+    private FloatingActionButton mFloatingActionButton, fab_report1, fab_report2, fab_report3, fab_report4;
     private NavigationView navigationView;
     private boolean showHide = false;
     private RelativeLayout rlDirection;
@@ -88,8 +90,7 @@ public class MapsActivity
     private GeoDataClient mGeoDataClient;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
@@ -110,13 +111,10 @@ public class MapsActivity
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showHide == false)
-                {
+                if (showHide == false) {
                     showFabLayout();
                     showHide = true;
-                }
-                else
-                {
+                } else {
                     hideFabLayout();
                     showHide = false;
                 }
@@ -126,10 +124,10 @@ public class MapsActivity
         iwDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!rlDirection.isShown()){
+                if (!rlDirection.isShown()) {
                     rlDirection.setVisibility(View.VISIBLE);
 
-                }else{
+                } else {
                     rlDirection.setVisibility(View.GONE);
 
                 }
@@ -139,10 +137,10 @@ public class MapsActivity
         mSearchDestinationText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH
+                if (actionId == EditorInfo.IME_ACTION_SEARCH
                         || actionId == EditorInfo.IME_ACTION_DONE
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
                     //searching
                     geoLocate(1);
                     hideKeyboard();
@@ -166,21 +164,18 @@ public class MapsActivity
         fab_report2 = findViewById(R.id.fab_report2);
         fab_report3 = findViewById(R.id.fab_report3);
         fab_report4 = findViewById(R.id.fab_report4);
-        navigationView= (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         rlDirection = findViewById(R.id.relLayout2);
         iwDirection = findViewById(R.id.iwDirection);
         iwSearch1 = findViewById(R.id.iwSearch1);
         iwSearch2 = findViewById(R.id.iwSearch2);
         mSearchDestinationText = findViewById(R.id.input_search_destination);
+        navigationView = findViewById(R.id.nav_view);
     }
 
 
-
-
-
     @Override
-    public void onConnectionFailed(@NonNull final ConnectionResult connectionResult)
-    {
+    public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
 
     }
 
@@ -210,8 +205,7 @@ public class MapsActivity
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap)
-    {
+    public void onMapReady(final GoogleMap googleMap) {
         Toast.makeText(MapsActivity.this, "Map is read ", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is right here!");
         mMap = googleMap;
@@ -226,32 +220,30 @@ public class MapsActivity
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-        addNewMarker(mMap,"Hư xe","Tôi bị hư xe",marker1);
-        addNewMarker(mMap,"Hết xăng","Tôi bị gãy chân, không có xe",marker2);
-        addNewMarker(mMap,"Cần quá giang","Tôi bị lủng lốp",marker3);
+        addNewMarker(mMap, "problem", "Hư xe", "Tôi bị hư xe", marker1, null);
+        addNewMarker(mMap, "problem", "Hết xăng", "Tôi bị gãy chân, không có xe", marker2, null);
+        addNewMarker(mMap, "problem", "Cần quá giang", "Tôi bị lủng lốp", marker3, null);
         init();
     }
 
-    private void init(){
+    private void init() {
         Log.d(TAG, "init: initializing");
         mGeoDataClient = Places.getGeoDataClient(this);
 
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this,
-                                                                 mGeoDataClient,
-                                                                 LAT_LNG_BOUNDS,
-                                                                 null);
+                mGeoDataClient,
+                LAT_LNG_BOUNDS,
+                null);
 
         mSearchDestinationText.setAdapter(mPlaceAutocompleteAdapter);
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
+        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onEditorAction( TextView textView,int actionId, KeyEvent keyEvent)
-            {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH
                         || actionId == EditorInfo.IME_ACTION_DONE
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
                     //searching
                     geoLocate(0);
                     hideKeyboard();
@@ -264,11 +256,10 @@ public class MapsActivity
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(MapsActivity.INPUT_METHOD_SERVICE);
 
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),0);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void geoLocate(int i)
-    {
+    private void geoLocate(int i) {
         Log.d(TAG, "geoLocate: geolocating");
         String searchString = "";
         switch (i) {
@@ -284,17 +275,17 @@ public class MapsActivity
         List<Address> list = new ArrayList<>();
 
         try {
-            list = geocoder.getFromLocationName(searchString,1);
+            list = geocoder.getFromLocationName(searchString, 1);
         } catch (IOException e) {
             Log.e(TAG, "geoLocate: IOException", e);
         }
 
-        if(list.size() > 0){
+        if (list.size() > 0) {
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            switch (i){
+            switch (i) {
                 case 0:
                     oriLatLng = latLng;
                     break;
@@ -308,32 +299,29 @@ public class MapsActivity
         }
     }
 
-    private void getDeviceLocation()
-    {
+    private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting device current location");
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try {
             if (mLocationPermissionGranted) {
                 Task location = mFusedLocationProviderClient.getLastLocation();
-                    location.addOnCompleteListener(new OnCompleteListener()
-                    {
-                        @Override
-                        public void onComplete(@NonNull final Task task)
-                        {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                Log.d(TAG, "onComplete: found location");
-                                Location currentLocation = (Location) task.getResult();
-                                moveCamera(new LatLng(currentLocation.getLatitude(),
-                                                      currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                           "My location");
-                            } else {
-                                Log.d(TAG, "onComplete: current location is null");
-                                Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
-                                     .show();
-                            }
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull final Task task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            Log.d(TAG, "onComplete: found location");
+                            Location currentLocation = (Location) task.getResult();
+                            moveCamera(new LatLng(currentLocation.getLatitude(),
+                                            currentLocation.getLongitude()), DEFAULT_ZOOM,
+                                    "My location");
+                        } else {
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
+                                    .show();
                         }
-                    });
+                    }
+                });
             }
 
         } catch (SecurityException e) {
@@ -342,48 +330,46 @@ public class MapsActivity
 
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title)
-    {
+    private void moveCamera(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera: moving camera to: lat: " + latLng.latitude + ", lng " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(title);
-        if(!title.equals("My location")){
+        if (!title.equals("My location")) {
             mMap.addMarker(options);
         }
     }
 
-    private void initMap()
-    {
+    private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         Log.d(TAG, "initMap: initializing map");
         mapFragment.getMapAsync(this);
     }
 
-    public void getLocationPermission(){
+    public void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COURSE_LOCATION};
         Log.d(TAG, "getLocationPermission: getting location permision");
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "getLocationPermission: fine location permission granted");
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
                 Log.d(TAG, "getLocationPermission: course location permission granted!");
                 initMap();
-            }else {
+            } else {
                 Log.d(TAG, "getLocationPermission: request course permision ");
                 ActivityCompat.requestPermissions(this,
                         permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
-        }else{
+        } else {
             Log.d(TAG, "getLocationPermission: request fine permision ");
             ActivityCompat.requestPermissions(this,
-                                              permissions,
-                                              LOCATION_PERMISSION_REQUEST_CODE);
+                    permissions,
+                    LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -391,11 +377,11 @@ public class MapsActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
         Log.d(TAG, "onRequestPermissionsResult: called.");
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-                if(grantResults.length > 0){
-                    for (int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGranted = false;
                             Log.d(TAG, "onRequestPermissionsResult: permission failed.");
                             return;
@@ -408,21 +394,43 @@ public class MapsActivity
             }
 
         }
-
     }
 
     private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
-    public void addNewMarker(GoogleMap googleMap, String problem,String description,LatLng position){
+
+    public void addNewMarker(GoogleMap googleMap, String type, String problem, String description, LatLng position, ReportData reportData) {
         mMap = googleMap;
-        mMap.addMarker(new MarkerOptions().title(problem).snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem)));
+        MarkerOptions markerOptions = new MarkerOptions().title(problem)
+                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
+
+        //Set reportData --> This is temporary
+        ReportData reportData1 = new ReportData();
+
+        //Set type of problem
+        reportData1.setType(type);
+
+        //Set user's information for InfoWindowData -->This is temporary (static data)
+        reportData1.setPhoneNumber("01288446176");
+
+        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+        Marker marker = mMap.addMarker(markerOptions);
+        mMap.setOnInfoWindowClickListener(this);
+        marker.setTag(reportData1);
+        marker.showInfoWindow();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -432,7 +440,7 @@ public class MapsActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -458,7 +466,7 @@ public class MapsActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
