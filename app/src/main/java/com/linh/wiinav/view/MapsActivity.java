@@ -325,24 +325,24 @@ public class MapsActivity
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_place) {
-            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
-        } else if (id == R.id.nav_contribution) {
-
-        } else if (id == R.id.nav_profile) {
-
-        } else if (id == R.id.nav_contact) {
-
-        } else if (id == R.id.nav_setting) {
-
-        } else if (id == R.id.nav_feedback) {
-
-        } else if (id == R.id.nav_term) {
-
-        } else if (id == R.id.nav_logout) {
-
-        }
+//
+//        if (id == R.id.nav_place) {
+//            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
+//        } else if (id == R.id.nav_contribution) {
+//
+//        } else if (id == R.id.nav_profile) {
+//
+//        } else if (id == R.id.nav_contact) {
+//
+//        } else if (id == R.id.nav_setting) {
+//
+//        } else if (id == R.id.nav_feedback) {
+//
+//        } else if (id == R.id.nav_term) {
+//
+//        } else if (id == R.id.nav_logout) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
