@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,10 +37,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,8 +53,7 @@ import java.util.List;
 public class MapsActivity
         extends AppCompatActivity
     implements OnMapReadyCallback,
-               GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener
-{
+               GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnInfoWindowClickListener {
     private static final String TAG = "MapsActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -112,7 +112,7 @@ public class MapsActivity
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
-        navigationView= (NavigationView) findViewById(R.id.nav_view);
+        navigationView= findViewById(R.id.nav_view);
     }
 
     @Override
@@ -138,9 +138,9 @@ public class MapsActivity
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-        addNewMarker(mMap,"Hư xe","Tôi bị hư xe",marker1);
-        addNewMarker(mMap,"Hết xăng","Tôi bị gãy chân, không có xe",marker2);
-        addNewMarker(mMap,"Cần quá giang","Tôi bị lủng lốp",marker3);
+        addNewMarker(mMap,"problem","Hư xe","Tôi bị hư xe",marker1,null);
+        addNewMarker(mMap,"problem","Hết xăng","Tôi bị gãy chân, không có xe",marker2,null);
+        addNewMarker(mMap,"problem","Cần quá giang","Tôi bị lủng lốp",marker3,null);
         init();
     }
 
@@ -230,7 +230,6 @@ public class MapsActivity
         }
 
     }
-
     private void moveCamera(LatLng latLng, float zoom, String title)
     {
         Log.d(TAG, "moveCamera: moving camera to: lat: " + latLng.latitude + ", lng " + latLng.longitude);
@@ -283,8 +282,8 @@ public class MapsActivity
         switch (requestCode){
             case LOCATION_PERMISSION_REQUEST_CODE:{
                 if(grantResults.length > 0){
-                    for (int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGranted = false;
                             Log.d(TAG, "onRequestPermissionsResult: permission failed.");
                             return;
@@ -297,21 +296,54 @@ public class MapsActivity
             }
 
         }
-
     }
 
     private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
-    public void addNewMarker(GoogleMap googleMap, String problem,String description,LatLng position){
+    public void addNewMarker(GoogleMap googleMap, String type,String problem,String description,LatLng position,InfoWindowData infoWindowData){
         mMap = googleMap;
-        mMap.addMarker(new MarkerOptions().title(problem).snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem)));
+        MarkerOptions markerOptions = new MarkerOptions().title(problem)
+                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
+
+        //Set infoWindowData --> This is temporary
+        InfoWindowData info = infoWindowData;
+        info = new InfoWindowData();
+
+        //Set type of problem
+        info.setType(type);
+
+        //Set user's information for InfoWindowData -->This is temporary (static data)
+        info.setPhoneNumber("01288446176");
+
+        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+        Marker marker = mMap.addMarker(markerOptions);
+        mMap.setOnInfoWindowClickListener(this);
+        marker.setTag(info);
+        marker.showInfoWindow();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        InfoWindowData infoWindowData = (InfoWindowData) marker.getTag();
+        if ("problem".equals(infoWindowData.getType()))
+        {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + infoWindowData.getPhoneNumber()));
+            try{
+                startActivity(intent);
+            }
+            catch (android.content.ActivityNotFoundException ex){
+                Toast.makeText(MapsActivity.this,"yourActivity is not founded",Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -321,34 +353,31 @@ public class MapsActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-//
-//        if (id == R.id.nav_place) {
-//            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
-//        } else if (id == R.id.nav_contribution) {
-//
-//        } else if (id == R.id.nav_profile) {
-//
-//        } else if (id == R.id.nav_contact) {
-//
-//        } else if (id == R.id.nav_setting) {
-//
-//        } else if (id == R.id.nav_feedback) {
-//
-//        } else if (id == R.id.nav_term) {
-//
-//        } else if (id == R.id.nav_logout) {
-//
-//        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (id == R.id.nav_place) {
+            Toast.makeText(MapsActivity.this, "got it", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_contribution) {
+
+        } else if (id == R.id.nav_profile) {
+
+        } else if (id == R.id.nav_contact) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_feedback) {
+
+        } else if (id == R.id.nav_term) {
+
+        } else if (id == R.id.nav_logout) {
+
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
 }
