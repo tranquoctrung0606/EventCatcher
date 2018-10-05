@@ -79,6 +79,8 @@ public class MapsActivity
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
+    public static final String TITLE = "title";
+    public static final String IMGSRC = "description";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -154,22 +156,30 @@ public class MapsActivity
 
     private void selectReportPlaces()
     {
-
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Places");
+        startActivity(intent);
     }
 
     private void selectReportPoliceMan()
     {
-
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Police man");
+        startActivity(intent);
     }
 
     private void selectReportMapIssues()
     {
-
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Map Issues");
+        startActivity(intent);
     }
 
     private void selectReportTraffic()
     {
-
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Traffic");
+        startActivity(intent);
     }
 
     private void addControls() {
