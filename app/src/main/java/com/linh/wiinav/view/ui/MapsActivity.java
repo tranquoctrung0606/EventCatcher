@@ -80,7 +80,6 @@ public class MapsActivity
     private RelativeLayout rlDirection;
     private ImageView iwSearch1, iwSearch2, iwDirection;
     private AutoCompleteTextView mSearchDestinationText;
-    private ImageView iwUser;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -147,12 +146,7 @@ public class MapsActivity
                 return false;
             }
         });
-        iwUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
         fab_reportTraffic.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -223,7 +217,6 @@ public class MapsActivity
         iwSearch2 = findViewById(R.id.iwSearch2);
         mSearchDestinationText = findViewById(R.id.input_search_destination);
         navigationView = findViewById(R.id.nav_view);
-        iwUser = findViewById(R.id.iwUser);
     }
 
 
