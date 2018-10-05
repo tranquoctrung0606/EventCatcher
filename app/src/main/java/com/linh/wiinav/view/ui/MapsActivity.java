@@ -70,26 +70,26 @@ public class MapsActivity
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136)
     );
-
-    private LatLng oriLatLng;
-    private LatLng desLatLng;
-
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton, fab_reportTraffic, fab_reportMapIssues, fab_reportPoliceMan, fab_reportPlaces;
-    private NavigationView navigationView;
-    private boolean showHide = false;
     private RelativeLayout rlDirection;
     private ImageView iwSearch1, iwSearch2, iwDirection;
     private AutoCompleteTextView mSearchDestinationText;
-
+    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces,
+            fab_maptype, fab_satellitetype, fab_roadtype ;
+    private NavigationView navigationView;
+    private boolean showHide1 = false;
+    private boolean showHide2 = false;
+    private TextView tvDuration;
+    private TextView tvDistance;
     //vars
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
+    public static final String TITLE = "title";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,16 +109,19 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout();
+        hideFabLayout1();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (showHide == false) {
-                    showFabLayout();
-                    showHide = true;
-                } else {
-                    hideFabLayout();
-                    showHide = false;
+                if(showHide1 == false)
+                {
+                    showFabLayout1();
+                    showHide1 = true;
+                }
+                else
+                {
+                    hideFabLayout1();
+                    showHide1 = false;
                 }
             }
         });
@@ -149,7 +152,6 @@ public class MapsActivity
                 return false;
             }
         });
-
         fab_reportTraffic.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -182,30 +184,68 @@ public class MapsActivity
                 selectReportPlaces();
             }
         });
+
+        hideFabLayout2();
+        fab_maptype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(showHide2 == false)
+                {
+                    showFabLayout2();
+                    showHide2 = true;
+                }
+                else
+                {
+                    hideFabLayout2();
+                    showHide2 = false;
+                }
+            }
+        });
+        fab_satellitetype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            }
+        });
+        fab_roadtype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            }
+        });
     }
 
-    private void selectReportPlaces() {
-
+    private void selectReportPlaces()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Places");
+        startActivity(intent);
     }
 
-    private void selectReportPoliceMan() {
-
+    private void selectReportPoliceMan()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Police man");
+        startActivity(intent);
     }
 
-    private void selectReportMapIssues() {
-
+    private void selectReportMapIssues()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Map Issues");
+        startActivity(intent);
     }
 
-    private void selectReportTraffic() {
-
-    }
-
-    private void direction() {
-        // Getting URL to the Google Directions API
-        String url = getDirectionsUrl(oriLatLng, desLatLng);
+    private void selectReportTraffic()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Traffic");
+        startActivity(intent);
     }
 
     private void addControls() {
+        tvDistance = findViewById(R.id.tvDuration);
+        tvDuration = findViewById(R.id.tvDuration);
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
@@ -213,44 +253,22 @@ public class MapsActivity
         fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
         fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
         fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
-        navigationView = findViewById(R.id.nav_view);
         rlDirection = findViewById(R.id.relLayout2);
         iwDirection = findViewById(R.id.iwDirection);
         iwSearch1 = findViewById(R.id.iwSearch1);
         iwSearch2 = findViewById(R.id.iwSearch2);
         mSearchDestinationText = findViewById(R.id.input_search_destination);
-        navigationView = findViewById(R.id.nav_view);
+        fab_maptype = findViewById(R.id.fab_maptype);
+        fab_satellitetype = findViewById(R.id.fab_satellitetype);
+        fab_roadtype = findViewById(R.id.fab_roadtype);
+        navigationView= (NavigationView) findViewById(R.id.nav_view);
+
     }
 
 
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
 
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-
-        return url;
     }
 
     @Override
@@ -334,15 +352,6 @@ public class MapsActivity
             Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            switch (i) {
-                case 0:
-                    oriLatLng = latLng;
-                    break;
-                case 1:
-                    desLatLng = latLng;
-                    direction();
-                    break;
-            }
             moveCamera(latLng, DEFAULT_ZOOM,
                     address.getAddressLine(0));
         }
@@ -489,10 +498,12 @@ public class MapsActivity
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
-        ReportedData reportedData = (ReportedData) marker.getTag();
-        intent.putExtra("reportedData",reportedData);
-        startActivity(intent);
+        if(marker.getTag() != null) {
+            Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
+            ReportedData reportedData = (ReportedData) marker.getTag();
+            intent.putExtra("reportedData", reportedData);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -539,7 +550,7 @@ public class MapsActivity
         return true;
     }
 
-    private void showFabLayout()
+    private void showFabLayout1()
     {
         fab_reportTraffic.show();
         fab_reportMapIssues.show();
@@ -547,13 +558,27 @@ public class MapsActivity
         fab_reportPlaces.show();
     }
 
-    private void hideFabLayout()
+    private void hideFabLayout1()
     {
         fab_reportTraffic.hide();
         fab_reportMapIssues.hide();
         fab_reportPoliceMan.hide();
         fab_reportPlaces.hide();
     }
+
+
+    private void showFabLayout2()
+    {
+        fab_satellitetype.show();
+        fab_roadtype.show();
+    }
+
+    private void hideFabLayout2()
+    {
+        fab_satellitetype.hide();
+        fab_roadtype.hide();
+    }
+
 
     protected void displayNextScreen(final Intent nextScreen)
     {

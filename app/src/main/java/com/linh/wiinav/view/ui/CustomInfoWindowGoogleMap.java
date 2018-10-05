@@ -23,19 +23,21 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        ReportedData infoWindowData = (ReportedData) marker.getTag();
-        View view = null;
-        if ("problem".equals(infoWindowData.getType())){
-            view = ((Activity) context).getLayoutInflater()
-                    .inflate(R.layout.info_problem_report, null);
+        ReportedData reportedData = (ReportedData) marker.getTag();
+        if(reportedData != null) {
+            if ("problem".equals(reportedData.getType())) {
+                View view = ((Activity) context).getLayoutInflater()
+                        .inflate(R.layout.info_problem_report, null);
 
-            TextView tvTitle = view.findViewById(R.id.title);
-            TextView tvSnippet = view.findViewById(R.id.snippet);
+                TextView tvTitle = view.findViewById(R.id.title);
+                TextView tvSnippet = view.findViewById(R.id.snippet);
 
-            tvTitle.setText(marker.getTitle());
-            tvSnippet.setText(marker.getSnippet());
+                tvTitle.setText(marker.getTitle());
+                tvSnippet.setText(marker.getSnippet());
+                return view;
+            }
         }
-        return view;
+        return null;
     }
 
 
