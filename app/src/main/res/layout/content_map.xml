@@ -67,4 +67,15 @@
         />
     <include layout="@layout/fab_layout"/>
 
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_maptype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:src="@drawable/ic_maptype"
+            android:layout_marginLeft="20dp"/>
+    <include layout="@layout/maptype_layout"/>
+
 </android.support.design.widget.CoordinatorLayout>

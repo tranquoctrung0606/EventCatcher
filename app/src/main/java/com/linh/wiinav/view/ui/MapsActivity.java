@@ -69,9 +69,11 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces ;
+    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces,
+            fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
-    private boolean showHide = false;
+    private boolean showHide1 = false;
+    private boolean showHide2 = false;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -104,19 +106,19 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout();
+        hideFabLayout1();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showHide == false)
+                if(showHide1 == false)
                 {
-                    showFabLayout();
-                    showHide = true;
+                    showFabLayout1();
+                    showHide1 = true;
                 }
                 else
                 {
-                    hideFabLayout();
-                    showHide = false;
+                    hideFabLayout1();
+                    showHide1 = false;
                 }
             }
         });
@@ -150,6 +152,23 @@ public class MapsActivity
             public void onClick(final View v)
             {
                 selectReportPlaces();
+            }
+        });
+
+        hideFabLayout2();
+        fab_maptype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(showHide2 == false)
+                {
+                    showFabLayout2();
+                    showHide2 = true;
+                }
+                else
+                {
+                    hideFabLayout2();
+                    showHide2 = false;
+                }
             }
         });
     }
@@ -190,6 +209,9 @@ public class MapsActivity
         fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
         fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
         fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
+        fab_maptype = findViewById(R.id.fab_maptype);
+        fab_satellitetype = findViewById(R.id.fab_satellitetype);
+        fab_roadtype = findViewById(R.id.fab_roadtype);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
     }
 
@@ -430,7 +452,7 @@ public class MapsActivity
         return true;
     }
 
-    private void showFabLayout()
+    private void showFabLayout1()
     {
         fab_reportTraffic.show();
         fab_reportMapIssues.show();
@@ -438,13 +460,27 @@ public class MapsActivity
         fab_reportPlaces.show();
     }
 
-    private void hideFabLayout()
+    private void hideFabLayout1()
     {
         fab_reportTraffic.hide();
         fab_reportMapIssues.hide();
         fab_reportPoliceMan.hide();
         fab_reportPlaces.hide();
     }
+
+
+    private void showFabLayout2()
+    {
+        fab_satellitetype.show();
+        fab_roadtype.show();
+    }
+
+    private void hideFabLayout2()
+    {
+        fab_satellitetype.hide();
+        fab_roadtype.hide();
+    }
+
 
     protected void displayNextScreen(final Intent nextScreen)
     {
