@@ -1,4 +1,4 @@
-package com.linh.wiinav.view;
+package com.linh.wiinav.view.ui;
 
 import android.Manifest;
 import android.app.Activity;
@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
+import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,10 +69,11 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton,fab_report1,fab_report2,fab_report3,fab_report4 ;
+    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces,
+            fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
-    private boolean showHide = false;
-    private ImageView iwUser;
+    private boolean showHide1 = false;
+    private boolean showHide2 = false;
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -79,6 +81,8 @@ public class MapsActivity
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
+    public static final String TITLE = "title";
+    public static final String IMGSRC = "description";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -99,51 +103,113 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout();
+        hideFabLayout1();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showHide == false)
+                if(showHide1 == false)
                 {
-                    showFabLayout();
-                    showHide = true;
+                    showFabLayout1();
+                    showHide1 = true;
                 }
                 else
                 {
-                    hideFabLayout();
-                    showHide = false;
+                    hideFabLayout1();
+                    showHide1 = false;
                 }
             }
         });
-
-        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        fab_reportTraffic.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onFocusChange(final View v, final boolean hasFocus)
+            public void onClick(final View v)
             {
-                if (!hasFocus) {
-                    hideKeyboard(v);
+                selectReportTraffic();
+            }
+        });
+        fab_reportMapIssues.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportMapIssues();
+            }
+        });
+        fab_reportPoliceMan.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportPoliceMan();
+            }
+        });
+        fab_reportPlaces.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(final View v)
+            {
+                selectReportPlaces();
+            }
+        });
+
+        hideFabLayout2();
+        fab_maptype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(showHide2 == false)
+                {
+                    showFabLayout2();
+                    showHide2 = true;
+                }
+                else
+                {
+                    hideFabLayout2();
+                    showHide2 = false;
                 }
             }
         });
-        iwUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
 
-            }
-        });
+    private void selectReportPlaces()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Places");
+        startActivity(intent);
+    }
+
+    private void selectReportPoliceMan()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Police man");
+        startActivity(intent);
+    }
+
+    private void selectReportMapIssues()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Map Issues");
+        startActivity(intent);
+    }
+
+    private void selectReportTraffic()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Traffic");
+        startActivity(intent);
     }
 
     private void addControls() {
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
-        fab_report1 = findViewById(R.id.fab_report1);
-        fab_report2 = findViewById(R.id.fab_report2);
-        fab_report3 = findViewById(R.id.fab_report3);
-        fab_report4 = findViewById(R.id.fab_report4);
+        fab_reportTraffic = findViewById(R.id.fab_reportTraffic);
+        fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
+        fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
+        fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
+        fab_maptype = findViewById(R.id.fab_maptype);
+        fab_satellitetype = findViewById(R.id.fab_satellitetype);
+        fab_roadtype = findViewById(R.id.fab_roadtype);
         navigationView= (NavigationView) findViewById(R.id.nav_view);
-        iwUser = findViewById(R.id.iwUser);
     }
 
     @Override
@@ -383,54 +449,35 @@ public class MapsActivity
         return true;
     }
 
-    private void showFabLayout()
+    private void showFabLayout1()
     {
-        fab_report1.show();
-        fab_report2.show();
-        fab_report3.show();
-        fab_report4.show();
+        fab_reportTraffic.show();
+        fab_reportMapIssues.show();
+        fab_reportPoliceMan.show();
+        fab_reportPlaces.show();
     }
 
-    private void hideFabLayout()
+    private void hideFabLayout1()
     {
-        fab_report1.hide();
-        fab_report2.hide();
-        fab_report3.hide();
-        fab_report4.hide();
+        fab_reportTraffic.hide();
+        fab_reportMapIssues.hide();
+        fab_reportPoliceMan.hide();
+        fab_reportPlaces.hide();
     }
 
-    private void hideKeyboard(final View view)
+
+    private void showFabLayout2()
     {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        fab_satellitetype.show();
+        fab_roadtype.show();
     }
 
-    @Override
-    public void onWindowFocusChanged(final boolean hasFocus)
+    private void hideFabLayout2()
     {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            hideSystemUI();
-        }
+        fab_satellitetype.hide();
+        fab_roadtype.hide();
     }
 
-    private void hideSystemUI()
-    {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
-    }
 
     protected void displayNextScreen(final Intent nextScreen)
     {

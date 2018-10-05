@@ -13,7 +13,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:id="@+id/map"
-              tools:context=".view.MapsActivity"
+              tools:context=".view.ui.MapsActivity"
               android:name="com.google.android.gms.maps.SupportMapFragment" />
 
     <RelativeLayout android:layout_width="match_parent"
@@ -52,7 +52,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="18dp"
             android:layout_marginTop="68dp"
-            app:srcCompat="@android:drawable/ic_menu_mylocation" android:layout_gravity="right"/>
+            app:srcCompat="@android:drawable/ic_menu_mylocation"
+            android:layout_gravity="right"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -65,5 +66,16 @@
         app:srcCompat="@drawable/ic_baseline_report_problem_24px"
         />
     <include layout="@layout/fab_layout"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_maptype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:src="@drawable/ic_maptype"
+            android:layout_marginLeft="20dp"/>
+    <include layout="@layout/maptype_layout"/>
 
 </android.support.design.widget.CoordinatorLayout>
