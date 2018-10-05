@@ -48,11 +48,14 @@ import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
 import com.linh.wiinav.view.InfoProblemReportActivity;
 import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
+import com.linh.wiinav.view.model.Comment;
 import com.linh.wiinav.view.model.ReportedData;
+import com.linh.wiinav.view.model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MapsActivity
         extends AppCompatActivity
@@ -446,7 +449,7 @@ public class MapsActivity
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
 
-    public void addNewMarker(GoogleMap googleMap, String type, String problem, String description, LatLng position, ReportedData reportedData) {
+    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
         mMap = googleMap;
         MarkerOptions markerOptions = new MarkerOptions().title(problem)
                 .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
@@ -457,18 +460,31 @@ public class MapsActivity
 
         //Set type of problem
         reportedData.setType(type);
-
-        //Set user's information for InfoWindowData -->This is temporary (static data)
+        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
+        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
+        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
+        ArrayList<Comment> listComments = new ArrayList<>();
+        listComments.add(cmt1);
+        listComments.add(cmt2);
+        listComments.add(cmt3);
+        reportedData.setComments(listComments);
+//        reportedData.getComments().add(cmt1);
+//        reportedData.getComments().add(cmt2);
+//        reportedData.getComments().add(cmt3);
+        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
+        User reporter = new User("01","Dat","01288446176");
+        reportedData.setReporter(reporter);
+        //Set problem's information for InfoWindowData -->This is temporary (static data)
         reportedData.setTitle(markerOptions.getTitle());
-        reportedData.setSnippet(markerOptions.getSnippet());
-        reportedData.setPhoneNumber("01288446176");
+        reportedData.setDescription(markerOptions.getSnippet());
 
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
-        mMap.setOnInfoWindowClickListener(this);
+
         marker.setTag(reportedData);
         marker.showInfoWindow();
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override

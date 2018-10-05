@@ -1,10 +1,12 @@
 package com.linh.wiinav.view.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class ReportedData implements Serializable {
-    private String type,phoneNumber,title, snippet;
-
+    private String type,title, description;
+    private User reporter;
+    private ArrayList<Comment> comments;
     public ReportedData() {
     }
 
@@ -16,21 +18,6 @@ public class ReportedData implements Serializable {
         this.type = type;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getSnippet() {
-        return snippet;
-    }
-
-    public void setSnippet(String snippet) {
-        this.snippet = snippet;
-    }
 
     public String getTitle() {
         return title;
@@ -38,5 +25,31 @@ public class ReportedData implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+
+
+    public User getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(User reporter) {
+        this.reporter = reporter;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
     }
 }
