@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.ui.SignupActivity"
-    android:background="@drawable/greengradient">
+    android:background="@drawable/side_nav_bar">
 
     <ImageView
         android:id="@+id/imageView"

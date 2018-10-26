@@ -38,8 +38,6 @@
             android:name=".view.ui.MainActivity"
             android:theme="@style/SplashTheme" />
         <activity android:name=".view.ui.MapsActivity" />
-
-
         <activity android:name=".view.ui.TermActivity" />
         <activity android:name=".view.ui.FeedbackActivity" />
         <activity
@@ -55,8 +53,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".view.ui.SignupActivity">
+        <activity android:name=".view.ui.SignupActivity"></activity>
+        <activity android:name=".view.ui.UserprofileActivity">
 
         </activity>
     </application>

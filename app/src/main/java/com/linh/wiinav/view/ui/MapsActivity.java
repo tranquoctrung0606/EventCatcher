@@ -529,7 +529,8 @@ public class MapsActivity
         } else if (id == R.id.nav_contribution) {
 
         } else if (id == R.id.nav_profile) {
-
+            Intent userprofileActivity = new Intent(getApplicationContext(), UserprofileActivity.class);
+            displayNextScreen(userprofileActivity);
         } else if (id == R.id.nav_contact) {
 
         } else if (id == R.id.nav_setting) {
