@@ -303,9 +303,9 @@ public class MapsActivity
         tvDuration = findViewById(R.id.tvDuration);
         tvDuration.setVisibility(View.GONE);
         fab_maptype = findViewById(R.id.fab_maptype);
-//        fab_satellitetype = findViewById(R.id.fab_satellitetype);
-//        fab_roadtype = findViewById(R.id.fab_roadtype);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        fab_satellitetype = findViewById(R.id.fab_satellitetype);
+        fab_roadtype = findViewById(R.id.fab_roadtype);
+        navigationView = findViewById(R.id.nav_view);
     }
 
 
