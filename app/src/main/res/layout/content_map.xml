@@ -141,10 +141,6 @@
         app:srcCompat="@drawable/ic_baseline_report_problem_24px"
         />
 
-    <include layout="@layout/fab_layout" />
-
-
-
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_maptype"
             android:layout_width="wrap_content"

@@ -109,20 +109,16 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout1();
+
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showHide1 == false)
-                {
-                    showFabLayout1();
-                    showHide1 = true;
-                }
-                else
-                {
-                    hideFabLayout1();
-                    showHide1 = false;
-                }
+                //Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+                //intent.putExtra(TITLE,"Places");
+                //startActivity(intent);
+                Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+                intent.putExtra(TITLE,"Places");
+                startActivity(intent);
             }
         });
         rlDirection.setVisibility(View.GONE);
@@ -152,38 +148,7 @@ public class MapsActivity
                 return false;
             }
         });
-        fab_reportTraffic.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                selectReportTraffic();
-            }
-        });
-        fab_reportMapIssues.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                selectReportMapIssues();
-            }
-        });
-        fab_reportPoliceMan.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                selectReportPoliceMan();
-            }
-        });
-        fab_reportPlaces.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                selectReportPlaces();
-            }
-        });
+
 
         hideFabLayout2();
         fab_maptype.setOnClickListener(new View.OnClickListener() {
@@ -215,33 +180,7 @@ public class MapsActivity
         });
     }
 
-    private void selectReportPlaces()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Places");
-        startActivity(intent);
-    }
 
-    private void selectReportPoliceMan()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Police man");
-        startActivity(intent);
-    }
-
-    private void selectReportMapIssues()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Map Issues");
-        startActivity(intent);
-    }
-
-    private void selectReportTraffic()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Traffic");
-        startActivity(intent);
-    }
 
     private void addControls() {
         tvDistance = findViewById(R.id.tvDuration);
@@ -250,9 +189,7 @@ public class MapsActivity
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
         fab_reportTraffic = findViewById(R.id.fab_reportTraffic);
-        fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
-        fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
-        fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
+
         rlDirection = findViewById(R.id.relLayout2);
         iwDirection = findViewById(R.id.iwDirection);
         iwSearch1 = findViewById(R.id.iwSearch1);
@@ -550,21 +487,6 @@ public class MapsActivity
         return true;
     }
 
-    private void showFabLayout1()
-    {
-        fab_reportTraffic.show();
-        fab_reportMapIssues.show();
-        fab_reportPoliceMan.show();
-        fab_reportPlaces.show();
-    }
-
-    private void hideFabLayout1()
-    {
-        fab_reportTraffic.hide();
-        fab_reportMapIssues.hide();
-        fab_reportPoliceMan.hide();
-        fab_reportPlaces.hide();
-    }
 
 
     private void showFabLayout2()

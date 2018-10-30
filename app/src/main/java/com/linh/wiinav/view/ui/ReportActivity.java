@@ -1,28 +1,23 @@
 package com.linh.wiinav.view.ui;
 
-import android.content.Intent;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import com.linh.wiinav.R;
+import com.linh.wiinav.view.ui.report.MajorReportAdapter;
+
+import java.util.ArrayList;
+
+import static com.linh.wiinav.view.ui.report.MajorReportDataFactory.makeReports;
 
 public class ReportActivity
         extends AppCompatActivity
 {
 
-    private TextView txtReportName;
-    private ImageView imgViewReport;
-    private ImageButton imgButtonCamera;
-    private Button btnCloseReport;
-    private Button btnSendReport;
-
-    private static final int CAMERA_PIC_REQUEST = 2500;
+    public MajorReportAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,60 +26,52 @@ public class ReportActivity
         setContentView(R.layout.activity_report);
         addControls();
         addEvents();
+        init();
+    }
+
+    private void init()
+    {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView_ReportList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        // RecyclerView has some built in animations to it, using the DefaultItemAnimator.
+        // Specifically when you call notifyItemChanged() it does a fade animation for the changing
+        // of the data in the ViewHolder. If you would like to disable this you can use the following:
+        RecyclerView.ItemAnimator animator = recyclerView.getItemAnimator();
+        if (animator instanceof DefaultItemAnimator) {
+            ((DefaultItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
+
+        adapter = new MajorReportAdapter(makeReports(), getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        adapter.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        adapter.onRestoreInstanceState(savedInstanceState);
     }
 
     private void addEvents()
     {
-        Intent intent = getIntent();
-        txtReportName.setText(intent.getStringExtra(MapsActivity.TITLE));
 
-        if(txtReportName.getText().toString().equals("Places")){
-            imgViewReport.setImageResource(R.drawable.ic_places);
-        } else
-        if(txtReportName.getText().toString().equals("Police man")) {
-            imgViewReport.setImageResource(R.drawable.ic_policeman);
-        } else
-        if(txtReportName.getText().toString().equals("Map Issues")) {
-            imgViewReport.setImageResource(R.drawable.ic_mapissues);
-        } else
-        if(txtReportName.getText().toString().equals("Traffic")) {
-            imgViewReport.setImageResource(R.drawable.ic_traffic);
-        }
-
-        imgButtonCamera.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
-            }
-        });
-        btnCloseReport.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                onBackPressed();
-            }
-        });
-        btnSendReport.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                Toast.makeText(getApplicationContext(), "Report Sent", Toast.LENGTH_SHORT).show();
-                onBackPressed();
-            }
-        });
     }
 
     private void addControls()
     {
-        txtReportName = findViewById(R.id.txtReportName);
-        imgViewReport = findViewById(R.id.imgViewReport);
-        imgButtonCamera = findViewById(R.id.imgButtonCamera);
-        btnCloseReport = findViewById(R.id.btnCloseReport);
-        btnSendReport = findViewById(R.id.btnSendReport);
+
     }
+
+
+
+
+
+
 }

@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.linh.wiinav">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.linh.wiinav">
 
     <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="true" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
+            android:glEsVersion="0x00020000"
+            android:required="true"/>
+
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
-        tools:ignore="GoogleAppIndexingWarning">
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            tools:ignore="GoogleAppIndexingWarning">
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version"/>
@@ -50,8 +51,10 @@
                 android:label="@string/title_activity_setting"
                 android:theme="@style/AppThemeActionBar">
         </activity>
-        <activity android:name=".view.InfoProblemReportActivity"></activity>
+        <activity android:name=".view.InfoProblemReportActivity"/>
         <activity android:name=".view.ui.ReportActivity">
+        </activity>
+        <activity android:name=".view.ui.ReportDetailActivity">
         </activity>
     </application>
 
