@@ -11,15 +11,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.linh.wiinav.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
-
-    Button btnMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,13 +27,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
-
     @Override
     public void onWindowFocusChanged(final boolean hasFocus)
     {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             hideSystemUI();
+
         }
     }
 
@@ -75,42 +72,42 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    static class InfoWindowData  {
-        private String type,phoneNumber,title, snippet;
-
-        InfoWindowData() {
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getPhoneNumber() {
-            return phoneNumber;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-        }
-
-        public String getSnippet() {
-            return snippet;
-        }
-
-        public void setSnippet(String snippet) {
-            this.snippet = snippet;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-    }
+//    static class InfoWindowData  {
+//        private String type,phoneNumber,title, snippet;
+//
+//        InfoWindowData() {
+//        }
+//
+//        public String getType() {
+//            return type;
+//        }
+//
+//        public void setType(String type) {
+//            this.type = type;
+//        }
+//
+//        public String getPhoneNumber() {
+//            return phoneNumber;
+//        }
+//
+//        public void setPhoneNumber(String phoneNumber) {
+//            this.phoneNumber = phoneNumber;
+//        }
+//
+//        public String getSnippet() {
+//            return snippet;
+//        }
+//
+//        public void setSnippet(String snippet) {
+//            this.snippet = snippet;
+//        }
+//
+//        public String getTitle() {
+//            return title;
+//        }
+//
+//        public void setTitle(String title) {
+//            this.title = title;
+//        }
+//    }
 }

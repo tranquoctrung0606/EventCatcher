@@ -97,10 +97,8 @@ public class MapsActivity
     private TextView tvDuration;
     private TextView tvDistance;
 
-    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces,
-            fab_maptype, fab_satellitetype, fab_roadtype ;
+    private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
-    private boolean showHide1 = false;
     private boolean showHide2 = false;
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -114,7 +112,6 @@ public class MapsActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
         getLocationPermission();
         addControls();
         addEvents();
@@ -128,20 +125,13 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout1();
+
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showHide1 == false)
-                {
-                    showFabLayout1();
-                    showHide1 = true;
-                }
-                else
-                {
-                    hideFabLayout1();
-                    showHide1 = false;
-                }
+                Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+                intent.putExtra(TITLE,"Places");
+                startActivity(intent);
             }
         });
         rlDirection.setVisibility(View.GONE);
@@ -171,36 +161,27 @@ public class MapsActivity
                 return false;
             }
         });
-        fab_reportTraffic.setOnClickListener(new View.OnClickListener()
-        {
+
+        fab_maptype.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v)
-            {
-                selectReportTraffic();
+            public void onClick(View v) {
+                if(showHide2 == false)
+                    showFabLayout2();
+                else
+                    hideFabLayout2();
+                showHide2 = !showHide2;
             }
         });
-        fab_reportMapIssues.setOnClickListener(new View.OnClickListener()
-        {
+        fab_satellitetype.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v)
-            {
-                selectReportMapIssues();
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             }
         });
-        fab_reportPoliceMan.setOnClickListener(new View.OnClickListener()
-        {
+        fab_roadtype.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v)
-            {
-                selectReportPoliceMan();
-            }
-        });
-        fab_reportPlaces.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View v)
-            {
-                selectReportPlaces();
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             }
         });
     }
@@ -225,73 +206,12 @@ public class MapsActivity
         }
     }
 
-    private void selectReportPlaces() {
-        hideFabLayout2();
-        fab_maptype.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(showHide2 == false)
-                {
-                    showFabLayout2();
-                    showHide2 = true;
-                }
-                else
-                {
-                    hideFabLayout2();
-                    showHide2 = false;
-                }
-            }
-        });
-        fab_satellitetype.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            }
-        });
-        fab_roadtype.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            }
-        });
-    }
-
-//    private void selectReportPlaces()
-//    {
-//        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-//        intent.putExtra(TITLE,"Places");
-//        startActivity(intent);
-//    }
-
-    private void selectReportPoliceMan()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Police man");
-        startActivity(intent);
-    }
-    private void selectReportMapIssues()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Map Issues");
-        startActivity(intent);
-    }
-    private void selectReportTraffic()
-    {
-        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-        intent.putExtra(TITLE,"Traffic");
-        startActivity(intent);
-    }
-
     private void addControls() {
         tvDistance = findViewById(R.id.tvDuration);
         tvDuration = findViewById(R.id.tvDuration);
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
-        fab_reportTraffic = findViewById(R.id.fab_reportTraffic);
-        fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
-        fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
-        fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
         rlDirection = findViewById(R.id.relLayout2);
         iwDirection = findViewById(R.id.iwDirection);
         iwSearch1 = findViewById(R.id.iwSearch1);
@@ -305,6 +225,7 @@ public class MapsActivity
         fab_maptype = findViewById(R.id.fab_maptype);
         fab_satellitetype = findViewById(R.id.fab_satellitetype);
         fab_roadtype = findViewById(R.id.fab_roadtype);
+        hideFabLayout2();
         navigationView = findViewById(R.id.nav_view);
     }
 
@@ -316,7 +237,6 @@ public class MapsActivity
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        Toast.makeText(MapsActivity.this, "Map is read ", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is right here!");
         mMap = googleMap;
 
@@ -371,7 +291,7 @@ public class MapsActivity
 
     private void geoLocate(int i) {
         Log.d(TAG, "geoLocate: geolocating");
-        String searchString = "";
+        String searchString;
         List<Address> list = new ArrayList<>();
         switch (i) {
             case 0:
@@ -590,22 +510,10 @@ public class MapsActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+
+
     }
 
-    private void showFabLayout1()
-    {
-        fab_reportTraffic.show();
-        fab_reportMapIssues.show();
-        fab_reportPoliceMan.show();
-        fab_reportPlaces.show();
-    }
-    private void hideFabLayout1()
-    {
-        fab_reportTraffic.hide();
-        fab_reportMapIssues.hide();
-        fab_reportPoliceMan.hide();
-        fab_reportPlaces.hide();
-    }
     private void showFabLayout2()
     {
         fab_satellitetype.show();
@@ -616,7 +524,6 @@ public class MapsActivity
         fab_satellitetype.hide();
         fab_roadtype.hide();
     }
-
 
     protected void displayNextScreen(final Intent nextScreen)
     {

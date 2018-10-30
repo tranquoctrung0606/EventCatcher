@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -87,7 +88,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
     }
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], int[] grantResults) {
         switch (requestCode) {
 
             case 1: {
@@ -99,7 +100,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
                 }
-                return;
+                break;
             }
 
             // other 'case' lines to check for other
