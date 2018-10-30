@@ -1,8 +1,10 @@
 package com.linh.wiinav.view.ui;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -43,21 +45,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
 import com.linh.wiinav.view.InfoProblemReportActivity;
 import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
 import com.linh.wiinav.view.model.ReportedData;
+import com.linh.wiinav.view.model.Route;
+import com.linh.wiinav.view.module.DirectionFinder;
+import com.linh.wiinav.view.module.DirectionFinderListener;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
         implements OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnInfoWindowClickListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        NavigationView.OnNavigationItemSelectedListener,
+        GoogleMap.OnInfoWindowClickListener,
+        DirectionFinderListener
+{
     private static final String TAG = "MapsActivity";
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -70,6 +82,9 @@ public class MapsActivity
 
     private LatLng oriLatLng;
     private LatLng desLatLng;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
 
     //widgets
     private AutoCompleteTextView mSearchText;
@@ -80,6 +95,10 @@ public class MapsActivity
     private RelativeLayout rlDirection;
     private ImageView iwSearch1, iwSearch2, iwDirection;
     private AutoCompleteTextView mSearchDestinationText;
+    private ProgressDialog progressDialog;
+    private TextView tvDuration;
+    private TextView tvDistance;
+
 
     //vars
     private Boolean mLocationPermissionGranted = false;
@@ -140,7 +159,7 @@ public class MapsActivity
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
                     //searching
-                    geoLocate(1);
+                   geoLocate(1);
                     hideKeyboard();
                 }
                 return false;
@@ -181,6 +200,26 @@ public class MapsActivity
         });
     }
 
+    private void sendRequest() {
+        Log.d(TAG, "sendRequest: sending...............");
+        String origin = mSearchText.getText().toString();
+        String destination = mSearchDestinationText.getText().toString();
+        if (origin.isEmpty()) {
+            Toast.makeText(this, "Please enter origin address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (destination.isEmpty()) {
+            Toast.makeText(this, "Please enter destination address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            new DirectionFinder(this, origin, destination).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void selectReportPlaces() {
 
     }
@@ -217,6 +256,10 @@ public class MapsActivity
         iwSearch2 = findViewById(R.id.iwSearch2);
         mSearchDestinationText = findViewById(R.id.input_search_destination);
         navigationView = findViewById(R.id.nav_view);
+        tvDistance = findViewById(R.id.tvDistance);
+        tvDistance.setVisibility(View.GONE);
+        tvDuration = findViewById(R.id.tvDuration);
+        tvDuration.setVisibility(View.GONE);
     }
 
 
@@ -311,38 +354,30 @@ public class MapsActivity
         switch (i) {
             case 0:
                 searchString = mSearchText.getText().toString();
+                Log.d(TAG, "geoLocate: ");
+                Geocoder geocoder = new Geocoder(MapsActivity.this);
+                List<Address> list = new ArrayList<>();
+
+                try {
+                    list = geocoder.getFromLocationName(searchString, 1);
+                } catch (IOException e) {
+                    Log.e(TAG, "geoLocate: IOException", e);
+                }
+
+                if (list.size() > 0) {
+                    Address address = list.get(0);
+                    Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
+                    //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    moveCamera(latLng, DEFAULT_ZOOM,
+                            address.getAddressLine(0));
+                }
                 break;
             case 1:
-                searchString = mSearchDestinationText.getText().toString();
+                //sendRequest();
                 break;
         }
-        Log.d(TAG, "geoLocate: ");
-        Geocoder geocoder = new Geocoder(MapsActivity.this);
-        List<Address> list = new ArrayList<>();
 
-        try {
-            list = geocoder.getFromLocationName(searchString, 1);
-        } catch (IOException e) {
-            Log.e(TAG, "geoLocate: IOException", e);
-        }
-
-        if (list.size() > 0) {
-            Address address = list.get(0);
-            Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
-            //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            switch (i) {
-                case 0:
-                    oriLatLng = latLng;
-                    break;
-                case 1:
-                    desLatLng = latLng;
-                    direction();
-                    break;
-            }
-            moveCamera(latLng, DEFAULT_ZOOM,
-                    address.getAddressLine(0));
-        }
     }
 
     private void getDeviceLocation() {
@@ -464,6 +499,7 @@ public class MapsActivity
         reportedData.setPhoneNumber("01288446176");
 
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
         mMap.setOnInfoWindowClickListener(this);
@@ -473,10 +509,13 @@ public class MapsActivity
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
-        ReportedData reportedData = (ReportedData) marker.getTag();
-        intent.putExtra("reportedData",reportedData);
-        startActivity(intent);
+        if (marker.getTag()!=null)
+        {
+            ReportedData reportedData = (ReportedData) marker.getTag();
+            Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
+            intent.putExtra("reportedData",reportedData);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -545,4 +584,63 @@ public class MapsActivity
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
+    @Override
+    public void onDirectionFinderStart() {
+        progressDialog = ProgressDialog.show(this, "Please wait.",
+                "Finding direction..!", true);
+
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline:polylinePaths ) {
+                polyline.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> routes) {
+        progressDialog.dismiss();
+        Log.i(TAG, "onDirectionFinderSuccess: dissmisssssssssss");
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+
+        for (Route route : routes) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+            tvDuration.setText(route.duration.text);
+            tvDistance.setText(route.distance.text);
+
+            originMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
+                    .title(route.startAddress)
+                    .position(route.startLocation)));
+            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
+                    .title(route.endAddress)
+                    .position(route.endLocation)));
+
+            PolylineOptions polylineOptions = new PolylineOptions().
+                    geodesic(true).
+                    color(Color.BLUE).
+                    width(10);
+
+            for (int i = 0; i < route.points.size(); i++)
+                polylineOptions.add(route.points.get(i));
+
+            polylinePaths.add(mMap.addPolyline(polylineOptions));
+            break;
+        }
+        Log.i(TAG, "onDirectionFinderSuccess: sSTOPPPPPPPPPPPPPPPP");
+    }
 }
