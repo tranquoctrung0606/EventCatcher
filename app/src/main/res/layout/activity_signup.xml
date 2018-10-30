@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.ui.SignupActivity"
+    android:background="@drawable/side_nav_bar">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="190dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="38dp"
+        android:background="@drawable/logomap" />
+
+    <EditText
+        android:id="@+id/edt_email"
+        android:layout_width="266dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint=" Email"
+        android:textColorHint="#f1e9e9"
+        android:drawableLeft="@drawable/email"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/edt_password"
+        android:layout_width="266dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/edt_email"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint=" Password"
+        android:textColorHint="#f1e9e9"
+        android:drawableLeft="@drawable/password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/edt_confirmpassword"
+        android:layout_width="266dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/edt_password"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint=" Confirm Password"
+        android:textColorHint="#f1e9e9"
+        android:drawableLeft="@drawable/password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btn_signupEmail"
+        android:layout_width="247dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/edt_confirmpassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Sign up"
+        android:background="@drawable/rounded_btnsignup"/>
+
+</RelativeLayout>

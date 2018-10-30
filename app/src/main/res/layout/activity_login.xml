@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/side_nav_bar">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="190dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="38dp"
+            android:background="@drawable/logomap" />
+
+        <EditText
+            android:id="@+id/edt_email"
+            android:layout_width="266dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:ems="10"
+            android:hint=" Email"
+            android:textColorHint="#f1e9e9"
+            android:drawableLeft="@drawable/email"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edt_password"
+            android:layout_width="266dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/edt_email"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint=" Password"
+            android:textColorHint="#f1e9e9"
+            android:drawableLeft="@drawable/password"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forgot your password?"
+            android:textColor="#272bb4"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="180dp"
+            android:layout_below="@id/edt_password"
+            android:textStyle="italic"/>
+
+        <Button
+            android:id="@+id/btn_signin"
+            android:layout_width="247dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/edt_password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:text="Sign in"
+            android:background="@drawable/rounded_btnsignin"/>
+
+        <Button
+            android:id="@+id/btn_signupEmail"
+            android:layout_width="247dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/btn_signin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="Sign up"
+            android:background="@drawable/rounded_btnsignup"/>
+
+        <Button
+            android:id="@+id/btn_singninGoogle"
+            android:layout_width="247dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/btn_signupEmail"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="Sign in with Google"
+            android:textColor="#fcfbfb"
+            android:background="@drawable/rounded_signingg"/>
+
+        <Button
+            android:id="@+id/btn_signinFacebook"
+            android:layout_width="247dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/btn_singninGoogle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_btnsigninfb"
+            android:text="Sign in with FaceBook"
+            android:textColor="#fcfbfb" />
+
+    </RelativeLayout>
+
+</ScrollView>

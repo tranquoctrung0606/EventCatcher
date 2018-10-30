@@ -24,7 +24,4 @@
             android:src="@drawable/ic_roadtype"
             android:layout_marginLeft="20dp"
             app:backgroundTint="#ffffff"/>
-
-
-
 </FrameLayout>
