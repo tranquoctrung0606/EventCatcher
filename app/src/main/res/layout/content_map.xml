@@ -2,7 +2,8 @@
 <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusableInTouchMode="true"
@@ -89,8 +90,35 @@
         android:layout_gravity="right"
         android:layout_marginRight="18dp"
         android:layout_marginTop="22dp"
-        app:srcCompat="@drawable/ic_magnify" />
+        app:srcCompat="@drawable/ic_magnify"
+        android:visibility="gone"
+        />
 
+    <TextView
+        android:id="@+id/tvDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="right"
+        android:layout_marginRight="70dp"
+        android:layout_marginTop="115dp"
+        android:text="TextView"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="left"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="115dp"
+        android:text="TextView"
+        android:visibility="gone"
+        />
     <ImageView
             android:id="@+id/iwMyLocation"
             android:layout_width="wrap_content"
@@ -136,5 +164,18 @@
         />
 
     <include layout="@layout/fab_layout" />
+
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_maptype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:src="@drawable/ic_maptype"
+            android:layout_marginLeft="20dp"/>
+    <include layout="@layout/maptype_layout"/>
 
 </android.support.design.widget.CoordinatorLayout>

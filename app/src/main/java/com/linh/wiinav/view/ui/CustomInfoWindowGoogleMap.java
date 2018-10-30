@@ -38,11 +38,10 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoContents(Marker marker) {
         ReportedData reportedData = (ReportedData) marker.getTag();
-        if (reportedData != null) {
-            if ("problem".equals(reportedData.getType())){
+        if(reportedData != null) {
+            if ("problem".equals(reportedData.getType())) {
                 View view = ((Activity) context).getLayoutInflater()
                         .inflate(R.layout.info_problem_report, null);
-
                 TextView tvTitle = view.findViewById(R.id.title);
                 TextView tvSnippet = view.findViewById(R.id.snippet);
 

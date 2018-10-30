@@ -11,7 +11,7 @@
             android:layout_marginBottom="100dp"
             android:layout_marginEnd="10dp"
             android:clickable="true"
-            android:src="@drawable/ic_feedback"
+            android:src="@drawable/ic_traffic"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_reportMapIssues"
@@ -21,7 +21,7 @@
             android:layout_marginBottom="80dp"
             android:layout_marginEnd="50dp"
             android:clickable="true"
-            android:src="@drawable/ic_contact"
+            android:src="@drawable/ic_mapissues"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_reportPoliceMan"
@@ -31,7 +31,7 @@
             android:layout_marginBottom="50dp"
             android:layout_marginEnd="80dp"
             android:clickable="true"
-            android:src="@drawable/ic_place"
+            android:src="@drawable/ic_policeman"
             app:backgroundTint="#ffffff"/>
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_reportPlaces"
@@ -41,7 +41,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="100dp"
             android:clickable="true"
-            android:src="@drawable/ic_profile"
+            android:src="@drawable/ic_places"
             app:backgroundTint="#ffffff"/>
 
 </FrameLayout>

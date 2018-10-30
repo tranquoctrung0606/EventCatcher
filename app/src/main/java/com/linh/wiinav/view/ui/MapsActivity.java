@@ -52,15 +52,17 @@ import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
 import com.linh.wiinav.view.InfoProblemReportActivity;
 import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
+import com.linh.wiinav.view.model.Comment;
 import com.linh.wiinav.view.model.ReportedData;
 import com.linh.wiinav.view.model.Route;
 import com.linh.wiinav.view.module.DirectionFinder;
 import com.linh.wiinav.view.module.DirectionFinderListener;
-
+import com.linh.wiinav.view.model.User;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MapsActivity
         extends AppCompatActivity
@@ -80,8 +82,6 @@ public class MapsActivity
             new LatLng(-40, -168), new LatLng(71, 136)
     );
 
-    private LatLng oriLatLng;
-    private LatLng desLatLng;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
@@ -89,23 +89,26 @@ public class MapsActivity
     //widgets
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
-    private FloatingActionButton mFloatingActionButton, fab_reportTraffic, fab_reportMapIssues, fab_reportPoliceMan, fab_reportPlaces;
-    private NavigationView navigationView;
-    private boolean showHide = false;
     private RelativeLayout rlDirection;
     private ImageView iwSearch1, iwSearch2, iwDirection;
     private AutoCompleteTextView mSearchDestinationText;
+
     private ProgressDialog progressDialog;
     private TextView tvDuration;
     private TextView tvDistance;
 
-
+    private FloatingActionButton mFloatingActionButton,fab_reportTraffic,fab_reportMapIssues,fab_reportPoliceMan,fab_reportPlaces,
+            fab_maptype, fab_satellitetype, fab_roadtype ;
+    private NavigationView navigationView;
+    private boolean showHide1 = false;
+    private boolean showHide2 = false;
     //vars
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
+    public static final String TITLE = "title";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,16 +128,19 @@ public class MapsActivity
                 getDeviceLocation();
             }
         });
-        hideFabLayout();
+        hideFabLayout1();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (showHide == false) {
-                    showFabLayout();
-                    showHide = true;
-                } else {
-                    hideFabLayout();
-                    showHide = false;
+                if(showHide1 == false)
+                {
+                    showFabLayout1();
+                    showHide1 = true;
+                }
+                else
+                {
+                    hideFabLayout1();
+                    showHide1 = false;
                 }
             }
         });
@@ -165,7 +171,6 @@ public class MapsActivity
                 return false;
             }
         });
-
         fab_reportTraffic.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -221,27 +226,65 @@ public class MapsActivity
     }
 
     private void selectReportPlaces() {
-
+        hideFabLayout2();
+        fab_maptype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(showHide2 == false)
+                {
+                    showFabLayout2();
+                    showHide2 = true;
+                }
+                else
+                {
+                    hideFabLayout2();
+                    showHide2 = false;
+                }
+            }
+        });
+        fab_satellitetype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            }
+        });
+        fab_roadtype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            }
+        });
     }
 
-    private void selectReportPoliceMan() {
+//    private void selectReportPlaces()
+//    {
+//        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+//        intent.putExtra(TITLE,"Places");
+//        startActivity(intent);
+//    }
 
+    private void selectReportPoliceMan()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Police man");
+        startActivity(intent);
     }
-
-    private void selectReportMapIssues() {
-
+    private void selectReportMapIssues()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Map Issues");
+        startActivity(intent);
     }
-
-    private void selectReportTraffic() {
-
-    }
-
-    private void direction() {
-        // Getting URL to the Google Directions API
-        String url = getDirectionsUrl(oriLatLng, desLatLng);
+    private void selectReportTraffic()
+    {
+        Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+        intent.putExtra(TITLE,"Traffic");
+        startActivity(intent);
     }
 
     private void addControls() {
+        tvDistance = findViewById(R.id.tvDuration);
+        tvDuration = findViewById(R.id.tvDuration);
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
@@ -249,7 +292,6 @@ public class MapsActivity
         fab_reportMapIssues = findViewById(R.id.fab_reportMapIssues);
         fab_reportPoliceMan = findViewById(R.id.fab_reportPoliceMan);
         fab_reportPlaces = findViewById(R.id.fab_reportPlaces);
-        navigationView = findViewById(R.id.nav_view);
         rlDirection = findViewById(R.id.relLayout2);
         iwDirection = findViewById(R.id.iwDirection);
         iwSearch1 = findViewById(R.id.iwSearch1);
@@ -260,37 +302,16 @@ public class MapsActivity
         tvDistance.setVisibility(View.GONE);
         tvDuration = findViewById(R.id.tvDuration);
         tvDuration.setVisibility(View.GONE);
+        fab_maptype = findViewById(R.id.fab_maptype);
+//        fab_satellitetype = findViewById(R.id.fab_satellitetype);
+//        fab_roadtype = findViewById(R.id.fab_roadtype);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
     }
 
 
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
 
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-
-        return url;
     }
 
     @Override
@@ -351,19 +372,17 @@ public class MapsActivity
     private void geoLocate(int i) {
         Log.d(TAG, "geoLocate: geolocating");
         String searchString = "";
+        List<Address> list = new ArrayList<>();
         switch (i) {
             case 0:
                 searchString = mSearchText.getText().toString();
                 Log.d(TAG, "geoLocate: ");
                 Geocoder geocoder = new Geocoder(MapsActivity.this);
-                List<Address> list = new ArrayList<>();
-
                 try {
                     list = geocoder.getFromLocationName(searchString, 1);
                 } catch (IOException e) {
                     Log.e(TAG, "geoLocate: IOException", e);
                 }
-
                 if (list.size() > 0) {
                     Address address = list.get(0);
                     Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
@@ -377,7 +396,6 @@ public class MapsActivity
                 //sendRequest();
                 break;
         }
-
     }
 
     private void getDeviceLocation() {
@@ -481,7 +499,7 @@ public class MapsActivity
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
 
-    public void addNewMarker(GoogleMap googleMap, String type, String problem, String description, LatLng position, ReportedData reportedData) {
+    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
         mMap = googleMap;
         MarkerOptions markerOptions = new MarkerOptions().title(problem)
                 .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
@@ -492,19 +510,32 @@ public class MapsActivity
 
         //Set type of problem
         reportedData.setType(type);
-
-        //Set user's information for InfoWindowData -->This is temporary (static data)
+        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
+        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
+        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
+        ArrayList<Comment> listComments = new ArrayList<>();
+        listComments.add(cmt1);
+        listComments.add(cmt2);
+        listComments.add(cmt3);
+        reportedData.setComments(listComments);
+//        reportedData.getComments().add(cmt1);
+//        reportedData.getComments().add(cmt2);
+//        reportedData.getComments().add(cmt3);
+        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
+        User reporter = new User("01","Dat","01288446176");
+        reportedData.setReporter(reporter);
+        //Set problem's information for InfoWindowData -->This is temporary (static data)
         reportedData.setTitle(markerOptions.getTitle());
-        reportedData.setSnippet(markerOptions.getSnippet());
-        reportedData.setPhoneNumber("01288446176");
+        reportedData.setDescription(markerOptions.getSnippet());
 
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
 
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
-        mMap.setOnInfoWindowClickListener(this);
+
         marker.setTag(reportedData);
         marker.showInfoWindow();
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
@@ -529,9 +560,7 @@ public class MapsActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item)
+    public boolean onNavigationItemSelected(MenuItem item)
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -562,21 +591,31 @@ public class MapsActivity
         return true;
     }
 
-    private void showFabLayout()
+    private void showFabLayout1()
     {
         fab_reportTraffic.show();
         fab_reportMapIssues.show();
         fab_reportPoliceMan.show();
         fab_reportPlaces.show();
     }
-
-    private void hideFabLayout()
+    private void hideFabLayout1()
     {
         fab_reportTraffic.hide();
         fab_reportMapIssues.hide();
         fab_reportPoliceMan.hide();
         fab_reportPlaces.hide();
     }
+    private void showFabLayout2()
+    {
+        fab_satellitetype.show();
+        fab_roadtype.show();
+    }
+    private void hideFabLayout2()
+    {
+        fab_satellitetype.hide();
+        fab_roadtype.hide();
+    }
+
 
     protected void displayNextScreen(final Intent nextScreen)
     {
