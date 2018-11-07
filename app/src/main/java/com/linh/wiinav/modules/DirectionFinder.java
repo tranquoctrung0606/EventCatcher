@@ -1,12 +1,12 @@
-package com.linh.wiinav.view.module;
+package com.linh.wiinav.modules;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.linh.wiinav.view.model.Distance;
-import com.linh.wiinav.view.model.Duration;
-import com.linh.wiinav.view.model.Route;
+import com.linh.wiinav.models.Distance;
+import com.linh.wiinav.models.Duration;
+import com.linh.wiinav.models.Route;
 
 import org.json.JSONArray;
 import org.json.JSONException;

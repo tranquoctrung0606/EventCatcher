@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.ui;
+package com.linh.wiinav.ui;
 
 import android.app.Activity;
 import android.content.Intent;

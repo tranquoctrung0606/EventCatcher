@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.model;
+package com.linh.wiinav.models;
 
 import com.google.android.gms.maps.model.LatLng;
 

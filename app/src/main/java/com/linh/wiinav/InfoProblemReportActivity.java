@@ -1,4 +1,4 @@
-package com.linh.wiinav.view;
+package com.linh.wiinav;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,9 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.adapter.CommentsAdapter;
-import com.linh.wiinav.view.model.Comment;
-import com.linh.wiinav.view.model.ReportedData;
+import com.linh.wiinav.adapter.CommentsAdapter;
+import com.linh.wiinav.models.Comment;
+import com.linh.wiinav.models.ReportedData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         commentsRecyclerView.setLayoutManager(linearLayoutManager);
-        ArrayList<Comment> comments = reportedData.getComments();
+        List<Comment> comments = reportedData.getComments();
         CommentsAdapter commentsAdapter = new CommentsAdapter(comments);
         commentsRecyclerView.setAdapter(commentsAdapter);
 

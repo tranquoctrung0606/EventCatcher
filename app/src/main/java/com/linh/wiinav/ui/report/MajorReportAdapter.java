@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.ui.report;
+package com.linh.wiinav.ui.report;
 
 import android.content.Context;
 import android.content.Intent;

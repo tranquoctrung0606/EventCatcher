@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.ui.report;
+package com.linh.wiinav.ui.report;
 
 import android.view.View;
 import android.widget.ImageView;

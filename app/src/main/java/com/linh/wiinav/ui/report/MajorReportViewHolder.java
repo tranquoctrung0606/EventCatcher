@@ -1,11 +1,10 @@
-package com.linh.wiinav.view.ui.report;
+package com.linh.wiinav.ui.report;
 
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.ui.report.MajorReport;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder;
 

@@ -1,6 +1,6 @@
-package com.linh.wiinav.view.module;
+package com.linh.wiinav.modules;
 
-import com.linh.wiinav.view.model.Route;
+import com.linh.wiinav.models.Route;
 
 import java.util.List;
 

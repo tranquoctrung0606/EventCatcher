@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.ui;
+package com.linh.wiinav.ui;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -50,14 +50,14 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.InfoProblemReportActivity;
-import com.linh.wiinav.view.adapter.PlaceAutocompleteAdapter;
-import com.linh.wiinav.view.model.Comment;
-import com.linh.wiinav.view.model.ReportedData;
-import com.linh.wiinav.view.model.Route;
-import com.linh.wiinav.view.module.DirectionFinder;
-import com.linh.wiinav.view.module.DirectionFinderListener;
-import com.linh.wiinav.view.model.User;
+import com.linh.wiinav.InfoProblemReportActivity;
+import com.linh.wiinav.adapter.PlaceAutocompleteAdapter;
+import com.linh.wiinav.models.Comment;
+import com.linh.wiinav.models.ReportedData;
+import com.linh.wiinav.models.Route;
+import com.linh.wiinav.modules.DirectionFinder;
+import com.linh.wiinav.modules.DirectionFinderListener;
+import com.linh.wiinav.models.User;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

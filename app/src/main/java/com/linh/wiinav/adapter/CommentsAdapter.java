@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.adapter;
+package com.linh.wiinav.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.model.Comment;
+import com.linh.wiinav.models.Comment;
 
 import java.util.ArrayList;
 import java.util.List;

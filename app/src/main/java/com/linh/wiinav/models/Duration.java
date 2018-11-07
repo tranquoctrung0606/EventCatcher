@@ -1,4 +1,4 @@
-package com.linh.wiinav.view.model;
+package com.linh.wiinav.models;
 
 public class Duration {
     public String text;
