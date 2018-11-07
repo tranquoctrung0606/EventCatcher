@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.model.ReportedData;
+import com.linh.wiinav.models.ReportedData;
 
 public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
     private Context context;

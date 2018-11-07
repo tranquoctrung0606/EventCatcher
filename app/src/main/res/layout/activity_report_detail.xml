@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusableInTouchMode="true"
-        tools:context=".view.ui.ReportDetailActivity"
+        tools:context=".ui.ReportDetailActivity"
         android:background="@drawable/gradiant" android:gravity="bottom"
     tools:ignore="MissingDefaultResource">
 
@@ -86,13 +86,14 @@
 
     </FrameLayout>
 
-    <ImageView
+    <ImageButton
             android:layout_below="@+id/frame"
             android:layout_width="130dp"
             android:layout_height="50dp"
             android:src="@drawable/sig"
             android:scaleType="fitXY"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp" android:id="@+id/reportSubmit"/>
+            android:layout_marginBottom="10dp"
+            android:id="@+id/reportSubmit" />
 
 </RelativeLayout>

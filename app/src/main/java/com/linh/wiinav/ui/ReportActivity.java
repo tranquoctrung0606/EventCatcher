@@ -3,13 +3,11 @@ package com.linh.wiinav.ui;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import com.linh.wiinav.R;
 import com.linh.wiinav.ui.report.MajorReportAdapter;
 
-import java.util.ArrayList;
 
 import static com.linh.wiinav.ui.report.MajorReportDataFactory.makeReports;
 

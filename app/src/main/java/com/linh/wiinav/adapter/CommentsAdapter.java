@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.Comment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentsViewHolder>{
@@ -19,7 +18,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     public CommentsAdapter(List<Comment> comments) {
         this.comments = comments;
     }
-
 
     @Override
     public void onBindViewHolder(CommentsViewHolder holder, int position) {

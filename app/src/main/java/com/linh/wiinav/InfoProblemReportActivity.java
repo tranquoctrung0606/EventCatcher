@@ -17,12 +17,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.linh.wiinav.R;
 import com.linh.wiinav.adapter.CommentsAdapter;
 import com.linh.wiinav.models.Comment;
 import com.linh.wiinav.models.ReportedData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InfoProblemReportActivity extends AppCompatActivity {

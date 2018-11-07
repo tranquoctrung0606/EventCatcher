@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import com.linh.wiinav.R;
 
-import java.util.Map;
-
 public class LoginActivity extends AppCompatActivity {
 
     private EditText email, pass;

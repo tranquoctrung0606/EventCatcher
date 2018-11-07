@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linh.wiinav.R;
-import com.linh.wiinav.view.ui.ReportDetailActivity;
+import com.linh.wiinav.ui.ReportDetailActivity;
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.linh.wiinav.R;
@@ -13,9 +15,11 @@ import com.linh.wiinav.R;
 public class ReportDetailActivity
         extends AppCompatActivity
 {
+    private static final String TAG = ReportDetailActivity.class.getSimpleName();
+
     private TextView txtReportDetailTitle;
     private ImageView imgViewReportThumbnail;
-    private ImageView reportSubmit;
+    private ImageButton reportSubmit;
     private TextView reportDescriptions;
 
     @Override
@@ -48,7 +52,10 @@ public class ReportDetailActivity
             @Override
             public void onClick(final View v)
             {
-
+                Log.i(TAG, "onClick: report submit");
+                Intent intent = new Intent(ReportDetailActivity.this, MapsActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -63,7 +70,11 @@ public class ReportDetailActivity
     {
         txtReportDetailTitle = findViewById(R.id.txtReportDetailTitle);
         imgViewReportThumbnail = findViewById(R.id.imgViewReportThumbnail);
+
         reportSubmit = findViewById(R.id.reportSubmit);
+        reportSubmit.setClickable(true);
+        reportSubmit.bringToFront();
+
         reportDescriptions = findViewById(R.id.reportDescriptions);
     }
 
