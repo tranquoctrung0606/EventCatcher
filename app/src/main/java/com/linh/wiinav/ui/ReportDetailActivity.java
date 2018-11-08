@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.linh.wiinav.R;
@@ -19,7 +17,7 @@ public class ReportDetailActivity
 
     private TextView txtReportDetailTitle;
     private ImageView imgViewReportThumbnail;
-    private ImageButton reportSubmit;
+    private ImageView reportSubmit;
     private TextView reportDescriptions;
 
     @Override
@@ -52,7 +50,6 @@ public class ReportDetailActivity
             @Override
             public void onClick(final View v)
             {
-                Log.i(TAG, "onClick: report submit");
                 Intent intent = new Intent(ReportDetailActivity.this, MapsActivity.class);
                 startActivity(intent);
                 finish();

@@ -51,7 +51,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.linh.wiinav.R;
 import com.linh.wiinav.InfoProblemReportActivity;
-import com.linh.wiinav.adapter.PlaceAutocompleteAdapter;
+import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.Comment;
 import com.linh.wiinav.models.ReportedData;
 import com.linh.wiinav.models.Route;

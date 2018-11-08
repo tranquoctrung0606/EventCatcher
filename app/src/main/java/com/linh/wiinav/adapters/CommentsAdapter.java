@@ -1,4 +1,4 @@
-package com.linh.wiinav.adapter;
+package com.linh.wiinav.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

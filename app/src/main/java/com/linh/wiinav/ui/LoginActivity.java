@@ -46,15 +46,13 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
     }
 
     private void validate(String mail, String password ){
-        if((mail.equals("admin@gmail.com"))  && (password.equals("1234"))){
+        if((mail.equals("1"))  && (password.equals("11"))){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
         else{
             Toast.makeText(LoginActivity.this, "Please check your email or password", Toast.LENGTH_SHORT).show();
