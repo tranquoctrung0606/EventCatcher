@@ -39,26 +39,26 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
         <activity
-            android:name=".view.ui.MainActivity"
+            android:name=".ui.MainActivity"
             android:theme="@style/SplashTheme" />
-        <activity android:name=".view.ui.MapsActivity" />
-        <activity android:name=".view.ui.TermActivity" />
-        <activity android:name=".view.ui.FeedbackActivity" />
+        <activity android:name=".ui.MapsActivity" />
+        <activity android:name=".ui.TermActivity" />
+        <activity android:name=".ui.FeedbackActivity" />
         <activity
-            android:name=".view.ui.SettingActivity"
+            android:name=".ui.SettingActivity"
             android:label="@string/title_activity_setting"
             android:theme="@style/AppThemeActionBar" />
-        <activity android:name=".view.InfoProblemReportActivity" />
-        <activity android:name=".view.ui.ReportActivity" />
-        <activity android:name=".view.ui.LoginActivity">
+        <activity android:name=".InfoProblemReportActivity" />
+        <activity android:name=".ui.ReportActivity" />
+        <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.ui.SignupActivity" />
-        <activity android:name=".view.ui.UserprofileActivity"/>
-        <activity android:name=".view.ui.ReportDetailActivity"/>
+        <activity android:name=".ui.SignupActivity" />
+        <activity android:name=".ui.UserprofileActivity"/>
+        <activity android:name=".ui.ReportDetailActivity"/>
     </application>
 
 </manifest>

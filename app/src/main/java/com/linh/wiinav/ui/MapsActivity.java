@@ -442,7 +442,7 @@ public class MapsActivity
 //        reportedData.getComments().add(cmt2);
 //        reportedData.getComments().add(cmt3);
         //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
-        User reporter = new User("01","Dat","01288446176");
+        User reporter = new User();
         reportedData.setReporter(reporter);
         //Set problem's information for InfoWindowData -->This is temporary (static data)
         reportedData.setTitle(markerOptions.getTitle());

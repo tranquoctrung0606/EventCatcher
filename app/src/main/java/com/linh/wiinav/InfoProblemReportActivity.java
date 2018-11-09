@@ -69,7 +69,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
     }
 
     private void call_action() {
-        String phnum = reportedData.getReporter().getPhoneNumber();
+        String phnum = "";//reportedData.getReporter().getPhoneNumber();
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phnum));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {

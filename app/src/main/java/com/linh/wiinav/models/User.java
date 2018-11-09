@@ -1,37 +1,64 @@
 package com.linh.wiinav.models;
 
-import java.io.Serializable;
+import com.google.firebase.database.IgnoreExtraProperties;
 
-public class User implements Serializable {
-    private String userId, userName, phoneNumber;
+import java.util.Date;
 
-    public String getUserId() {
-        return userId;
+@IgnoreExtraProperties
+public class User {
+    private String email, username, phone;
+    private Date birthday;
+
+    public User()
+    {
     }
 
-    public User(String userId, String userName, String phoneNumber) {
-        this.userId = userId;
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
+    public User(final String email, final String username, final String phone, final Date birthday)
+    {
+        this.email = email;
+        this.username = username;
+        this.phone = phone;
+        this.birthday = birthday;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getEmail()
+    {
+        return email;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername()
+    {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public String getPhone()
+    {
+        return phone;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public Date getBirthday()
+    {
+        return birthday;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setEmail(final String email)
+    {
+        this.email = email;
     }
+
+    public void setUsername(final String username)
+    {
+        this.username = username;
+    }
+
+    public void setPhone(final String phone)
+    {
+        this.phone = phone;
+    }
+
+    public void setBirthday(final Date birthday)
+    {
+        this.birthday = birthday;
+    }
+
 }
