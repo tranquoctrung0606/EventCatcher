@@ -49,6 +49,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.linh.wiinav.R;
 import com.linh.wiinav.InfoProblemReportActivity;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
@@ -106,6 +107,8 @@ public class MapsActivity
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
     public static final String TITLE = "title";
 
     @Override
@@ -504,7 +507,10 @@ public class MapsActivity
             Intent termActivity = new Intent(getApplicationContext(), TermActivity.class);
             displayNextScreen(termActivity);
         } else if (id == R.id.nav_logout) {
-
+            mAuth.signOut();
+            Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(loginActivity);
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
