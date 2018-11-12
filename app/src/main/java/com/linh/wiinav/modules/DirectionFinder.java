@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionFinder {
-    private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String GOOGLE_DIRECTION_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyCTWFhXTvgVhGw-kHjV-wDWPTMsFENGzdg";
     private DirectionFinderListener listener;
     private String origin;
@@ -45,7 +45,16 @@ public class DirectionFinder {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
+        StringBuilder sb = new StringBuilder();
+        sb.append(GOOGLE_DIRECTION_API);
+        sb.append("origin=");
+        sb.append(urlOrigin);
+        sb.append("&destination=");
+        sb.append(urlDestination);
+        sb.append("&key=");
+        sb.append(GOOGLE_API_KEY);
+
+        return sb.toString();
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
@@ -94,7 +103,6 @@ public class DirectionFinder {
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         for (int i = 0; i < jsonRoutes.length(); i++) {
-            Log.d("AA", "parseJSon: parsing...........");
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
             Route route = new Route();
 
