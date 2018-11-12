@@ -20,8 +20,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +33,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,7 +49,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -52,6 +56,7 @@ import com.linh.wiinav.R;
 import com.linh.wiinav.InfoProblemReportActivity;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.Comment;
+import com.linh.wiinav.models.PlaceInfo;
 import com.linh.wiinav.models.ReportedData;
 import com.linh.wiinav.models.Route;
 import com.linh.wiinav.modules.DirectionFinder;
@@ -82,6 +87,7 @@ public class MapsActivity
     );
 
     private boolean showHide2 = false;
+    private boolean isDirectionPressed = false;
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
@@ -91,9 +97,6 @@ public class MapsActivity
     private AutoCompleteTextView mSearchText;
     private ImageView iwMyLocation;
     private ImageView iwSearch, iwDirection;
-
-    private TextView tvDuration;
-    private TextView tvDistance;
 
     private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
@@ -106,6 +109,8 @@ public class MapsActivity
     private GeoDataClient mGeoDataClient;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+
+    private PlaceInfo mPlace;
 
     public static final String TITLE = "title";
 
@@ -151,7 +156,15 @@ public class MapsActivity
         });
 
         iwDirection.setOnClickListener((v) -> {
-            makeDirection();
+            if(!isDirectionPressed || !mSearchText.getText().toString().trim().isEmpty()) {
+                isDirectionPressed = true;
+                makeDirection();
+            }
+            else {
+                mMap.clear();
+                mSearchText.setText("");
+                isDirectionPressed = false;
+            }
         });
 
     }
@@ -168,7 +181,7 @@ public class MapsActivity
                         Location currentLocation = (Location) task.getResult();
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                   "My location");
+                                   "My Location");
                         StringBuilder origin = new StringBuilder();
                         origin.append(currentLocation.getLatitude());
                         origin.append(",");
@@ -200,9 +213,6 @@ public class MapsActivity
     }
 
     private void addControls() {
-        tvDistance = findViewById(R.id.tvDistance);
-        tvDuration = findViewById(R.id.tvDuration);
-
         mSearchText = findViewById(R.id.input_search);
         iwMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
@@ -253,6 +263,8 @@ public class MapsActivity
                 LAT_LNG_BOUNDS,
                 null);
 
+        mSearchText.setOnItemClickListener(mAutocompleteClickListener);
+
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
@@ -265,7 +277,6 @@ public class MapsActivity
                         || event.getAction() == KeyEvent.KEYCODE_ENTER) {
                     //searching
                     geoLocate();
-                    hideKeyboard();
                 }
                 return true;
             }
@@ -273,9 +284,7 @@ public class MapsActivity
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(MapsActivity.INPUT_METHOD_SERVICE);
-
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void geoLocate() {
@@ -312,7 +321,7 @@ public class MapsActivity
                         Location currentLocation = (Location) task.getResult();
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                   "My location");
+                                   "My Location");
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
                         Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
@@ -325,17 +334,18 @@ public class MapsActivity
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title) {
+    private void moveCamera(LatLng latLng, float zoom, String name) {
         Log.d(TAG, "moveCamera: moving camera to: lat: " + latLng.latitude + ", lng " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
+        mMap.clear();
+
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
-                .title(title);
+                .title(name)
+                .snippet(name);
 
-
-
-        if (!title.equals("My location")) {
+        if (!name.equals("My Location")) {
             mMap.addMarker(options);
         }
     }
@@ -390,7 +400,6 @@ public class MapsActivity
                     initMap();
                 }
             }
-
         }
     }
 
@@ -462,8 +471,6 @@ public class MapsActivity
     public boolean onNavigationItemSelected(MenuItem item)
     {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
         switch (item.getItemId()){
             case R.id.nav_place:
                 break;
@@ -546,9 +553,6 @@ public class MapsActivity
 
         for (Route route : routes) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            tvDuration.setText(route.duration.text);
-            tvDistance.setText(route.distance.text);
-
             originMarkers.add(mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
                     .title(route.startAddress)
@@ -556,7 +560,9 @@ public class MapsActivity
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
                     .title(route.endAddress)
-                    .position(route.endLocation)));
+                    .position(route.endLocation)
+                                                  .snippet("Duration: ")
+            ));
 
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
@@ -570,4 +576,48 @@ public class MapsActivity
             break;
         }
     }
+
+    AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener()
+    {
+        @Override
+        public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
+        {
+            hideKeyboard();
+
+            final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
+            final String placeId = item.getPlaceId();
+
+            mGeoDataClient.getPlaceById(placeId).addOnCompleteListener((task -> {
+                if (task.isSuccessful()) {
+                    PlaceBufferResponse places = task.getResult();
+                    try {
+                        Place myPlace = places.get(0);
+
+                        mPlace = new PlaceInfo();
+
+                        mPlace.setId(myPlace.getId());
+                        mPlace.setAddress(myPlace.getAddress().toString());
+                        //mPlace.setAttribution(myPlace.getAttributions().toString());
+                        mPlace.setName(myPlace.getName().toString());
+                        mPlace.setPhoneNumber(myPlace.getPhoneNumber().toString());
+                        mPlace.setRating(myPlace.getRating());
+                        mPlace.setWebsiteUri(myPlace.getWebsiteUri());
+                        mPlace.setLatLng(myPlace.getLatLng());
+
+                        Log.i(TAG, "Place found: " + myPlace.getName());
+                        moveCamera(new LatLng(myPlace.getViewport().getCenter().latitude,
+                                              myPlace.getViewport().getCenter().longitude),
+                                   DEFAULT_ZOOM, mPlace.getName());
+                        places.release();
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "onItemClick: ", e);
+                    }
+                } else {
+                    Log.e(TAG, "Place not found.");
+                }
+            }));
+        }
+    };
+
+
 }

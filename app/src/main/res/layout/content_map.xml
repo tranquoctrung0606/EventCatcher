@@ -60,31 +60,6 @@
         android:layout_marginTop="22dp"
         app:srcCompat="@drawable/ic_magnify" />
 
-    <TextView
-        android:id="@+id/tvDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="right"
-        android:layout_marginRight="70dp"
-        android:layout_marginTop="115dp"
-        android:text="TextView"
-        android:visibility="gone"
-        />
-
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="left"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="115dp"
-        android:text="TextView"
-        android:visibility="gone"
-        />
     <ImageView
             android:id="@+id/iwMyLocation"
             android:layout_width="wrap_content"
@@ -92,7 +67,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="18dp"
-            android:layout_marginTop="110dp"
+            android:layout_marginTop="63dp"
             app:srcCompat="@android:drawable/ic_menu_mylocation"
             android:layout_gravity="right"/>
 

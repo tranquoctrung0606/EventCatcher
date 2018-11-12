@@ -66,16 +66,16 @@ public class DirectionFinder {
             try {
                 URL url = new URL(link);
                 is = url.openConnection().getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
+                    sb.append(line + "\n");
                 }
                 reader.close();
                 is.close();
-                return buffer.toString();
+                return sb.toString();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
