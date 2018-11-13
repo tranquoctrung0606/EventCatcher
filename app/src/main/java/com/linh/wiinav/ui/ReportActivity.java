@@ -11,8 +11,7 @@ import com.linh.wiinav.ui.report.MajorReportAdapter;
 
 import static com.linh.wiinav.ui.report.MajorReportDataFactory.makeReports;
 
-public class ReportActivity
-        extends AppCompatActivity
+public class ReportActivity extends AppCompatActivity
 {
 
     public MajorReportAdapter adapter;

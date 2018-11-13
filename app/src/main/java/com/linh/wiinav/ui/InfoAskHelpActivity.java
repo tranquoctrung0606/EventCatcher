@@ -1,4 +1,4 @@
-package com.linh.wiinav;
+package com.linh.wiinav.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,22 +12,19 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.CommentsAdapter;
+import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.Comment;
-import com.linh.wiinav.models.ReportedData;
 
 import java.util.List;
 
-public class InfoProblemReportActivity extends AppCompatActivity {
-    private TextView tvTitle;
-    private TextView tvSnipper;
+public class InfoAskHelpActivity extends AppCompatActivity {
     private Button btnCall;
-    private ReportedData reportedData;
     RecyclerView commentsRecyclerView;
 
     @Override
@@ -39,14 +36,11 @@ public class InfoProblemReportActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btnCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isPermissionGranted()) {
-                    call_action();
-                }
-
+        btnCall.setOnClickListener(v -> {
+            if (isPermissionGranted()) {
+                call_action();
             }
+
         });
     }
 
@@ -69,7 +63,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
     }
 
     private void call_action() {
-        String phnum = "";//reportedData.getReporter().getPhoneNumber();
+        String phnum = "";//askHelp.getReporter().getPhoneNumber();
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + phnum));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -86,7 +80,7 @@ public class InfoProblemReportActivity extends AppCompatActivity {
     }
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
 
             case 1: {
@@ -106,11 +100,12 @@ public class InfoProblemReportActivity extends AppCompatActivity {
         }
     }
     private void addControls() {
-        reportedData = (ReportedData) getIntent().getSerializableExtra("reportedData");
-        tvTitle = findViewById(R.id.title);
-        tvTitle.setText(reportedData.getTitle());
-        tvSnipper = findViewById(R.id.snippet);
-        tvSnipper.setText(reportedData.getDescription());
+        //Get information from ask help infoWindow
+        AskHelp askHelp = (AskHelp) getIntent().getSerializableExtra("askHelp");
+        TextView tvTitle = findViewById(R.id.title);
+        tvTitle.setText(askHelp.getTitle());
+        TextView tvSnipper = findViewById(R.id.snippet);
+        tvSnipper.setText(askHelp.getContent());
         btnCall = findViewById(R.id.btnCall);
         commentsRecyclerView = findViewById(R.id.comments);
         commentsRecyclerView.setHasFixedSize(true);
@@ -118,10 +113,9 @@ public class InfoProblemReportActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         commentsRecyclerView.setLayoutManager(linearLayoutManager);
-        List<Comment> comments = reportedData.getComments();
+        List<Comment> comments = askHelp.getComments();
         CommentsAdapter commentsAdapter = new CommentsAdapter(comments);
         commentsRecyclerView.setAdapter(commentsAdapter);
-
     }
 
 }

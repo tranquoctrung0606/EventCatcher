@@ -1,6 +1,7 @@
 package com.linh.wiinav.ui;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,16 +56,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
-import com.linh.wiinav.InfoProblemReportActivity;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
-import com.linh.wiinav.models.Comment;
+import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
-import com.linh.wiinav.models.ReportedData;
 import com.linh.wiinav.models.Route;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
-import com.linh.wiinav.models.User;
+
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,9 +96,13 @@ public class MapsActivity
     private List<Polyline> polylinePaths = new ArrayList<>();
 
     //widgets
+    private Dialog dialogSelectAction;
+    private ImageView ivCloseDialog;
+    private ImageView ivAskHelp;
+    private ImageView ivReport;
     private AutoCompleteTextView mSearchText;
-    private ImageView iwMyLocation;
-    private ImageView iwSearch, iwDirection;
+    private ImageView ivMyLocation;
+    private ImageView ivSearch, ivDirection;
 
     private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
@@ -115,7 +119,6 @@ public class MapsActivity
 
     private PlaceInfo mPlace;
 
-    public static final String TITLE = "title";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,13 +133,12 @@ public class MapsActivity
 
     private void addEvents() {
         navigationView.setNavigationItemSelectedListener(this);
-        iwMyLocation.setOnClickListener((v) ->{
+        ivMyLocation.setOnClickListener((v) ->{
             moveToDeviceLocation();
         });
 
         mFloatingActionButton.setOnClickListener((v) -> {
-            Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-            startActivity(intent);
+            dialogSelectAction.show();
         });
 
         fab_maptype.setOnClickListener((v) -> {
@@ -155,11 +157,11 @@ public class MapsActivity
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         });
 
-        iwSearch.setOnClickListener((v) -> {
+        ivSearch.setOnClickListener((v) -> {
 
         });
 
-        iwDirection.setOnClickListener((v) -> {
+        ivDirection.setOnClickListener((v) -> {
             if(!isDirectionPressed || !mSearchText.getText().toString().trim().isEmpty()) {
                 isDirectionPressed = true;
                 makeDirection();
@@ -170,7 +172,15 @@ public class MapsActivity
                 isDirectionPressed = false;
             }
         });
+        //Add event for Selecting Action Dialog
+        ivCloseDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
+        ivAskHelp.setOnClickListener((v ->{
 
+        }));
+        ivReport.setOnClickListener((v -> {
+            Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
+            startActivity(intent);
+        }));
     }
 
     private void makeDirection()
@@ -218,10 +228,10 @@ public class MapsActivity
 
     private void addControls() {
         mSearchText = findViewById(R.id.input_search);
-        iwMyLocation = findViewById(R.id.iwMyLocation);
+        ivMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
-        iwDirection = findViewById(R.id.iwDirection);
-        iwSearch = findViewById(R.id.iwSearch);
+        ivDirection = findViewById(R.id.iwDirection);
+        ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
         fab_maptype = findViewById(R.id.fab_maptype);
@@ -229,6 +239,13 @@ public class MapsActivity
         fab_roadtype = findViewById(R.id.fab_roadtype);
         hideFabLayout2();
         navigationView = findViewById(R.id.nav_view);
+        //Dialog Select Action
+        dialogSelectAction = new Dialog(this);
+        dialogSelectAction.setContentView(R.layout.dialog_select_action);
+        ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
+        ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
+        ivReport = dialogSelectAction.findViewById(R.id.ivReport);
+
     }
 
 
@@ -419,52 +436,82 @@ public class MapsActivity
     private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
     private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
 
-    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
-        mMap = googleMap;
-        MarkerOptions markerOptions = new MarkerOptions().title(problem)
-                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set reportedData --> This is temporary
-//        ReportedData reportedData = reportedData;
-        reportedData = new ReportedData();
+    /*This method adds asking help marker into the map (display Marker)
+     *
+     * Version: 1.0
+     *
+     * Date: 13/11/2018
+     *
+     * Author: Nghiên
+     */
+    public void displayAskHelpMarker(AskHelp askHelp){
+        MarkerOptions markerOptions = new MarkerOptions();
+        //Set attribute for marker;
+        markerOptions.title(askHelp.getTitle());
+        markerOptions.snippet(askHelp.getContent());
+        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongtitude());
+        markerOptions.position(position);
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set type of problem
-        reportedData.setType(type);
-        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
-        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
-        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
-        ArrayList<Comment> listComments = new ArrayList<>();
-        listComments.add(cmt1);
-        listComments.add(cmt2);
-        listComments.add(cmt3);
-        reportedData.setComments(listComments);
-//        reportedData.getComments().add(cmt1);
-//        reportedData.getComments().add(cmt2);
-//        reportedData.getComments().add(cmt3);
-        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
-        User reporter = new User();
-        reportedData.setReporter(reporter);
-        //Set problem's information for InfoWindowData -->This is temporary (static data)
-        reportedData.setTitle(markerOptions.getTitle());
-        reportedData.setDescription(markerOptions.getSnippet());
-
+        //Set info window for this marker
         CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
 
         mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
 
-        marker.setTag(reportedData);
+        marker.setTag(askHelp);
         marker.showInfoWindow();
         mMap.setOnInfoWindowClickListener(this);
+
     }
 
+//    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
+//        mMap = googleMap;
+//        MarkerOptions markerOptions = new MarkerOptions().title(problem)
+//                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
+//
+//        //Set reportedData --> This is temporary
+////        ReportedData reportedData = reportedData;
+//        reportedData = new ReportedData();
+//
+//        //Set type of problem
+//        reportedData.setType(type);
+//        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
+//        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
+//        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
+//        ArrayList<Comment> listComments = new ArrayList<>();
+//        listComments.add(cmt1);
+//        listComments.add(cmt2);
+//        listComments.add(cmt3);
+//        reportedData.setComments(listComments);
+////        reportedData.getComments().add(cmt1);
+////        reportedData.getComments().add(cmt2);
+////        reportedData.getComments().add(cmt3);
+//        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
+//        User reporter = new User();
+//        reportedData.setReporter(reporter);
+//        //Set problem's information for InfoWindowData -->This is temporary (static data)
+//        reportedData.setTitle(markerOptions.getTitle());
+//        reportedData.setDescription(markerOptions.getSnippet());
+//
+//        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+//
+//        mMap.setInfoWindowAdapter(customInfoWindow);
+//        Marker marker = mMap.addMarker(markerOptions);
+//
+//        marker.setTag(reportedData);
+//        marker.showInfoWindow();
+//        mMap.setOnInfoWindowClickListener(this);
+//    }
+//
     @Override
     public void onInfoWindowClick(Marker marker) {
         if (marker.getTag()!=null)
         {
-            ReportedData reportedData = (ReportedData) marker.getTag();
-            Intent intent = new Intent(MapsActivity.this, InfoProblemReportActivity.class);
-            intent.putExtra("reportedData",reportedData);
+            AskHelp askHelp = (AskHelp) marker.getTag();
+            Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
+            intent.putExtra("askHelp", (Serializable) askHelp);
             startActivity(intent);
         }
     }
