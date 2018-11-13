@@ -251,6 +251,7 @@ public class MapsActivity
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.setTrafficEnabled(true);
         }
         //addNewMarker(mMap, "problem", "Hư xe", "Tôi bị hư xe", marker1, null);
         //addNewMarker(mMap, "problem", "Hết xăng", "Tôi bị gãy chân, không có xe", marker2, null);
