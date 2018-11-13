@@ -6,59 +6,101 @@ import java.util.Date;
 
 @IgnoreExtraProperties
 public class User {
-    private String email, username, phone;
-    private Date birthday;
+    private String email, username, phoneNumber;
+    private String birthday;
+    private Long identifyCard;
+    private boolean verify, ban;
+    private int numberAsk;;
 
-    public User()
-    {
+    public User() {
     }
 
-    public User(final String email, final String username, final String phone, final Date birthday)
-    {
+    public User(String email, String username, String phoneNumber, String birthday, Long identifyCard, boolean verify, boolean ban, int numberAsk) {
         this.email = email;
         this.username = username;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
         this.birthday = birthday;
+        this.identifyCard = identifyCard;
+        this.verify = verify;
+        this.ban = ban;
+        this.numberAsk = numberAsk;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public String getUsername()
-    {
-        return username;
-    }
-
-    public String getPhone()
-    {
-        return phone;
-    }
-
-    public Date getBirthday()
-    {
-        return birthday;
-    }
-
-    public void setEmail(final String email)
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setUsername(final String username)
-    {
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public void setPhone(final String phone)
-    {
-        this.phone = phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setBirthday(final Date birthday)
-    {
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
+    public Long getIdentifyCard() {
+        return identifyCard;
+    }
+
+    public void setIdentifyCard(Long identifyCard) {
+        this.identifyCard = identifyCard;
+    }
+
+    public boolean isVerify() {
+        return verify;
+    }
+
+    public void setVerify(boolean verify) {
+        this.verify = verify;
+    }
+
+    public boolean isBan() {
+        return ban;
+    }
+
+    public void setBan(boolean ban) {
+        this.ban = ban;
+    }
+
+    public int getNumberAsk() {
+        return numberAsk;
+    }
+
+    public void setNumberAsk(int numberAsk) {
+        this.numberAsk = numberAsk;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", birthday=" + birthday +
+                ", identifyCard=" + identifyCard +
+                ", verify=" + verify +
+                ", ban=" + ban +
+                ", numberAsk=" + numberAsk +
+                '}';
+    }
 }

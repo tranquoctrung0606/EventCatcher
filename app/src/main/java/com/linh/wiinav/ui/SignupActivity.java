@@ -16,6 +16,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class SignupActivity
@@ -105,7 +107,9 @@ public class SignupActivity
     private void writeNewUser(final String uid, final String username, final String email)
     {
         Log.d(TAG, "writeNewUser: " + uid);
-        User user = new User(email, username, "099999", new Date(System.currentTimeMillis()));
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Date today = new Date();
+        User user = new User(email, username, "0", format.format(today), 0L, false, false, 1 );
         mDatabase.child("users").child(uid).setValue(user);
     }
 

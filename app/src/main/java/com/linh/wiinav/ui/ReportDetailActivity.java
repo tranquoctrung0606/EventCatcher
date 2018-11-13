@@ -1,14 +1,25 @@
 package com.linh.wiinav.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
+import com.linh.wiinav.models.Report;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ReportDetailActivity
         extends AppCompatActivity
@@ -20,11 +31,20 @@ public class ReportDetailActivity
     private ImageView reportSubmit;
     private TextView reportDescriptions;
 
+    private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+    private SharedPreferences mPreferences;
+
+    private int reportedId;
+    private String reportedType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_detail);
+
+        mPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+
         addControls();
         addEvents();
     }
@@ -32,8 +52,6 @@ public class ReportDetailActivity
     private void addEvents()
     {
         getIncomingIntent();
-        setThumbnail();
-
         reportDescriptions.setOnFocusChangeListener(new View.OnFocusChangeListener()
         {
             @Override
@@ -47,9 +65,24 @@ public class ReportDetailActivity
 
         reportSubmit.setOnClickListener(new View.OnClickListener()
         {
+            Date postDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            Report report = new Report();
+
             @Override
             public void onClick(final View v)
             {
+                report.setReportType(reportedType);
+                report.setReporterId(FirebaseAuth.getInstance().getUid());
+                report.setPostDate(formatter.format(postDate));
+                report.setContent(reportDescriptions.getText().toString());
+                report.setVerifyDate("");
+                report.setLatitude(Double.parseDouble(mPreferences.getString("LAT", "0.0")));
+                report.setLongitude(Double.parseDouble(mPreferences.getString("LONG", "0.0")));
+                report.setInspector("");
+                report.setInspectorId("");
+
+                mReference.child("reports").child(report.getId().toString()).setValue(report);
                 Intent intent = new Intent(ReportDetailActivity.this, MapsActivity.class);
                 startActivity(intent);
                 finish();
@@ -65,6 +98,7 @@ public class ReportDetailActivity
 
     private void addControls()
     {
+
         txtReportDetailTitle = findViewById(R.id.txtReportDetailTitle);
         imgViewReportThumbnail = findViewById(R.id.imgViewReportThumbnail);
 
@@ -77,92 +111,125 @@ public class ReportDetailActivity
 
     private void getIncomingIntent(){
 
-        if(getIntent().hasExtra("TITLE"))
+        if(getIntent().hasExtra("REPORT_TYPE"))
         {
-            String title = getIntent().getStringExtra("TITLE");
-            txtReportDetailTitle.setText(title);
+            reportedType = getIntent().getStringExtra("REPORT_TYPE");
+            reportedId = getIntent().getIntExtra("REPORT_ID", 0);
+            txtReportDetailTitle.setText(reportedType);
+            setThumbnail(reportedId);
         }
     }
 
-    private void setThumbnail()
+    private void setThumbnail(final int reportedId)
     {
-        if(txtReportDetailTitle.getText().toString().equals("Moderate")){
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_moderate);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Heavy")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_heavy);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Stuck")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_stuck);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("On Road")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_police_visible);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Hidden")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_police_hidden);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Major")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_major);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Minor")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_minor);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Flood")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_flood);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Pothole")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_pothole);
-        }else
-        if(txtReportDetailTitle.getText().toString().equals("Construction")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_construction);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Missing Sign")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_missingsign);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Object on Road")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_objectonroad);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Broken Traffic Light")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_brokentrafficlight);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Stopped Vehicle")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_stoppedvehicle);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Animal")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_animal);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Missing Road")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingroad);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Turn not Allowed")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_turnnotallowed);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Speed limit")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_speedlimit);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Wrong Address")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_wrongaddress);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Missing Exit")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingexit);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("One Way")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_oneway);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Closure")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_closure);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Speed")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_speed);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Redlight")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_redlight);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Fake")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_fake);
-        } else
-        if(txtReportDetailTitle.getText().toString().equals("Send Help")) {
-            imgViewReportThumbnail.setImageResource(R.drawable.ic_report_roadsidehelp);
+        switch (reportedId) {
+            case 1: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_moderate);
+                break;
+            }
+            case 2: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_heavy);
+                break;
+            }
+            case 3: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_stuck);
+                break;
+            }
+            case 5: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_police_visible);
+                break;
+            }
+            case 6: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_police_hidden);
+                break;
+            }
+            case 8: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_major);
+                break;
+            }
+            case 9: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_minor);
+                break;
+            }
+            case 11: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_flood);
+                break;
+            }
+            case 12: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_pothole);
+                break;
+            }
+            case 13: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_construction);
+                break;
+            }
+            case 14: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_missingsign);
+                break;
+            }
+            case 15: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_objectonroad);
+                break;
+            }
+            case 16: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_brokentrafficlight);
+                break;
+            }
+            case 17: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_stoppedvehicle);
+                break;
+            }
+            case 18: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_animal);
+                break;
+            }
+            case 20: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingroad);
+                break;
+            }
+            case 21: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_turnnotallowed);
+                break;
+            }
+            case 22: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_speedlimit);
+                break;
+            }
+            case 23: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_wrongaddress);
+                break;
+            }
+            case 24: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingexit);
+                break;
+            }
+            case 25: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_oneway);
+                break;
+            }
+            case 26: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_closure);
+                break;
+            }
+            case 28: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_speed);
+                break;
+            }
+            case 29: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_redlight);
+                break;
+            }
+            case 30: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_fake);
+                break;
+            }
+            case 32: {
+                imgViewReportThumbnail.setImageResource(R.drawable.ic_report_roadsidehelp);
+                break;
+            }
+            default: {
+
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.linh.wiinav.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -109,6 +111,7 @@ public class MapsActivity
     private GeoDataClient mGeoDataClient;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+    private SharedPreferences mPreferences;
 
     private PlaceInfo mPlace;
 
@@ -118,6 +121,8 @@ public class MapsActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        mPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+
         getLocationPermission();
         addControls();
         addEvents();
@@ -131,7 +136,6 @@ public class MapsActivity
 
         mFloatingActionButton.setOnClickListener((v) -> {
             Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-            intent.putExtra(TITLE,"Places");
             startActivity(intent);
         });
 
@@ -148,7 +152,7 @@ public class MapsActivity
         });
 
         fab_roadtype.setOnClickListener((v) -> {
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         });
 
         iwSearch.setOnClickListener((v) -> {
@@ -319,6 +323,13 @@ public class MapsActivity
                     if (task.isSuccessful() && task.getResult() != null) {
                         Log.d(TAG, "onComplete: found location");
                         Location currentLocation = (Location) task.getResult();
+
+                        SharedPreferences.Editor editor = mPreferences.edit();
+                        editor.putString("LAT", String.valueOf(currentLocation.getLatitude()));
+                        Log.i(TAG, "moveToDeviceLocation: " + currentLocation.getLatitude() );
+                        editor.putString("LONG", String.valueOf(currentLocation.getLongitude()));
+                        editor.commit();
+
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
                                    "My Location");
