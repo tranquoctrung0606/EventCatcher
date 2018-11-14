@@ -2,10 +2,11 @@ package com.linh.wiinav.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @IgnoreExtraProperties
-public class User {
+public class User implements Serializable {
     private String email, username, phoneNumber;
     private String birthday;
     private Long identifyCard;

@@ -1,8 +1,9 @@
 package com.linh.wiinav.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AskHelp {
+public class AskHelp implements Serializable {
     private String id;
     private User poster;
     private String postDate;
@@ -10,7 +11,7 @@ public class AskHelp {
     private String content;
     private boolean isCompleted;
     private double latitude, longtitude;
-    private ArrayList<Comment> comments;
+    private ArrayList<Comment> comments ;
 
     public AskHelp() {
     }

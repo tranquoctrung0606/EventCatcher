@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -19,12 +20,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -53,8 +52,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
@@ -71,7 +71,7 @@ import java.util.List;
 
 
 public class MapsActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
@@ -94,6 +94,7 @@ public class MapsActivity
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
+    private List<AskHelp> askHelps = new ArrayList<>();
 
     //widgets
     private Dialog dialogSelectAction;
@@ -114,24 +115,23 @@ public class MapsActivity
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
-    private SharedPreferences mPreferences;
 
     private PlaceInfo mPlace;
-
+    private Handler refreshHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         getLocationPermission();
         addControls();
         addEvents();
     }
 
-    private void addEvents() {
+    @Override
+    protected void addEvents() {
         navigationView.setNavigationItemSelectedListener(this);
         ivMyLocation.setOnClickListener((v) ->{
             moveToDeviceLocation();
@@ -139,6 +139,7 @@ public class MapsActivity
 
         mFloatingActionButton.setOnClickListener((v) -> {
             dialogSelectAction.show();
+            moveToDeviceLocation();
         });
 
         fab_maptype.setOnClickListener((v) -> {
@@ -181,6 +182,8 @@ public class MapsActivity
             Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
             startActivity(reportActivity);
         }));
+
+
     }
 
     private void makeDirection()
@@ -226,7 +229,8 @@ public class MapsActivity
         }
     }
 
-    private void addControls() {
+    @Override
+    protected void addControls() {
         mSearchText = findViewById(R.id.input_search);
         ivMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
@@ -245,7 +249,6 @@ public class MapsActivity
         ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
         ivReport = dialogSelectAction.findViewById(R.id.ivReport);
-
     }
 
 
@@ -270,10 +273,9 @@ public class MapsActivity
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             mMap.setTrafficEnabled(true);
         }
-        //addNewMarker(mMap, "problem", "Hư xe", "Tôi bị hư xe", marker1, null);
-        //addNewMarker(mMap, "problem", "Hết xăng", "Tôi bị gãy chân, không có xe", marker2, null);
-        //addNewMarker(mMap, "problem", "Cần quá giang", "Tôi bị lủng lốp", marker3, null);
         init();
+        refreshHandler = new Handler();
+        refreshHandler.postDelayed(reloadMapRunnable, 5000);
     }
 
     private void init() {
@@ -303,10 +305,6 @@ public class MapsActivity
                 return true;
             }
         });
-    }
-
-    private void hideKeyboard() {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void geoLocate() {
@@ -342,11 +340,7 @@ public class MapsActivity
                         Log.d(TAG, "onComplete: found location");
                         Location currentLocation = (Location) task.getResult();
 
-                        SharedPreferences.Editor editor = mPreferences.edit();
-                        editor.putString("LAT", String.valueOf(currentLocation.getLatitude()));
-                        Log.i(TAG, "moveToDeviceLocation: " + currentLocation.getLatitude() );
-                        editor.putString("LONG", String.valueOf(currentLocation.getLongitude()));
-                        editor.commit();
+                        saveLocation(currentLocation);
 
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
@@ -361,6 +355,14 @@ public class MapsActivity
         } catch (SecurityException e) {
             Log.e(TAG, "getDeviceLocation: Sercurity Exeption" + e.getMessage());
         }
+    }
+
+    private void saveLocation(Location currentLocation) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("LAT", String.valueOf(currentLocation.getLatitude()));
+        Log.i(TAG, "moveToDeviceLocation: " + currentLocation.getLatitude() );
+        editor.putString("LONG", String.valueOf(currentLocation.getLongitude()));
+        editor.apply();
     }
 
     private void moveCamera(LatLng latLng, float zoom, String name) {
@@ -432,12 +434,7 @@ public class MapsActivity
         }
     }
 
-    private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
-    private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
-    private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
-
-
-    /*This method adds asking help marker into the map (display Marker)
+    /*This method adds asking help marker into the map (displayToMap Marker)
      *
      * Version: 1.0
      *
@@ -463,10 +460,54 @@ public class MapsActivity
         marker.setTag(askHelp);
         marker.showInfoWindow();
         mMap.setOnInfoWindowClickListener(this);
-
     }
 
-//    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
+    private void reloadMap() {
+        getAskHelpData();
+        displayToMap();
+    }
+
+    private void displayToMap() {
+        for (AskHelp askHelp : askHelps
+                ) {
+            displayAskHelpMarker(askHelp);
+        }
+    }
+
+    private final Runnable reloadMapRunnable = new Runnable() {
+        @Override
+        public void run() {
+            reloadMap();
+
+            refreshHandler.postDelayed(reloadMapRunnable, 5000);
+        }
+    };
+
+    private void getAskHelpData() {
+        databaseReference.child("askHelps").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot askHelpSnapshot = dataSnapshot;
+                Iterable<DataSnapshot> askHelpChildren = askHelpSnapshot.getChildren();
+
+                askHelps.clear();
+
+                for (DataSnapshot ask : askHelpChildren) {
+                    AskHelp askHelp = ask.getValue(AskHelp.class);
+                    Log.d(TAG, "onDataChange: " + askHelp.getId());
+                    askHelps.add(askHelp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
+    }
+
+    //    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
 //        mMap = googleMap;
 //        MarkerOptions markerOptions = new MarkerOptions().title(problem)
 //                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
@@ -641,7 +682,7 @@ public class MapsActivity
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
         {
-            hideKeyboard();
+            hideKeyboard(view);
 
             final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
             final String placeId = item.getPlaceId();
