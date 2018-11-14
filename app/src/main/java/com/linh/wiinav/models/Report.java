@@ -6,41 +6,34 @@ import java.util.UUID;
 
 @IgnoreExtraProperties
 public class Report {
-    private String reporter, inspector, reporterId, inspectorId, content, reportType, reportTypeId, verifyDate, postDate;
+    private String id, inspector, inspectorId, content, reportType, verifyDate, postDate;
     private double latitude, longitude;
-
-    private UUID id = UUID.randomUUID();
-
-    public Report(String reporter, String inspector, String reporterId,
-                  String inspectorId, String content, String reportType,
-                  String reportTypeId, String verifyDate, String postDate,
-                  float latitude, float longitude) {
-        this.reporter = reporter;
-        this.inspector = inspector;
-        this.reporterId = reporterId;
-        this.inspectorId = inspectorId;
-        this.content = content;
-        this.reportType = reportType;
-        this.reportTypeId = reportTypeId;
-        this.verifyDate = verifyDate;
-        this.postDate = postDate;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+    private User reporter;
 
     public Report() {
     }
 
-    public UUID getId() {
+    public Report(String id, String inspector, String inspectorId,
+                  String content, String reportType, String verifyDate,
+                  String postDate, double latitude, double longitude, User reporter) {
+        this.id = id;
+        this.inspector = inspector;
+        this.inspectorId = inspectorId;
+        this.content = content;
+        this.reportType = reportType;
+        this.verifyDate = verifyDate;
+        this.postDate = postDate;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.reporter = reporter;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public String getReporter() {
-        return reporter;
-    }
-
-    public void setReporter(String reporter) {
-        this.reporter = reporter;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getInspector() {
@@ -49,14 +42,6 @@ public class Report {
 
     public void setInspector(String inspector) {
         this.inspector = inspector;
-    }
-
-    public String getReporterId() {
-        return reporterId;
-    }
-
-    public void setReporterId(String reporterId) {
-        this.reporterId = reporterId;
     }
 
     public String getInspectorId() {
@@ -81,14 +66,6 @@ public class Report {
 
     public void setReportType(String reportType) {
         this.reportType = reportType;
-    }
-
-    public String getReportTypeId() {
-        return reportTypeId;
-    }
-
-    public void setReportTypeId(String reportTypeId) {
-        this.reportTypeId = reportTypeId;
     }
 
     public String getVerifyDate() {
@@ -123,20 +100,27 @@ public class Report {
         this.longitude = longitude;
     }
 
+    public User getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(User reporter) {
+        this.reporter = reporter;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
-                "reporter='" + reporter + '\'' +
+                "id='" + id + '\'' +
                 ", inspector='" + inspector + '\'' +
-                ", reporterId='" + reporterId + '\'' +
                 ", inspectorId='" + inspectorId + '\'' +
                 ", content='" + content + '\'' +
                 ", reportType='" + reportType + '\'' +
-                ", reportTypeId='" + reportTypeId + '\'' +
                 ", verifyDate='" + verifyDate + '\'' +
                 ", postDate='" + postDate + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", reporter=" + reporter +
                 '}';
     }
 }

@@ -3,8 +3,6 @@ package com.linh.wiinav.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,27 +10,32 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.Report;
+import com.linh.wiinav.models.User;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
+
+import static com.linh.wiinav.enums.User.BIRTHDAY;
+import static com.linh.wiinav.enums.User.EMAIL;
+import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
+import static com.linh.wiinav.enums.User.IS_BANNED;
+import static com.linh.wiinav.enums.User.IS_VERIFIED;
+import static com.linh.wiinav.enums.User.NUMBER_ASK;
+import static com.linh.wiinav.enums.User.PHONE_NUMBER;
+import static com.linh.wiinav.enums.User.USERNAME;
 
 public class ReportDetailActivity
-        extends AppCompatActivity
+        extends BaseActivity
 {
-    private static final String TAG = ReportDetailActivity.class.getSimpleName();
+    private static final String TAG = "ReportDetailActivity";
 
     private TextView txtReportDetailTitle;
     private ImageView imgViewReportThumbnail;
     private ImageView reportSubmit;
     private TextView reportDescriptions;
-
-    private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
-    private SharedPreferences mPreferences;
 
     private int reportedId;
     private String reportedType;
@@ -43,13 +46,12 @@ public class ReportDetailActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_detail);
 
-        mPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
-
         addControls();
         addEvents();
     }
 
-    private void addEvents()
+    @Override
+    protected void addEvents()
     {
         getIncomingIntent();
         reportDescriptions.setOnFocusChangeListener(new View.OnFocusChangeListener()
@@ -66,38 +68,55 @@ public class ReportDetailActivity
         reportSubmit.setOnClickListener(new View.OnClickListener()
         {
             Date postDate = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             Report report = new Report();
 
             @Override
             public void onClick(final View v)
             {
+                report.setId(UUID.randomUUID().toString());
                 report.setReportType(reportedType);
-                report.setReporterId(FirebaseAuth.getInstance().getUid());
-                report.setPostDate(formatter.format(postDate));
+                report.setPostDate(Calendar.getInstance().getTime().toString());
                 report.setContent(reportDescriptions.getText().toString());
-                report.setVerifyDate("");
-                report.setLatitude(Double.parseDouble(mPreferences.getString("LAT", "0.0")));
-                report.setLongitude(Double.parseDouble(mPreferences.getString("LONG", "0.0")));
+                report.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0.0")));
+                report.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0.0")));
                 report.setInspector("");
                 report.setInspectorId("");
+                report.setVerifyDate("");
 
-                mReference.child("reports").child(report.getId().toString()).setValue(report);
-                Intent intent = new Intent(ReportDetailActivity.this, MapsActivity.class);
-                startActivity(intent);
-                finish();
+                User reporter = new User();
+
+                reporter.setBan(sharedPreferences.getBoolean(IS_BANNED.name(), false));
+                reporter.setVerify(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
+                reporter.setBirthday(sharedPreferences.getString(BIRTHDAY.name(), ""));
+                reporter.setEmail(sharedPreferences.getString(EMAIL.name(), ""));
+                reporter.setIdentifyCard(sharedPreferences.getLong(IDENTIFY_CARD.name(), 0L));
+                reporter.setNumberAsk(sharedPreferences.getInt(NUMBER_ASK.name(), 0));
+                reporter.setPhoneNumber(sharedPreferences.getString(PHONE_NUMBER.name(), ""));
+                reporter.setUsername(sharedPreferences.getString(USERNAME.name(), ""));
+
+                report.setReporter(reporter);
+                sendReport(report);
+
+                backToMapsScreen();
             }
         });
     }
 
-    private void hideKeyboard(final View view)
-    {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    private void sendReport(Report report) {
+        databaseReference.child("reports").child(report.getId().toString())
+                .setValue(report).addOnSuccessListener(aVoid -> {
+            Log.d(TAG, "sendReport: post report successfully");
+            showToastMessage("Report is sent.");
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "sendReport: ", e);
+            showToastMessage("Report fail");
+        });
     }
 
-    private void addControls()
+    @Override
+    protected void addControls()
     {
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         txtReportDetailTitle = findViewById(R.id.txtReportDetailTitle);
         imgViewReportThumbnail = findViewById(R.id.imgViewReportThumbnail);

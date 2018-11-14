@@ -175,11 +175,11 @@ public class MapsActivity
         //Add event for Selecting Action Dialog
         ivCloseDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
         ivAskHelp.setOnClickListener((v ->{
-
+            startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
         ivReport.setOnClickListener((v -> {
-            Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-            startActivity(intent);
+            Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
+            startActivity(reportActivity);
         }));
     }
 

@@ -1,7 +1,6 @@
 package com.linh.wiinav.ui;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -16,15 +15,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.Calendar;
 
-public class SignupActivity
-        extends AppCompatActivity
+public class SignUpActivity
+        extends BaseActivity
         implements View.OnClickListener
 {
-    private static final String TAG = "SignupActivity";
+    private static final String TAG = "SignUpActivity";
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -53,12 +50,14 @@ public class SignupActivity
         }
     }
 
-    private void addEvents()
+    @Override
+    protected void addEvents()
     {
         btnSignup.setOnClickListener(this);
     }
 
-    private void addControls()
+    @Override
+    protected void addControls()
     {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -70,7 +69,7 @@ public class SignupActivity
     }
 
     private void displayNextScreen(){
-        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -107,10 +106,19 @@ public class SignupActivity
     private void writeNewUser(final String uid, final String username, final String email)
     {
         Log.d(TAG, "writeNewUser: " + uid);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date today = new Date();
-        User user = new User(email, username, "0", format.format(today), 0L, false, false, 1 );
-        mDatabase.child("users").child(uid).setValue(user);
+
+        User user = new User(email, username, "0",
+                Calendar.getInstance().getTime().toString(),
+                0L, false, false, 1 );
+
+        mDatabase.child("users").child(uid).setValue(user)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "writeNewUser: add new user successfully");
+                    showToastMessage("Sign up successfully.");
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "writeNewUser: ", e);
+            showToastMessage("Unable sign up. Try later.");
+        });
     }
 
     private String usernameFromEmail(final String email)
