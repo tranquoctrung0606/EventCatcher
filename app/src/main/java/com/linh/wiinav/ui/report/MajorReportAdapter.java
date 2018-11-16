@@ -2,6 +2,7 @@ package com.linh.wiinav.ui.report;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class MajorReportAdapter extends ExpandableRecyclerViewAdapter<MajorReportViewHolder, MinorReportViewHolder>
 {
-
+    private static final String TAG = "MajorReportAdapter";
     Context context;
 
     public MajorReportAdapter(List<? extends ExpandableGroup> groups, final Context context) {
@@ -52,7 +53,8 @@ public class MajorReportAdapter extends ExpandableRecyclerViewAdapter<MajorRepor
             {
                 Intent intent = new Intent(context, ReportDetailActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("TITLE",artist.getName());
+                intent.putExtra("REPORT_TYPE",artist.getName());
+                intent.putExtra("REPORT_ID", flatPosition);
                 context.startActivity(intent);
             }
         });

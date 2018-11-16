@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.Comment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentsViewHolder>{
@@ -34,7 +35,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
     @Override
     public int getItemCount() {
-        return comments.size();
+        return comments==null?-1:comments.size();
     }
 
     public static class CommentsViewHolder extends RecyclerView.ViewHolder{

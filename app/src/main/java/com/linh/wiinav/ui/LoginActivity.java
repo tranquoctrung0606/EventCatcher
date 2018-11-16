@@ -1,7 +1,9 @@
 package com.linh.wiinav.ui;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,14 +12,26 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
+import com.linh.wiinav.models.User;
 
+import static com.linh.wiinav.enums.User.BIRTHDAY;
+import static com.linh.wiinav.enums.User.EMAIL;
+import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
+import static com.linh.wiinav.enums.User.IS_BANNED;
+import static com.linh.wiinav.enums.User.IS_VERIFIED;
+import static com.linh.wiinav.enums.User.NUMBER_ASK;
+import static com.linh.wiinav.enums.User.PHONE_NUMBER;
+import static com.linh.wiinav.enums.User.USERNAME;
 import static com.linh.wiinav.helpers.ValidationHelper.isEmptyField;
 import static com.linh.wiinav.helpers.ValidationHelper.isValidEmail;
 import static com.linh.wiinav.helpers.ValidationHelper.isValidPassword;
 
 public class LoginActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements View.OnClickListener
 {
     private static final String TAG = "LoginActivity";
@@ -29,8 +43,10 @@ public class LoginActivity
     private EditText edtEmail, edtPass;
     private Button btnSignInByEmail, btnSignUpByEmail;
 
-    private void addControls(){
+    @Override
+    protected void addControls(){
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         edtEmail = findViewById(R.id.edt_email);
         edtPass = findViewById(R.id.edt_password);
@@ -57,7 +73,7 @@ public class LoginActivity
         addEvents();
     }
 
-    private void addEvents()
+    protected void addEvents()
     {
         btnSignInByEmail.setOnClickListener(this);
         btnSignUpByEmail.setOnClickListener(this);
@@ -80,7 +96,7 @@ public class LoginActivity
 
     private void signUpByEmail()
     {
-        Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
         startActivityForResult(intent, REQUEST_SIGN_UP_BY_EMAIL);
     }
 
@@ -90,11 +106,49 @@ public class LoginActivity
             Log.d(TAG, "signIn: " + authResultTask.isSuccessful());
 
             if (authResultTask.isSuccessful()) {
+                saveUserProfile();
                 displayMainActivity();
             } else {
                 Toast.makeText(this, "Sign in failed. Please check your email and password.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveUserProfile() {
+        String userId = getUid();
+        databaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+
+                if (user == null) {
+                    Log.d(TAG, "onDataChange: can not get user");
+                    showToastMessage("Can not get user");
+                } else {
+                    writeUserDataToPreference(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
+    }
+
+    private void writeUserDataToPreference(User user) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean(IS_BANNED.name(), user.isBan());
+        editor.putBoolean(IS_VERIFIED.name(), user.isVerify());
+        editor.putString(EMAIL.name(), user.getEmail());
+        editor.putString(USERNAME.name(), user.getUsername());
+        editor.putString(PHONE_NUMBER.name(), user.getPhoneNumber());
+        editor.putString(BIRTHDAY.name(), user.getBirthday());
+        editor.putLong(IDENTIFY_CARD.name(), user.getIdentifyCard());
+        editor.putInt(NUMBER_ASK.name(), user.getNumberAsk());
+
+        editor.apply();
     }
 
     private void displayMainActivity()
