@@ -138,7 +138,7 @@ public class LoginActivity
         }
 
         if (!isValidPassword(password)) {
-            edtEmail.setError(getString(R.string.error_invalid_password));
+            edtPass.setError(getString(R.string.error_invalid_password));
             return false;
         }
 
