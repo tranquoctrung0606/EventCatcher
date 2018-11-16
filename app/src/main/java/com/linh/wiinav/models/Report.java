@@ -2,30 +2,40 @@ package com.linh.wiinav.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 @IgnoreExtraProperties
-public class Report {
-    private String id, inspector, inspectorId, content, reportType, verifyDate, postDate;
-    private double latitude, longitude;
-    private User reporter;
+public class Report implements Serializable{
+
+    private String id,content;
+    private User poster,inspector;
+    private ReportType reportType;
+    private int upVote,downVote;
+    private Date postDate,verifyDate;
+    private float longtitude, latitude;
+    private ArrayList<Image> images;
 
     public Report() {
     }
 
-    public Report(String id, String inspector, String inspectorId,
-                  String content, String reportType, String verifyDate,
-                  String postDate, double latitude, double longitude, User reporter) {
+    public Report(String id, String content, User poster, User inspector, ReportType reportType,
+                  int upVote, int downVote, Date postDate, Date verifyDate, float longtitude,
+                  float latitude, ArrayList<Image> images) {
         this.id = id;
-        this.inspector = inspector;
-        this.inspectorId = inspectorId;
         this.content = content;
+        this.poster = poster;
+        this.inspector = inspector;
         this.reportType = reportType;
-        this.verifyDate = verifyDate;
+        this.upVote = upVote;
+        this.downVote = downVote;
         this.postDate = postDate;
+        this.verifyDate = verifyDate;
+        this.longtitude = longtitude;
         this.latitude = latitude;
-        this.longitude = longitude;
-        this.reporter = reporter;
+        this.images = images;
     }
 
     public String getId() {
@@ -36,22 +46,6 @@ public class Report {
         this.id = id;
     }
 
-    public String getInspector() {
-        return inspector;
-    }
-
-    public void setInspector(String inspector) {
-        this.inspector = inspector;
-    }
-
-    public String getInspectorId() {
-        return inspectorId;
-    }
-
-    public void setInspectorId(String inspectorId) {
-        this.inspectorId = inspectorId;
-    }
-
     public String getContent() {
         return content;
     }
@@ -60,67 +54,101 @@ public class Report {
         this.content = content;
     }
 
-    public String getReportType() {
+    public User getPoster() {
+        return poster;
+    }
+
+    public void setPoster(User poster) {
+        this.poster = poster;
+    }
+
+    public User getInspector() {
+        return inspector;
+    }
+
+    public void setInspector(User inspector) {
+        this.inspector = inspector;
+    }
+
+    public ReportType getReportType() {
         return reportType;
     }
 
-    public void setReportType(String reportType) {
+    public void setReportType(ReportType reportType) {
         this.reportType = reportType;
     }
 
-    public String getVerifyDate() {
-        return verifyDate;
+    public int getUpVote() {
+        return upVote;
     }
 
-    public void setVerifyDate(String verifyDate) {
-        this.verifyDate = verifyDate;
+    public void setUpVote(int upVote) {
+        this.upVote = upVote;
     }
 
-    public String getPostDate() {
+    public int getDownVote() {
+        return downVote;
+    }
+
+    public void setDownVote(int downVote) {
+        this.downVote = downVote;
+    }
+
+    public Date getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(String postDate) {
+    public void setPostDate(Date postDate) {
         this.postDate = postDate;
     }
 
-    public double getLatitude() {
+    public Date getVerifyDate() {
+        return verifyDate;
+    }
+
+    public void setVerifyDate(Date verifyDate) {
+        this.verifyDate = verifyDate;
+    }
+
+    public float getLongtitude() {
+        return longtitude;
+    }
+
+    public void setLongtitude(float longtitude) {
+        this.longtitude = longtitude;
+    }
+
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public ArrayList<Image> getImages() {
+        return images;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public User getReporter() {
-        return reporter;
-    }
-
-    public void setReporter(User reporter) {
-        this.reporter = reporter;
+    public void setImages(ArrayList<Image> images) {
+        this.images = images;
     }
 
     @Override
     public String toString() {
         return "Report{" +
                 "id='" + id + '\'' +
-                ", inspector='" + inspector + '\'' +
-                ", inspectorId='" + inspectorId + '\'' +
                 ", content='" + content + '\'' +
-                ", reportType='" + reportType + '\'' +
-                ", verifyDate='" + verifyDate + '\'' +
-                ", postDate='" + postDate + '\'' +
+                ", poster=" + poster +
+                ", inspector=" + inspector +
+                ", reportType=" + reportType +
+                ", upVote=" + upVote +
+                ", downVote=" + downVote +
+                ", postDate=" + postDate +
+                ", verifyDate=" + verifyDate +
+                ", longtitude=" + longtitude +
                 ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", reporter=" + reporter +
+                ", images=" + images +
                 '}';
     }
 }
