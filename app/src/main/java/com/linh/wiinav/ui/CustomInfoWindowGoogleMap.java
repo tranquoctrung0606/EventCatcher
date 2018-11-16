@@ -31,8 +31,8 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
                 TextView routeDuration = mWindow.findViewWithTag(R.id.routeDuration);
 
                 routeTitle.setText("");
-                routeDistance.setText(route.distance.text);
-                routeDuration.setText(route.duration.text);
+                routeDistance.setText(route.getDistance().getText());
+                routeDuration.setText(route.getDuration().getText());
             }
         }
 
