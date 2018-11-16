@@ -69,6 +69,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.linh.wiinav.enums.User.EMAIL;
+import static com.linh.wiinav.enums.User.PHONE_NUMBER;
+
 
 public class MapsActivity
         extends BaseActivity
@@ -104,6 +107,8 @@ public class MapsActivity
     private AutoCompleteTextView mSearchText;
     private ImageView ivMyLocation;
     private ImageView ivSearch, ivDirection;
+    private TextView txtEmail;
+    private TextView txtPhoneNumber;
 
     private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
@@ -242,13 +247,18 @@ public class MapsActivity
         fab_satellitetype = findViewById(R.id.fab_satellitetype);
         fab_roadtype = findViewById(R.id.fab_roadtype);
         hideFabLayout2();
-        navigationView = findViewById(R.id.nav_view);
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
         ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
         ivReport = dialogSelectAction.findViewById(R.id.ivReport);
+
+        //menu
+        //txtEmail = navigationView.findViewById(R.id.txtUsername);
+        //txtEmail.setText(sharedPreferences.getString(EMAIL.name(), ""));
+        //txtPhoneNumber = navigationView.findViewById(R.id.txtPhone_number);
+        //txtPhoneNumber.setText(sharedPreferences.getString(PHONE_NUMBER.name(), ""));
     }
 
 

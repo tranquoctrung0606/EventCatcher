@@ -1,12 +1,9 @@
 package com.linh.wiinav.ui;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,7 +83,7 @@ public class ReportDetailActivity
                 User reporter = new User();
 
                 reporter.setBan(sharedPreferences.getBoolean(IS_BANNED.name(), false));
-                reporter.setVerify(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
+                reporter.setVerifiedEmail(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
                 reporter.setBirthday(sharedPreferences.getString(BIRTHDAY.name(), ""));
                 reporter.setEmail(sharedPreferences.getString(EMAIL.name(), ""));
                 reporter.setIdentifyCard(sharedPreferences.getLong(IDENTIFY_CARD.name(), 0L));

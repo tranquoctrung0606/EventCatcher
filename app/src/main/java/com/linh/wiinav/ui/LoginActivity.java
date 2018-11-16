@@ -12,11 +12,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.linh.wiinav.enums.User.BIRTHDAY;
 import static com.linh.wiinav.enums.User.EMAIL;
@@ -24,6 +28,7 @@ import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
 import static com.linh.wiinav.enums.User.IS_BANNED;
 import static com.linh.wiinav.enums.User.IS_VERIFIED;
 import static com.linh.wiinav.enums.User.NUMBER_ASK;
+import static com.linh.wiinav.enums.User.PASSWORD;
 import static com.linh.wiinav.enums.User.PHONE_NUMBER;
 import static com.linh.wiinav.enums.User.USERNAME;
 import static com.linh.wiinav.helpers.ValidationHelper.isEmptyField;
@@ -60,6 +65,15 @@ public class LoginActivity
         super.onStart();
 
         if(mAuth.getCurrentUser() != null) {
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (!user.isEmailVerified()) {
+                user.reload();
+                if (user.isEmailVerified()) {
+                    Map<String, Object> updateUser = new HashMap<>();
+                    updateUser.put("verifiedEmail", true);
+                    databaseReference.child("users").child(getUid()).updateChildren(updateUser);
+                }
+            }
             displayMainActivity();
         }
     }
@@ -109,7 +123,7 @@ public class LoginActivity
                 saveUserProfile();
                 displayMainActivity();
             } else {
-                Toast.makeText(this, "Sign in failed. Please check your email and password.", Toast.LENGTH_SHORT).show();
+                showToastMessage("Sign in failed. Please check your email and password.");
             }
         });
     }
@@ -140,7 +154,7 @@ public class LoginActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean(IS_BANNED.name(), user.isBan());
-        editor.putBoolean(IS_VERIFIED.name(), user.isVerify());
+        editor.putBoolean(IS_VERIFIED.name(), user.isVerifiedEmail());
         editor.putString(EMAIL.name(), user.getEmail());
         editor.putString(USERNAME.name(), user.getUsername());
         editor.putString(PHONE_NUMBER.name(), user.getPhoneNumber());
@@ -165,7 +179,7 @@ public class LoginActivity
         if (requestCode == REQUEST_SIGN_UP_BY_EMAIL) {
             if (resultCode == RESULT_OK) {
                 if (validation()) {
-                    signIn(edtEmail.getText().toString(), edtPass.getText().toString());
+                    signIn(data.getStringExtra(EMAIL.name()),data.getStringExtra(PASSWORD.name()));
                 }
             }
         }

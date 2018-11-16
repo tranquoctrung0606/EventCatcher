@@ -62,7 +62,7 @@ public class AskHelpActivity extends BaseActivity {
                 User poster = new User();
 
                 poster.setBan(sharedPreferences.getBoolean(IS_BANNED.name(), poster.isBan()));
-                poster.setVerify(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
+                poster.setVerifiedEmail(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
                 poster.setBirthday(sharedPreferences.getString(BIRTHDAY.name(), ""));
                 poster.setEmail(sharedPreferences.getString(EMAIL.name(), ""));
                 poster.setIdentifyCard(sharedPreferences.getLong(IDENTIFY_CARD.name(), 0L));

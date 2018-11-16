@@ -8,14 +8,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.TaskExecutors;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
+import com.linh.wiinav.helpers.ValidationHelper;
 import com.linh.wiinav.models.User;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
+import static com.linh.wiinav.enums.User.EMAIL;
+import static com.linh.wiinav.enums.User.PASSWORD;
 
 public class SignUpActivity
         extends BaseActivity
@@ -26,10 +36,13 @@ public class SignUpActivity
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
-    private Button btnSignup;
+    private Button btnSignUp;
     private EditText edtEmail;
     private EditText edtPassword;
     private EditText edtConfirmPassword;
+    private EditText edtPhoneNumber;
+
+    private String phoneVerificationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +66,7 @@ public class SignUpActivity
     @Override
     protected void addEvents()
     {
-        btnSignup.setOnClickListener(this);
+        btnSignUp.setOnClickListener(this);
     }
 
     @Override
@@ -62,20 +75,41 @@ public class SignUpActivity
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        btnSignup = findViewById(R.id.btn_signupEmail);
+        btnSignUp = findViewById(R.id.btn_signupEmail);
         edtEmail = findViewById(R.id.edt_email);
         edtPassword = findViewById(R.id.edt_password);
         edtConfirmPassword = findViewById(R.id.edt_confirmpassword);
+        edtPhoneNumber = findViewById(R.id.edt_phone_number);
     }
 
     private void displayNextScreen(){
         Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+        intent.putExtra(EMAIL.name(), edtEmail.getText().toString());
+        intent.putExtra(PASSWORD.name(),edtPassword.getText().toString());
         setResult(RESULT_OK, intent);
         finish();
     }
 
     private void validateFormField(){
+        if (ValidationHelper.isEmptyField(edtEmail.getText().toString())) {
+            edtEmail.setText("Required");
+            return;
+        }
 
+        if (ValidationHelper.isEmptyField(edtPassword.getText().toString())) {
+            edtEmail.setText("Required");
+            return;
+        }
+
+        if (ValidationHelper.isEmptyField(edtConfirmPassword.getText().toString())) {
+            edtEmail.setText("Required");
+            return;
+        }
+
+        if (ValidationHelper.isEmptyField(edtPhoneNumber.getText().toString())) {
+            edtEmail.setText("Required");
+            return;
+        }
     }
 
     private void signUp()
@@ -100,16 +134,58 @@ public class SignUpActivity
         String username = usernameFromEmail(user.getEmail());
         writeNewUser(user.getUid(), username, user.getEmail());
 
+        verifyUserEmail(user);
+        verifyUserPhoneNumber(user);
+
         displayNextScreen();
+    }
+
+    private void verifyUserPhoneNumber(FirebaseUser user) {
+        Log.d(TAG, "verifyUserPhoneNumber: " + edtPhoneNumber.getText().toString());
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(edtPhoneNumber.getText().toString(),
+                60, TimeUnit.SECONDS, TaskExecutors.MAIN_THREAD, mCallback);
+    }
+
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            phoneVerificationId = s;
+        }
+
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            String code = phoneAuthCredential.getSmsCode();
+            verifySmsCode(code);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            Log.e(TAG, "onVerificationFailed: phone verification fail", e);
+        }
+    };
+
+    private void verifySmsCode(String code) {
+        PhoneAuthProvider.getCredential(phoneVerificationId, code);
+    }
+
+    private void verifyUserEmail(final FirebaseUser user) {
+        user.sendEmailVerification().addOnCompleteListener((task -> {
+            if (task.isSuccessful()) {
+                Log.d(TAG, "verifyUserEmail: Verification email is sent to " + user.getEmail() );
+            } else {
+                Log.d(TAG, "verifyUserEmail: fail");
+            }
+        }));
     }
 
     private void writeNewUser(final String uid, final String username, final String email)
     {
         Log.d(TAG, "writeNewUser: " + uid);
 
-        User user = new User(email, username, "0",
+        User user = new User(uid, email, username, edtPhoneNumber.getText().toString(),
                 Calendar.getInstance().getTime().toString(),
-                0L, false, false, 1 );
+                0L, false, false, false, 1 );
 
         mDatabase.child("users").child(uid).setValue(user)
                 .addOnSuccessListener(aVoid -> {
