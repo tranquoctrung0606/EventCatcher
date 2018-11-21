@@ -90,7 +90,9 @@ public class MapsActivity
             new LatLng(-40, -168), new LatLng(71, 136)
     );
 
-    private boolean showHide2 = false;
+
+    private boolean isTrafficOn = false;
+    private boolean mapType = false;
     private boolean isDirectionPressed = false;
 
     private List<Marker> originMarkers = new ArrayList<>();
@@ -113,8 +115,9 @@ public class MapsActivity
     private TextView tvDuration;
     private TextView tvDistance;
     private Snackbar snackbar;
+    private ImageView mFloatingActionButton, trafficStatusButton;
 
-    private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
+    private ImageView fab_maptype;
     private NavigationView navigationView;
 
     //vars
@@ -152,19 +155,23 @@ public class MapsActivity
         });
 
         fab_maptype.setOnClickListener((v) -> {
-            if(showHide2 == false)
-                showFabLayout2();
+            mapType = !mapType;
+            // refresh map here
+            if(mapType == false)
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             else
-                hideFabLayout2();
-            showHide2 = !showHide2;
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         });
 
-        fab_satellitetype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        });
+        trafficStatusButton.setOnClickListener((v) -> {
+            isTrafficOn = !isTrafficOn;
+            // refresh map here
+            if(isTrafficOn == false)
+                mMap.setTrafficEnabled(false);
+            else
+                mMap.setTrafficEnabled(true);
 
-        fab_roadtype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
         });
 
         ivSearch.setOnClickListener((v) -> {
@@ -250,9 +257,8 @@ public class MapsActivity
         navigationView = findViewById(R.id.nav_view);
 
         fab_maptype = findViewById(R.id.fab_maptype);
-        fab_satellitetype = findViewById(R.id.fab_satellitetype);
-        fab_roadtype = findViewById(R.id.fab_roadtype);
-        hideFabLayout2();
+
+        navigationView = findViewById(R.id.nav_view);
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
@@ -275,6 +281,8 @@ public class MapsActivity
         //txtEmail.setText(sharedPreferences.getString(EMAIL.name(), ""));
         //txtPhoneNumber = navigationView.findViewById(R.id.txtPhone_number);
         //txtPhoneNumber.setText(sharedPreferences.getString(PHONE_NUMBER.name(), ""));
+
+        trafficStatusButton = findViewById(R.id.trafficStatusButton);
     }
 
 
@@ -654,17 +662,6 @@ public class MapsActivity
         DrawerLayout drawer = findViewById(R.id.map_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void showFabLayout2()
-    {
-        fab_satellitetype.show();
-        fab_roadtype.show();
-    }
-    private void hideFabLayout2()
-    {
-        fab_satellitetype.hide();
-        fab_roadtype.hide();
     }
 
     protected void displayNextScreen(final Intent nextScreen)
