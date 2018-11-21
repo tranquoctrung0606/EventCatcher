@@ -104,6 +104,7 @@ public class AskHelp implements Serializable {
         this.comments = comments;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "AskHelp{" +
