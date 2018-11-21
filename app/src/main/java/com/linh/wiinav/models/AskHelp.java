@@ -14,15 +14,13 @@ public class AskHelp implements Serializable {
     private boolean isCompleted;
     private double latitude, longitude;
     private ArrayList<Comment> comments ;
-    private boolean completed;
 
     public AskHelp() {
     }
 
     public AskHelp(String id, User poster, String postDate,
                    String title, String content, boolean isCompleted,
-                   double latitude, double longitude,
-                   ArrayList<Comment> comments, boolean completed) {
+                   double latitude, double longitude, ArrayList<Comment> comments) {
         this.id = id;
         this.poster = poster;
         this.postDate = postDate;
@@ -32,7 +30,6 @@ public class AskHelp implements Serializable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.comments = comments;
-        this.completed = completed;
     }
 
     public String getId() {
@@ -107,7 +104,6 @@ public class AskHelp implements Serializable {
         this.comments = comments;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "AskHelp{" +
@@ -120,7 +116,6 @@ public class AskHelp implements Serializable {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", comments=" + comments +
-                ", completed=" + completed +
                 '}';
     }
 }

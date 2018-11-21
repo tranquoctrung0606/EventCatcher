@@ -579,6 +579,7 @@ public class MapsActivity
                 for (DataSnapshot ask : askHelpChildren) {
                     AskHelp askHelp = ask.getValue(AskHelp.class);
                     Log.d(TAG, "onDataChange: " + askHelp.getId());
+                    Log.d(TAG, "onDataChange: complete " + askHelp.isCompleted());
                     if (!askHelp.isCompleted())
                         askHelps.add(askHelp);
                 }
@@ -594,12 +595,14 @@ public class MapsActivity
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if (marker.getTag()!=null)
+        if (marker.getTag()!= null)
         {
-            AskHelp askHelp = (AskHelp) marker.getTag();
-            Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
-            intent.putExtra("askHelp", (Serializable) askHelp);
-            startActivity(intent);
+            if (marker.getTag() instanceof AskHelp) {
+                AskHelp askHelp = (AskHelp) marker.getTag();
+                Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
+                intent.putExtra("askHelp", askHelp);
+                startActivity(intent);
+            }
         }
     }
 

@@ -6,18 +6,18 @@ import java.io.Serializable;
 
 @IgnoreExtraProperties
 public class User implements Serializable {
-    private String id, email, username, phoneNumber;
-    private String birthday;
+    private String id, email, username, phoneNumber, birthday, password;
     private Long identifyCard;
     private boolean verifiedEmail, ban, verifiedPhoneNumber;
-    private int numberAsk;;
+    private int numberAsk;
 
     public User() {
     }
 
     public User(String id, String email, String username,
                 String phoneNumber, String birthday, Long identifyCard,
-                boolean verifiedEmail, boolean ban, boolean verifiedPhoneNumber, int numberAsk) {
+                boolean verifiedEmail, boolean ban, boolean verifiedPhoneNumber,
+                int numberAsk, String password) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -28,6 +28,15 @@ public class User implements Serializable {
         this.ban = ban;
         this.verifiedPhoneNumber = verifiedPhoneNumber;
         this.numberAsk = numberAsk;
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getId() {
@@ -118,6 +127,7 @@ public class User implements Serializable {
                 ", username='" + username + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", birthday='" + birthday + '\'' +
+                ", password='" + password + '\'' +
                 ", identifyCard=" + identifyCard +
                 ", verifiedEmail=" + verifiedEmail +
                 ", ban=" + ban +

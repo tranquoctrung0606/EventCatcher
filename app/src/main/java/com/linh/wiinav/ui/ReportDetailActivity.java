@@ -15,15 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.linh.wiinav.enums.User.BIRTHDAY;
-import static com.linh.wiinav.enums.User.EMAIL;
-import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
-import static com.linh.wiinav.enums.User.IS_BANNED;
-import static com.linh.wiinav.enums.User.IS_VERIFIED;
-import static com.linh.wiinav.enums.User.NUMBER_ASK;
-import static com.linh.wiinav.enums.User.PHONE_NUMBER;
-import static com.linh.wiinav.enums.User.USERNAME;
-
 public class ReportDetailActivity
         extends BaseActivity
 {
@@ -80,18 +71,7 @@ public class ReportDetailActivity
                 report.setInspectorId("");
                 report.setVerifyDate("");
 
-                User reporter = new User();
-
-                reporter.setBan(sharedPreferences.getBoolean(IS_BANNED.name(), false));
-                reporter.setVerifiedEmail(sharedPreferences.getBoolean(IS_VERIFIED.name(), false));
-                reporter.setBirthday(sharedPreferences.getString(BIRTHDAY.name(), ""));
-                reporter.setEmail(sharedPreferences.getString(EMAIL.name(), ""));
-                reporter.setIdentifyCard(sharedPreferences.getLong(IDENTIFY_CARD.name(), 0L));
-                reporter.setNumberAsk(sharedPreferences.getInt(NUMBER_ASK.name(), 0));
-                reporter.setPhoneNumber(sharedPreferences.getString(PHONE_NUMBER.name(), ""));
-                reporter.setUsername(sharedPreferences.getString(USERNAME.name(), ""));
-
-                report.setReporter(reporter);
+                report.setReporter(getUser());
                 sendReport(report);
 
                 backToMapsScreen();

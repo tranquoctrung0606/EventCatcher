@@ -26,7 +26,8 @@ import static com.linh.wiinav.enums.User.BIRTHDAY;
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
 import static com.linh.wiinav.enums.User.IS_BANNED;
-import static com.linh.wiinav.enums.User.IS_VERIFIED;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_PHONE_NUMBER;
 import static com.linh.wiinav.enums.User.NUMBER_ASK;
 import static com.linh.wiinav.enums.User.PASSWORD;
 import static com.linh.wiinav.enums.User.PHONE_NUMBER;
@@ -154,13 +155,15 @@ public class LoginActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean(IS_BANNED.name(), user.isBan());
-        editor.putBoolean(IS_VERIFIED.name(), user.isVerifiedEmail());
+        editor.putBoolean(IS_VERIFIED_EMAIL.name(), user.isVerifiedEmail());
+        editor.putBoolean(IS_VERIFIED_PHONE_NUMBER.name(), user.isVerifiedPhoneNumber());
         editor.putString(EMAIL.name(), user.getEmail());
         editor.putString(USERNAME.name(), user.getUsername());
         editor.putString(PHONE_NUMBER.name(), user.getPhoneNumber());
         editor.putString(BIRTHDAY.name(), user.getBirthday());
         editor.putLong(IDENTIFY_CARD.name(), user.getIdentifyCard());
         editor.putInt(NUMBER_ASK.name(), user.getNumberAsk());
+        editor.putString(PASSWORD.name(), user.getPassword());
 
         editor.apply();
     }

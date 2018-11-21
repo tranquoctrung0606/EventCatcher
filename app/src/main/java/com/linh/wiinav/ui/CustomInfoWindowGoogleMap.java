@@ -41,7 +41,7 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
             if(reportedData != null) {
                 if ("problem".equals(reportedData.getType())) {
                     mWindow = LayoutInflater.from(context).inflate(R.layout.info_problem_report, null);
-                    TextView tvTitle = mWindow.findViewById(R.id.title);
+                    TextView tvTitle = mWindow.findViewById(R.id.tv_title);
                     TextView tvSnippet = mWindow.findViewById(R.id.snippet);
 
                     tvTitle.setText(marker.getTitle());

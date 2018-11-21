@@ -82,10 +82,11 @@ public class SignUpActivity
         edtPhoneNumber = findViewById(R.id.edt_phone_number);
     }
 
-    private void displayNextScreen(){
+    private void displayNextScreen(User newUser){
         Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
         intent.putExtra(EMAIL.name(), edtEmail.getText().toString());
         intent.putExtra(PASSWORD.name(),edtPassword.getText().toString());
+        intent.putExtra("USER", newUser);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -132,12 +133,15 @@ public class SignUpActivity
     private void onAuthSuccess(final FirebaseUser user)
     {
         String username = usernameFromEmail(user.getEmail());
-        writeNewUser(user.getUid(), username, user.getEmail());
+
+        User newUser = createNewUser(user.getUid(), user.getEmail(), user.getDisplayName());
+
+        writeNewUser(newUser);
 
         verifyUserEmail(user);
         verifyUserPhoneNumber(user);
 
-        displayNextScreen();
+        displayNextScreen(newUser);
     }
 
     private void verifyUserPhoneNumber(FirebaseUser user) {
@@ -179,15 +183,11 @@ public class SignUpActivity
         }));
     }
 
-    private void writeNewUser(final String uid, final String username, final String email)
+    private void writeNewUser(final User user)
     {
-        Log.d(TAG, "writeNewUser: " + uid);
+        Log.d(TAG, "writeNewUser: " + user);
 
-        User user = new User(uid, email, username, edtPhoneNumber.getText().toString(),
-                Calendar.getInstance().getTime().toString(),
-                0L, false, false, false, 1 );
-
-        mDatabase.child("users").child(uid).setValue(user)
+        mDatabase.child("users").child(user.getId()).setValue(user)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "writeNewUser: add new user successfully");
                     showToastMessage("Sign up successfully.");
@@ -195,6 +195,12 @@ public class SignUpActivity
             Log.e(TAG, "writeNewUser: ", e);
             showToastMessage("Unable sign up. Try later.");
         });
+    }
+
+    private User createNewUser(final String uid, final String email, final String username) {
+        return new User(uid, email, username, edtPhoneNumber.getText().toString(),
+                Calendar.getInstance().getTime().toString(),
+                0L, false, false, false, 1, edtPassword.getText().toString());
     }
 
     private String usernameFromEmail(final String email)
