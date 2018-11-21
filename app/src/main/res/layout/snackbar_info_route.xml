@@ -16,6 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_schedule_white"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             />
         <TextView
             android:layout_width="wrap_content"
@@ -37,6 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_time_to_leave_white"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             />
         <TextView
             android:layout_width="wrap_content"

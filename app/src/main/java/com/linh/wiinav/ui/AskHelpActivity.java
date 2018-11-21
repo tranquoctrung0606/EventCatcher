@@ -57,7 +57,7 @@ public class AskHelpActivity extends BaseActivity {
                 askHelp.setContent(etAskHelpContent.getText().toString());
                 askHelp.setPostDate(Calendar.getInstance().getTime().toString());
                 askHelp.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0")));
-                askHelp.setLongtitude(Double.parseDouble(sharedPreferences.getString("LONG", "0")));
+                askHelp.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0")));
 
                 User poster = new User();
 

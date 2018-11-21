@@ -71,9 +71,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.linh.wiinav.enums.User.EMAIL;
-import static com.linh.wiinav.enums.User.PHONE_NUMBER;
-
 
 public class MapsActivity
         extends BaseActivity
@@ -303,15 +300,17 @@ public class MapsActivity
             mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.setTrafficEnabled(true);
             mMap.setOnPolylineClickListener((polyline -> {
-                String info[] = null, oldTag = null;
-                if ((String)polyline.getTag() != null) {
-                     info = polyline.getTag().toString().split(",");
-                     oldTag = info[0] + "," + info[1];
+                String distance = null, duration = null;
+                Route oldRoute = null;
+                if (polyline.getTag() != null) {
+                     oldRoute = (Route) polyline.getTag();
+                     distance = oldRoute.getDistance().getText();
+                     duration = oldRoute.getDuration().getText();
                 }
                 if (polyline.getColor() == getResources().getColor(R.color.colorBestPolyline)) {
-                    if (info != null) {
-                        tvDistance.setText(info[0]);
-                        tvDuration.setText(info[1]);
+                    if (distance != null && duration != null) {
+                        tvDistance.setText(distance);
+                        tvDuration.setText(duration);
                         snackbar.show();
                         return;
                     }
@@ -324,28 +323,29 @@ public class MapsActivity
                     for (Route route: routes) {
                         addDirectionMaker(route);
 
-                        String newTag = route.getDistance().getText() + "," + route.getDuration().getText();
-                        if (!oldTag.equals(newTag)) {
-                            PolylineOptions polylineOptions = new PolylineOptions().
-                                    geodesic(true).
-                                    color(getResources().getColor(R.color.colorNormalPolyline)).
-                                    width(10)
-                                    .clickable(true);
+                        if (oldRoute.getDuration().compareTo(route.getDuration()) != 0
+                                && oldRoute.getDistance().compareTo(route.getDistance()) != 0) {
+                            PolylineOptions polylineOptions = new PolylineOptions()
+                                    .geodesic(true)
+                                    .color(getResources()
+                                            .getColor(R.color.colorNormalPolyline))
+                                    .width(10).clickable(true);
 
                             polylineOptions.add(route.getStartLocation());
                             for (int i = 0; i < route.getPoints().size(); i++)
                                 polylineOptions.add(route.getPoints().get(i));
                             polylineOptions.add(route.getEndLocation());
 
-                            mMap.addPolyline(polylineOptions).setTag(newTag);
+                            mMap.addPolyline(polylineOptions).setTag(route);
                         }
                         else routeTmp = route;
 
                     }
-                    PolylineOptions polylineOptions = new PolylineOptions().
-                            geodesic(true).
-                            color(getResources().getColor(R.color.colorBestPolyline)).
-                            width(10)
+                    PolylineOptions polylineOptions = new PolylineOptions()
+                            .geodesic(true)
+                            .color(getResources()
+                                    .getColor(R.color.colorBestPolyline))
+                            .width(10)
                             .clickable(true);
 
                     polylineOptions.add(routeTmp.getStartLocation());
@@ -353,7 +353,7 @@ public class MapsActivity
                         polylineOptions.add(routeTmp.getPoints().get(i));
                     polylineOptions.add(routeTmp.getEndLocation());
 
-                    mMap.addPolyline(polylineOptions).setTag(oldTag);
+                    mMap.addPolyline(polylineOptions).setTag(routeTmp);
                 }
 
             }));
@@ -532,7 +532,7 @@ public class MapsActivity
         //Set attribute for marker;
         markerOptions.title(askHelp.getTitle());
         markerOptions.snippet(askHelp.getContent());
-        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongtitude());
+        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
@@ -572,15 +572,15 @@ public class MapsActivity
         databaseReference.child("askHelps").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot askHelpSnapshot = dataSnapshot;
-                Iterable<DataSnapshot> askHelpChildren = askHelpSnapshot.getChildren();
+                Iterable<DataSnapshot> askHelpChildren = dataSnapshot.getChildren();
 
                 askHelps.clear();
 
                 for (DataSnapshot ask : askHelpChildren) {
                     AskHelp askHelp = ask.getValue(AskHelp.class);
                     Log.d(TAG, "onDataChange: " + askHelp.getId());
-                    askHelps.add(askHelp);
+                    if (!askHelp.isCompleted())
+                        askHelps.add(askHelp);
                 }
             }
 
@@ -703,7 +703,6 @@ public class MapsActivity
 
         for (Route route : routes) {
             addDirectionMaker(route);
-            String tag = route.getDistance().getText() + "," + route.getDuration().getText();
             if (route.compareTo(bestRoute) != 0) {
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
@@ -716,7 +715,7 @@ public class MapsActivity
                     polylineOptions.add(route.getPoints().get(i));
                 polylineOptions.add(route.getEndLocation());
 
-                mMap.addPolyline(polylineOptions).setTag(tag);
+                mMap.addPolyline(polylineOptions).setTag(route);
             }
         }
 
@@ -731,7 +730,7 @@ public class MapsActivity
             polylineOptions.add(bestRoute.getPoints().get(i));
         polylineOptions.add(bestRoute.getEndLocation());
 
-        mMap.addPolyline(polylineOptions).setTag(bestRoute.getDistance().getText() + "," + bestRoute.getDuration().getText());
+        mMap.addPolyline(polylineOptions).setTag(bestRoute);
     }
 
     private void addDirectionMaker(Route route) {

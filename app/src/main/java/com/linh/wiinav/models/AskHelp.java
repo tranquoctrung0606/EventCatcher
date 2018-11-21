@@ -1,5 +1,7 @@
 package com.linh.wiinav.models;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -10,13 +12,17 @@ public class AskHelp implements Serializable {
     private String title;
     private String content;
     private boolean isCompleted;
-    private double latitude, longtitude;
+    private double latitude, longitude;
     private ArrayList<Comment> comments ;
+    private boolean completed;
 
     public AskHelp() {
     }
 
-    public AskHelp(String id, User poster, String postDate, String title, String content, boolean isCompleted, double latitude, double longtitude, ArrayList<Comment> comments) {
+    public AskHelp(String id, User poster, String postDate,
+                   String title, String content, boolean isCompleted,
+                   double latitude, double longitude,
+                   ArrayList<Comment> comments, boolean completed) {
         this.id = id;
         this.poster = poster;
         this.postDate = postDate;
@@ -24,8 +30,9 @@ public class AskHelp implements Serializable {
         this.content = content;
         this.isCompleted = isCompleted;
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longitude;
         this.comments = comments;
+        this.completed = completed;
     }
 
     public String getId() {
@@ -84,18 +91,36 @@ public class AskHelp implements Serializable {
         this.latitude = latitude;
     }
 
-    public double getLongtitude() {
-        return longtitude;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLongtitude(double longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
+
     public ArrayList<Comment> getComments() {
         return comments;
     }
 
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "AskHelp{" +
+                "id='" + id + '\'' +
+                ", poster=" + poster +
+                ", postDate='" + postDate + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", isCompleted=" + isCompleted +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", comments=" + comments +
+                ", completed=" + completed +
+                '}';
     }
 }

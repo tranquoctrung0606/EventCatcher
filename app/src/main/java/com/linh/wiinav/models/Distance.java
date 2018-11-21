@@ -1,6 +1,6 @@
 package com.linh.wiinav.models;
 
-public class Distance {
+public class Distance implements Comparable<Distance>{
     private String text;
     private int value;
 
@@ -31,5 +31,14 @@ public class Distance {
                 "text='" + text + '\'' +
                 ", value=" + value +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Distance o) {
+        if (this.value > o.getValue())
+            return 1;
+        if (this.value == o.getValue())
+            return 0;
+        return -1;
     }
 }
