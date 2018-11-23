@@ -12,6 +12,7 @@ public class User implements Serializable {
     private Long identifyCard;
     private boolean verify, ban;
     private int numberAsk;;
+    private String image;
 
     public User() {
     }
@@ -89,6 +90,14 @@ public class User implements Serializable {
 
     public void setNumberAsk(int numberAsk) {
         this.numberAsk = numberAsk;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

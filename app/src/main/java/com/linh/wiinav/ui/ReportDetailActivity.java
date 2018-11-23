@@ -73,7 +73,7 @@ public class ReportDetailActivity
             @Override
             public void onClick(final View v)
             {
-                report.setId(UUID.randomUUID().toString());
+                /*report.setId(UUID.randomUUID().toString());
                 report.setReportType(reportedType);
                 report.setPostDate(Calendar.getInstance().getTime().toString());
                 report.setContent(reportDescriptions.getText().toString());
@@ -97,7 +97,7 @@ public class ReportDetailActivity
                 report.setReporter(reporter);
                 sendReport(report);
 
-                backToMapsScreen();
+                backToMapsScreen();*/
             }
         });
     }

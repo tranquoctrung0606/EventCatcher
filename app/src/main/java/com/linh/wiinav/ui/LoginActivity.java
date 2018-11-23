@@ -38,7 +38,7 @@ public class LoginActivity
 
     private static final int REQUEST_SIGN_UP_BY_EMAIL = 9001;
 
-    private FirebaseAuth mAuth;
+    public static FirebaseAuth mAuth;
 
     private EditText edtEmail, edtPass;
     private Button btnSignInByEmail, btnSignUpByEmail;

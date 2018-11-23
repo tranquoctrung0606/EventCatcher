@@ -447,7 +447,7 @@ public class MapsActivity
         //Set attribute for marker;
         markerOptions.title(askHelp.getTitle());
         markerOptions.snippet(askHelp.getContent());
-        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongtitude());
+        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
@@ -493,9 +493,9 @@ public class MapsActivity
                 askHelps.clear();
 
                 for (DataSnapshot ask : askHelpChildren) {
-                    AskHelp askHelp = ask.getValue(AskHelp.class);
+/*                    AskHelp askHelp = ask.getValue(AskHelp.class);
                     Log.d(TAG, "onDataChange: " + askHelp.getId());
-                    askHelps.add(askHelp);
+                    askHelps.add(askHelp);*/
                 }
             }
 
