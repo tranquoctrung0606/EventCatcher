@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.Report;
+import com.linh.wiinav.models.ReportType;
 import com.linh.wiinav.models.User;
 
 import java.util.Calendar;
@@ -25,8 +26,7 @@ public class ReportDetailActivity
     private ImageView reportSubmit;
     private TextView reportDescriptions;
 
-    private int reportedId;
-    private String reportedType;
+    private ReportType reportedType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,20 +42,14 @@ public class ReportDetailActivity
     protected void addEvents()
     {
         getIncomingIntent();
-        reportDescriptions.setOnFocusChangeListener(new View.OnFocusChangeListener()
-        {
-            @Override
-            public void onFocusChange(final View v, final boolean hasFocus)
-            {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
+        reportDescriptions.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                hideKeyboard(v);
             }
         });
 
         reportSubmit.setOnClickListener(new View.OnClickListener()
         {
-            Date postDate = new Date();
             Report report = new Report();
 
             @Override
@@ -63,13 +57,12 @@ public class ReportDetailActivity
             {
                 report.setId(UUID.randomUUID().toString());
                 report.setReportType(reportedType);
-                report.setPostDate(Calendar.getInstance().getTime().toString());
+                report.setPostDate(Calendar.getInstance().getTime());
                 report.setContent(reportDescriptions.getText().toString());
                 report.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0.0")));
                 report.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0.0")));
-                report.setInspector("");
-                report.setInspectorId("");
-                report.setVerifyDate("");
+                report.setDownVote(0);
+                report.setUpVote(0);
 
                 report.setReporter(getUser());
                 sendReport(report);
@@ -80,7 +73,7 @@ public class ReportDetailActivity
     }
 
     private void sendReport(Report report) {
-        databaseReference.child("reports").child(report.getId().toString())
+        databaseReference.child("reports").child(report.getId())
                 .setValue(report).addOnSuccessListener(aVoid -> {
             Log.d(TAG, "sendReport: post report successfully");
             showToastMessage("Report is sent.");
@@ -109,10 +102,12 @@ public class ReportDetailActivity
 
         if(getIntent().hasExtra("REPORT_TYPE"))
         {
-            reportedType = getIntent().getStringExtra("REPORT_TYPE");
-            reportedId = getIntent().getIntExtra("REPORT_ID", 0);
-            txtReportDetailTitle.setText(reportedType);
-            setThumbnail(reportedId);
+            reportedType = new ReportType();
+            reportedType.setName(getIntent().getStringExtra("REPORT_TYPE"));
+            reportedType.setId(String.valueOf(getIntent().getIntExtra("REPORT_ID", 0)));
+            reportedType.setDuration(18000L);
+            txtReportDetailTitle.setText(reportedType.getName());
+            setThumbnail(Integer.parseInt(reportedType.getId()));
         }
     }
 

@@ -276,11 +276,6 @@ public class MapsActivity
         tvDistance = snackView.findViewById(R.id.sbDistance);
 
         snackbarLayout.addView(snackView, 0);
-        //menu
-        //txtEmail = navigationView.findViewById(R.id.txtUsername);
-        //txtEmail.setText(sharedPreferences.getString(EMAIL.name(), ""));
-        //txtPhoneNumber = navigationView.findViewById(R.id.txtPhone_number);
-        //txtPhoneNumber.setText(sharedPreferences.getString(PHONE_NUMBER.name(), ""));
 
         trafficStatusButton = findViewById(R.id.trafficStatusButton);
     }
@@ -363,7 +358,6 @@ public class MapsActivity
 
                     mMap.addPolyline(polylineOptions).setTag(routeTmp);
                 }
-
             }));
         }
         init();
