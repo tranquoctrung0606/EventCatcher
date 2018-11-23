@@ -6,7 +6,11 @@
     <TextView
         android:id="@+id/comment"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"/>
-
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/edit_text_rounded_corners"
+        />
 </android.support.v7.widget.CardView>

@@ -1,6 +1,7 @@
 package com.linh.wiinav.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,7 +13,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,21 +29,35 @@ import java.util.List;
 public class InfoAskHelpActivity extends AppCompatActivity {
     private Button btnCall;
     RecyclerView commentsRecyclerView;
+    private EditText etAskHelpCommentText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_problem_report);
+        setContentView(R.layout.activity_ask_help_details);
         addControls();
         addEvents();
     }
 
+    @SuppressLint({"ClickableViewAccessibility", "ShowToast"})
     private void addEvents() {
         btnCall.setOnClickListener(v -> {
             if (isPermissionGranted()) {
                 call_action();
             }
 
+        });
+        etAskHelpCommentText.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                if(event.getRawX() >= (etAskHelpCommentText.getRight() - etAskHelpCommentText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    String commentText = etAskHelpCommentText.getText().toString();
+                    Toast.makeText(this,commentText,Toast.LENGTH_SHORT);
+                    return true;
+                }
+            }
+            return false;
         });
     }
 
@@ -100,6 +117,7 @@ public class InfoAskHelpActivity extends AppCompatActivity {
         }
     }
     private void addControls() {
+        etAskHelpCommentText = findViewById(R.id.etAskHelpCommentText);
         //Get information from ask help infoWindow
         AskHelp askHelp = (AskHelp) getIntent().getSerializableExtra("askHelp");
         TextView tvTitle = findViewById(R.id.title);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class AskHelp {
     private String id;
-    private User poster;
+    private String posterId;
     private String postDate;
     private String title;
     private String content;
@@ -15,9 +15,9 @@ public class AskHelp {
     public AskHelp() {
     }
 
-    public AskHelp(String id, User poster, String postDate, String title, String content, boolean isCompleted, double latitude, double longtitude, ArrayList<Comment> comments) {
+    public AskHelp(String id, String posterId, String postDate, String title, String content, boolean isCompleted, double latitude, double longtitude, ArrayList<Comment> comments) {
         this.id = id;
-        this.poster = poster;
+        this.posterId = posterId;
         this.postDate = postDate;
         this.title = title;
         this.content = content;
@@ -35,12 +35,12 @@ public class AskHelp {
         this.id = id;
     }
 
-    public User getPoster() {
-        return poster;
+    public String getPosterId() {
+        return posterId;
     }
 
-    public void setPoster(User poster) {
-        this.poster = poster;
+    public void setPosterId(String posterId) {
+        this.posterId = posterId;
     }
 
     public String getPostDate() {

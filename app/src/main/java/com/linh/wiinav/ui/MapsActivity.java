@@ -288,20 +288,15 @@ public class MapsActivity
         mSearchText.setOnItemClickListener(mAutocompleteClickListener);
 
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
-            @Override
-            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event)
-            {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN
-                        || event.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    //searching
-                    geoLocate();
-                }
-                return true;
+        mSearchText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || event.getAction() == KeyEvent.ACTION_DOWN
+                    || event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                //searching
+                geoLocate();
             }
+            return true;
         });
     }
 
@@ -432,9 +427,6 @@ public class MapsActivity
         }
     }
 
-    private static final LatLng marker1 = new LatLng(16.132669, 108.119502);
-    private static final LatLng marker2 = new LatLng(15.996625, 108.258672);
-    private static final LatLng marker3 = new LatLng(16.060654, 108.209443);
 
 
     /*This method adds asking help marker into the map (display Marker)
@@ -466,45 +458,6 @@ public class MapsActivity
 
     }
 
-//    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
-//        mMap = googleMap;
-//        MarkerOptions markerOptions = new MarkerOptions().title(problem)
-//                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
-//
-//        //Set reportedData --> This is temporary
-////        ReportedData reportedData = reportedData;
-//        reportedData = new ReportedData();
-//
-//        //Set type of problem
-//        reportedData.setType(type);
-//        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
-//        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
-//        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
-//        ArrayList<Comment> listComments = new ArrayList<>();
-//        listComments.add(cmt1);
-//        listComments.add(cmt2);
-//        listComments.add(cmt3);
-//        reportedData.setComments(listComments);
-////        reportedData.getComments().add(cmt1);
-////        reportedData.getComments().add(cmt2);
-////        reportedData.getComments().add(cmt3);
-//        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
-//        User reporter = new User();
-//        reportedData.setReporter(reporter);
-//        //Set problem's information for InfoWindowData -->This is temporary (static data)
-//        reportedData.setTitle(markerOptions.getTitle());
-//        reportedData.setDescription(markerOptions.getSnippet());
-//
-//        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-//
-//        mMap.setInfoWindowAdapter(customInfoWindow);
-//        Marker marker = mMap.addMarker(markerOptions);
-//
-//        marker.setTag(reportedData);
-//        marker.showInfoWindow();
-//        mMap.setOnInfoWindowClickListener(this);
-//    }
-//
     @Override
     public void onInfoWindowClick(Marker marker) {
         if (marker.getTag()!=null)
@@ -619,8 +572,7 @@ public class MapsActivity
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
                     .title(route.endAddress)
-                    .position(route.endLocation)
-                                                  .snippet("Duration: ")
+                    .position(route.endLocation).snippet("Duration: ")
             ));
 
             PolylineOptions polylineOptions = new PolylineOptions().

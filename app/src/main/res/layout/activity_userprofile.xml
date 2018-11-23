@@ -127,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="84dp"
+                        android:layout_marginStart="84dp"
                         android:text="0902123123"
                         android:textColor="#060606"
                         android:textSize="20sp" />

@@ -88,4 +88,12 @@
         completions."
     </string>
     <string name="title_activity_select_action_pop">SelectActionPopActivity</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="call">Call</string>
+    <string name="type_to_comment">Type to comment</string>
+    <string name="comment">Comment</string>
+    <string name="username">Username</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="direction">Direction</string>
 </resources>
