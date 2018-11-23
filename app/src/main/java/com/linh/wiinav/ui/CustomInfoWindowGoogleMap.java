@@ -34,8 +34,8 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
                     tvTitle.setText(reportedData.getTitle());
                     tvDescription.setText(reportedData.getContent());
                     tvReporterName.setText(reportedData.getReporter().getUsername());
-                    tvUpVote.setText(1 + "");
-                    tvDownVote.setText(1 + "");
+                    tvUpVote.setText(reportedData.getUpVote() + "");
+                    tvDownVote.setText(reportedData.getDownVote() + "");
                     tvRemainingTime.setText(String.valueOf(reportedData.getRemainingTime()/3600));
             }
         }
