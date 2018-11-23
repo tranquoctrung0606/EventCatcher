@@ -65,9 +65,13 @@ import com.linh.wiinav.modules.DirectionFinderListener;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class MapsActivity
@@ -102,9 +106,19 @@ public class MapsActivity
     //widgets
     private DrawerLayout mapLayout;
     private Dialog dialogSelectAction;
-    private ImageView ivCloseDialog;
-    private ImageView ivAskHelp;
-    private ImageView ivReport;
+    private Dialog dialogInfoReport;
+    private ImageView ivCloseSelectActionDialog;
+    private ImageView ivAskHelpSelectActionDialog;
+    private ImageView ivReportSelectActionDialog;
+    private TextView tvTitleInfoReport;
+    private TextView tvDescriptionInfoReport;
+    private TextView tvDownVoteInfoReport;
+    private TextView tvUpVoteInfoReport;
+    private TextView tvReporterNameInfoReport;
+    private TextView tvRemainingTimeInfoReport;
+    private TextView tvPostedDateInfoReport;
+    private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
+
     private AutoCompleteTextView mSearchText;
     private ImageView ivMyLocation;
     private ImageView ivSearch, ivDirection;
@@ -185,17 +199,16 @@ public class MapsActivity
                 isDirectionPressed = false;
             }
         });
+
         //Add event for Selecting Action Dialog
-        ivCloseDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
-        ivAskHelp.setOnClickListener((v ->{
+        ivCloseSelectActionDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
+        ivAskHelpSelectActionDialog.setOnClickListener((v ->{
             startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
-        ivReport.setOnClickListener((v -> {
+        ivReportSelectActionDialog.setOnClickListener((v -> {
             Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
             startActivity(reportActivity);
         }));
-
-
     }
 
     private void makeDirection()
@@ -252,15 +265,29 @@ public class MapsActivity
         ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
-        fabMapType = findViewById(R.id.fab_maptype);
+        fabMapType = findViewById(R.id.fab_map_type);
 
         navigationView = findViewById(R.id.nav_view);
+
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
-        ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
-        ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
-        ivReport = dialogSelectAction.findViewById(R.id.ivReport);
+        ivCloseSelectActionDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
+        ivAskHelpSelectActionDialog = dialogSelectAction.findViewById(R.id.ivAskHelp);
+        ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
+
+        //Dialog info report
+        dialogInfoReport = new Dialog(this);
+        dialogInfoReport.setContentView(R.layout.dialog_info_report);
+        tvTitleInfoReport = dialogInfoReport.findViewById(R.id.info_report_title);
+        tvDescriptionInfoReport = dialogInfoReport.findViewById(R.id.info_report_description);
+        tvDownVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_down_vote);
+        tvUpVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_up_vote);
+        tvReporterNameInfoReport = dialogInfoReport.findViewById(R.id.info_report_reporter_name);
+        tvRemainingTimeInfoReport = dialogInfoReport.findViewById(R.id.info_report_remain_time);
+        ivUpVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_iv_up_vote);
+        ivDownVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_iv_down_vote);
+        tvPostedDateInfoReport = dialogInfoReport.findViewById(R.id.info_report_post_time);
 
         //info route
         snackbar = Snackbar.make(mapLayout,"",Snackbar.LENGTH_LONG);
@@ -298,14 +325,7 @@ public class MapsActivity
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.setTrafficEnabled(true);
-
-
-            //Set info window for this marker
-            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-            mMap.setInfoWindowAdapter(customInfoWindow);
-
             mMap.setOnInfoWindowClickListener(this);
-
             mMap.setOnPolylineClickListener((polyline -> {
                 String distance = null, duration = null;
                 Route oldRoute = null;
@@ -538,25 +558,24 @@ public class MapsActivity
         //Set attribute for marker;
         markerOptions.title(askHelp.getTitle());
         markerOptions.snippet(askHelp.getContent());
-        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongitude());
+        LatLng position = new LatLng(askHelp.getLatitude(), askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
         Marker marker = mMap.addMarker(markerOptions);
-
         marker.setTag(askHelp);
-        marker.showInfoWindow();
     }
 
     private void displayReportMarker(final Report report)
     {
         MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(report.getTitle());
+        markerOptions.snippet(report.getContent());
         markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.report));
 
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(report);
-        marker.showInfoWindow();
     }
 
     private void reloadMap() {
@@ -648,6 +667,68 @@ public class MapsActivity
                 Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
                 intent.putExtra("askHelp", askHelp);
                 startActivity(intent);
+            }
+            if (marker.getTag() instanceof  Report) {
+                Report report = (Report) marker.getTag();
+                boolean isVoted = false;
+                tvTitleInfoReport.setText(report.getTitle());
+                tvDescriptionInfoReport.setText(report.getContent());
+                StringBuilder builder = new StringBuilder();
+                builder.append(report.getRemainingTime()/3600);
+                builder.append(" ");
+                builder.append(getString(R.string.mins));
+                tvRemainingTimeInfoReport.setText(builder.toString());
+                tvReporterNameInfoReport.setText(report.getReporter().getUsername());
+                tvUpVoteInfoReport.setText(String.valueOf(report.getUpVote()));
+                tvDownVoteInfoReport.setText(String.valueOf(report.getDownVote()));
+                tvPostedDateInfoReport.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(report.getPostDate()));
+                ivDownVoteInfoReport.setOnClickListener(l -> {
+                    int currentUpVote = report.getUpVote();
+                    int currentDownVote = report.getDownVote();
+                    if (ivDownVoteInfoReport.isEnabled()) {
+                        if (currentUpVote > 0) {
+                            report.setUpVote(--currentUpVote);
+                            tvUpVoteInfoReport.setText(String.valueOf(currentUpVote));
+                        }
+                        report.setDownVote(++currentDownVote);
+                        tvDownVoteInfoReport.setText(String.valueOf(currentDownVote));
+                        ivDownVoteInfoReport.setEnabled(false);
+                        ivUpVoteInfoReport.setEnabled(true);
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("downVote", currentDownVote);
+                        vote.put("upVote", currentUpVote);
+                        databaseReference.child("reports")
+                                         .child(report.getId())
+                                         .updateChildren(vote)
+                                         .addOnCompleteListener(task -> {
+                                             showToastMessage("Vote down successfully!");
+                                         });
+                    }
+                });
+                ivUpVoteInfoReport.setOnClickListener(l -> {
+                    int currentUpVote = report.getUpVote();
+                    int currentDownVote = report.getDownVote();
+                    if (ivUpVoteInfoReport.isEnabled()) {
+                        if (currentDownVote > 0) {
+                            report.setDownVote(--currentDownVote);
+                            tvDownVoteInfoReport.setText(String.valueOf(currentDownVote));
+                        }
+                        report.setUpVote(++currentUpVote);
+                        tvUpVoteInfoReport.setText(String.valueOf(currentUpVote));
+                        ivUpVoteInfoReport.setEnabled(false);
+                        ivDownVoteInfoReport.setEnabled(true);
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("downVote", currentDownVote);
+                        vote.put("upVote", currentUpVote);
+                        databaseReference.child("reports")
+                                         .child(report.getId())
+                                         .updateChildren(vote)
+                                         .addOnCompleteListener(task -> {
+                                             showToastMessage("Vote up successfully!");
+                                         });
+                    }
+                });
+                dialogInfoReport.show();
             }
         }
     }

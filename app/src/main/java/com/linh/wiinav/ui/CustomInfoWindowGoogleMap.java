@@ -23,7 +23,7 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
         if (marker.getTag() instanceof Report) {
             Report reportedData = (Report) marker.getTag();
             if(reportedData != null) {
-                    mWindow = LayoutInflater.from(context).inflate(R.layout.info_report, null);
+                    mWindow = LayoutInflater.from(context).inflate(R.layout.dialog_info_report, null);
                     TextView tvTitle = mWindow.findViewById(R.id.info_report_title);
                     TextView tvDescription = mWindow.findViewById(R.id.info_report_description);
                     TextView tvDownVote = mWindow.findViewById(R.id.info_report_down_vote);

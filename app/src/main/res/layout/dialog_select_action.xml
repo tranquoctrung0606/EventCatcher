@@ -6,7 +6,7 @@
     android:layout_width="350dp"
     android:layout_height="350dp"
     android:background="#7500ff00"
-    android:padding="5dp"
+    android:padding="5dp" android:layout_gravity="center"
     >
 
     <ImageView
@@ -45,7 +45,5 @@
                 app:srcCompat="@drawable/ic_baseline_report_problem_24px" />
         </LinearLayout>
     </LinearLayout>
-
-
 
 </LinearLayout>

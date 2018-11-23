@@ -64,7 +64,7 @@ public class ReportDetailActivity
                 report.setDownVote(0);
                 report.setUpVote(0);
                 report.setRemainingTime(3600L);
-
+                report.setTitle(txtReportDetailTitle.getText().toString());
                 report.setReporter(getUser());
                 sendReport(report);
 
