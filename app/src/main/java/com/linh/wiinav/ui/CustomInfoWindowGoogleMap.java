@@ -19,17 +19,17 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
         this.context = context;
     }
 
-    private void init(Marker marker, View view) {
+    private void init(Marker marker) {
         if (marker.getTag() instanceof Report) {
             Report reportedData = (Report) marker.getTag();
             if(reportedData != null) {
-                    view = LayoutInflater.from(context).inflate(R.layout.info_report, null);
-                    TextView tvTitle = view.findViewById(R.id.info_report_title);
-                    TextView tvDescription = view.findViewById(R.id.info_report_description);
-                    TextView tvDownVote = view.findViewById(R.id.info_report_down_vote);
-                    TextView tvUpVote = view.findViewById(R.id.info_report_up_vote);
-                    TextView tvReporterName = view.findViewById(R.id.info_report_reporter_name);
-                    TextView tvRemainingTime = view.findViewById(R.id.info_report_remain_time);
+                    mWindow = LayoutInflater.from(context).inflate(R.layout.info_report, null);
+                    TextView tvTitle = mWindow.findViewById(R.id.info_report_title);
+                    TextView tvDescription = mWindow.findViewById(R.id.info_report_description);
+                    TextView tvDownVote = mWindow.findViewById(R.id.info_report_down_vote);
+                    TextView tvUpVote = mWindow.findViewById(R.id.info_report_up_vote);
+                    TextView tvReporterName = mWindow.findViewById(R.id.info_report_reporter_name);
+                    TextView tvRemainingTime = mWindow.findViewById(R.id.info_report_remain_time);
 
                     tvTitle.setText(reportedData.getTitle());
                     tvDescription.setText(reportedData.getContent());
@@ -43,13 +43,13 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {
-        init(marker, mWindow);
+        init(marker);
         return mWindow;
     }
 
     @Override
     public View getInfoContents(Marker marker) {
-        init(marker, mWindow);
+        init(marker);
         return mWindow;
     }
 
