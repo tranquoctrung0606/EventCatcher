@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -50,7 +49,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -60,12 +58,12 @@ import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
+import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.Route;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,9 +95,9 @@ public class MapsActivity
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
     private List<Route> routes = new ArrayList<>();
     private List<AskHelp> askHelps = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
     //widgets
     private DrawerLayout mapLayout;
@@ -110,14 +108,12 @@ public class MapsActivity
     private AutoCompleteTextView mSearchText;
     private ImageView ivMyLocation;
     private ImageView ivSearch, ivDirection;
-    private TextView txtEmail;
-    private TextView txtPhoneNumber;
     private TextView tvDuration;
     private TextView tvDistance;
     private Snackbar snackbar;
     private ImageView mFloatingActionButton, trafficStatusButton;
 
-    private ImageView fab_maptype;
+    private ImageView fabMapType;
     private NavigationView navigationView;
 
     //vars
@@ -154,7 +150,7 @@ public class MapsActivity
             moveToDeviceLocation();
         });
 
-        fab_maptype.setOnClickListener((v) -> {
+        fabMapType.setOnClickListener((v) -> {
             mapType = !mapType;
             // refresh map here
             if(mapType == false)
@@ -256,7 +252,7 @@ public class MapsActivity
         ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
-        fab_maptype = findViewById(R.id.fab_maptype);
+        fabMapType = findViewById(R.id.fab_maptype);
 
         navigationView = findViewById(R.id.nav_view);
         //Dialog Select Action
@@ -302,6 +298,14 @@ public class MapsActivity
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.setTrafficEnabled(true);
+
+
+            //Set info window for this marker
+            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+            mMap.setInfoWindowAdapter(customInfoWindow);
+
+            mMap.setOnInfoWindowClickListener(this);
+
             mMap.setOnPolylineClickListener((polyline -> {
                 String distance = null, duration = null;
                 Route oldRoute = null;
@@ -538,28 +542,68 @@ public class MapsActivity
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set info window for this marker
-        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-
-        mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
 
         marker.setTag(askHelp);
         marker.showInfoWindow();
-        mMap.setOnInfoWindowClickListener(this);
+    }
+
+    private void displayReportMarker(final Report report)
+    {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.report));
+
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.setTag(report);
+        marker.showInfoWindow();
     }
 
     private void reloadMap() {
         getAskHelpData();
+        getReportData();
         displayToMap();
     }
 
+    private void getReportData()
+    {
+        databaseReference.child("reports").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
+            {
+                Iterable<DataSnapshot> reportChildren = dataSnapshot.getChildren();
+
+                reports.clear();
+
+                for (DataSnapshot data: reportChildren) {
+                    Report report = data.getValue(Report.class);
+                    if (report.getRemainingTime() != 0) {
+                        reports.add(report);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull final DatabaseError databaseError)
+            {
+                Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
+    }
+
     private void displayToMap() {
-        for (AskHelp askHelp : askHelps
-                ) {
+        for (AskHelp askHelp : askHelps) {
             displayAskHelpMarker(askHelp);
         }
+
+        for (Report report : reports) {
+            displayReportMarker(report);
+        }
     }
+
+
 
     private final Runnable reloadMapRunnable = new Runnable() {
         @Override
@@ -677,18 +721,11 @@ public class MapsActivity
                 marker.remove();
             }
         }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths ) {
-                polyline.remove();
-            }
-        }
     }
 
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
         this.routes = routes;
-        polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
 

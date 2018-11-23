@@ -63,6 +63,7 @@ public class ReportDetailActivity
                 report.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0.0")));
                 report.setDownVote(0);
                 report.setUpVote(0);
+                report.setRemainingTime(3600L);
 
                 report.setReporter(getUser());
                 sendReport(report);

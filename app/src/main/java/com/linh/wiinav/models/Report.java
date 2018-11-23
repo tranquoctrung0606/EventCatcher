@@ -7,23 +7,25 @@ import java.util.UUID;
 
 @IgnoreExtraProperties
 public class Report {
-    private String id, content;
+    private String id, content, title;
     private Date postDate, closeDate;
     private double latitude, longitude;
     private User reporter;
     private ReportType reportType;
     private int upVote, downVote;
+    private Long remainingTime;
 
     public Report() {
     }
 
-    public Report(final String id, final String content, final Date postDate,
-                  final Date closeDate, final double latitude, final double longitude,
-                  final User reporter, final ReportType reportType, final int upVote,
-                  final int downVote)
+    public Report(final String id, final String content, final String title,
+                  final Date postDate, final Date closeDate, final double latitude,
+                  final double longitude, final User reporter, final ReportType reportType,
+                  final int upVote, final int downVote, final Long remainingTime)
     {
         this.id = id;
         this.content = content;
+        this.title = title;
         this.postDate = postDate;
         this.closeDate = closeDate;
         this.latitude = latitude;
@@ -32,6 +34,7 @@ public class Report {
         this.reportType = reportType;
         this.upVote = upVote;
         this.downVote = downVote;
+        this.remainingTime = remainingTime;
     }
 
     public String getId()
@@ -52,6 +55,16 @@ public class Report {
     public void setContent(final String content)
     {
         this.content = content;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(final String title)
+    {
+        this.title = title;
     }
 
     public Date getPostDate()
@@ -132,5 +145,15 @@ public class Report {
     public void setDownVote(final int downVote)
     {
         this.downVote = downVote;
+    }
+
+    public Long getRemainingTime()
+    {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(final Long remainingTime)
+    {
+        this.remainingTime = remainingTime;
     }
 }
