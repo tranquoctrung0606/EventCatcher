@@ -27,6 +27,10 @@ import java.util.concurrent.TimeUnit;
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.PASSWORD;
 
+import static com.linh.wiinav.helpers.ValidationHelper.isEmptyField;
+import static com.linh.wiinav.helpers.ValidationHelper.isValidEmail;
+import static com.linh.wiinav.helpers.ValidationHelper.isValidPassword;
+
 public class SignUpActivity
         extends BaseActivity
         implements View.OnClickListener
@@ -91,26 +95,44 @@ public class SignUpActivity
         finish();
     }
 
-    private void validateFormField(){
-        if (ValidationHelper.isEmptyField(edtEmail.getText().toString())) {
-            edtEmail.setText("Required");
-            return;
+    private boolean validateFormField(){
+        if(edtConfirmPassword.getText().toString().equals(edtPassword.getText().toString()))
+            return true;
+        return false;
+    }
+
+    private boolean validation()
+    {
+        String email = edtEmail.getText().toString();
+        String password = edtPassword.getText().toString();
+        String confirmPassword = edtConfirmPassword.getText().toString();
+
+        if (isEmptyField(email)) {
+            edtEmail.setError(getString(R.string.error_field_required));
+            return false;
         }
 
-        if (ValidationHelper.isEmptyField(edtPassword.getText().toString())) {
-            edtEmail.setText("Required");
-            return;
+        if (isEmptyField(password)) {
+            edtPassword.setError(getString(R.string.error_field_required));
+            return false;
         }
 
-        if (ValidationHelper.isEmptyField(edtConfirmPassword.getText().toString())) {
-            edtEmail.setText("Required");
-            return;
+        if (!isValidEmail(email)) {
+            edtEmail.setError(getString(R.string.error_invalid_email));
+            return false;
         }
 
-        if (ValidationHelper.isEmptyField(edtPhoneNumber.getText().toString())) {
-            edtEmail.setText("Required");
-            return;
+        if (!isValidPassword(password)) {
+            edtPassword.setError(getString(R.string.error_invalid_password));
+            return false;
         }
+
+        if(isEmptyField(confirmPassword)){
+            edtConfirmPassword.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+        return true;
     }
 
     private void signUp()
@@ -217,8 +239,13 @@ public class SignUpActivity
     {
         switch (v.getId()) {
             case R.id.btn_signupEmail: {
-                validateFormField();
-                signUp();
+               // validateFormField();
+                if(validation() && validateFormField()) {
+                    signUp();
+                }
+                else{
+                    Toast.makeText(this, "Please check your Confirm Password", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

@@ -18,47 +18,89 @@
             android:layout_marginTop="38dp"
             android:background="@drawable/logomap" />
 
-        <EditText
-            android:id="@+id/edt_email"
-            android:layout_width="266dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:ems="10"
-            android:hint=" Email"
-            android:textColorHint="#f1e9e9"
-            android:drawableLeft="@drawable/email"
-            android:inputType="textPersonName" />
-
-        <EditText
-            android:id="@+id/edt_password"
-            android:layout_width="266dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/edt_email"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:hint=" Password"
-            android:textColorHint="#f1e9e9"
-            android:drawableLeft="@drawable/password"
-            android:inputType="textPassword" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Forgot your password?"
-            android:textColor="#272bb4"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="180dp"
-            android:layout_below="@id/edt_password"
-            android:textStyle="italic"/>
+            android:id="@+id/linear1"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/imageView">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/email"
+                    android:layout_gravity="center"/>
+
+                <EditText
+                    android:id="@+id/edt_email"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/imageView"
+                    android:ems="10"
+                    android:hint="Email"
+                    android:layout_gravity="center"
+                    android:textColorHint="#f1e9e9"
+                    android:textColor="#ffffff"
+                    android:layout_marginStart="5dp"
+                    android:inputType="textPersonName"
+                    android:drawablePadding="10dp"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/password" />
+
+                <EditText
+                    android:id="@+id/edt_password"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/edt_email"
+                    android:ems="10"
+                    android:hint="Password"
+                    android:textColor="#ffffff"
+                    android:layout_marginStart="5dp"
+                    android:layout_gravity="center"
+                    android:textColorHint="#f1e9e9"
+                    android:inputType="textPassword" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot your password?"
+                android:textColor="#272bb4"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="90dp"
+                android:layout_below="@id/edt_password"
+                android:textStyle="italic"/>
+
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/btn_signin"
             android:layout_width="247dp"
             android:layout_height="40dp"
-            android:layout_below="@+id/edt_password"
+            android:layout_below="@+id/linear1"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
             android:text="Sign in"
@@ -78,7 +120,7 @@
             android:id="@+id/btn_singninGoogle"
             android:layout_width="247dp"
             android:layout_height="40dp"
-            android:layout_below="@id/btn_signupEmail"
+            android:layout_below="@+id/btn_signupEmail"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:text="Sign in with Google"

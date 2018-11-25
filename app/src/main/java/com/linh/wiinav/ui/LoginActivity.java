@@ -135,9 +135,9 @@ public class LoginActivity
 
     private void signUpByEmail()
     {
-        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-        startActivityForResult(intent, REQUEST_SIGN_UP_BY_EMAIL);
-    }
+    Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+    startActivityForResult(intent, REQUEST_SIGN_UP_BY_EMAIL);
+}
 
     private void signIn(final String email, final String password)
     {
@@ -233,7 +233,7 @@ public class LoginActivity
         }
 
         if (!isValidPassword(password)) {
-            edtEmail.setError(getString(R.string.error_invalid_password));
+            edtPass.setError(getString(R.string.error_invalid_password));
             return false;
         }
 

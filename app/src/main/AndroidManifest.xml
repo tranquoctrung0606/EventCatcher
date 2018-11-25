@@ -61,7 +61,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.SignUpActivity" />
-        <activity android:name=".ui.UserprofileActivity" />
+        <activity android:name=".ui.UserprofileActivity" >
+
+        </activity>
         <activity android:name=".ui.ReportDetailActivity" />
         <activity android:name=".ui.AskHelpActivity" />
     </application>
