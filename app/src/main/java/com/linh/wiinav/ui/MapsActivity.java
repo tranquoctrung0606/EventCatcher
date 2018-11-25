@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -107,9 +108,12 @@ public class MapsActivity
     private DrawerLayout mapLayout;
     private Dialog dialogSelectAction;
     private Dialog dialogInfoReport;
+    private Dialog dialogDirectionDisplaySetting;
     private ImageView ivCloseSelectActionDialog;
     private ImageView ivAskHelpSelectActionDialog;
     private ImageView ivReportSelectActionDialog;
+    private ImageView ivDirectionDisplaySetting;
+    private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
     private TextView tvTitleInfoReport;
     private TextView tvDescriptionInfoReport;
     private TextView tvDownVoteInfoReport;
@@ -120,8 +124,7 @@ public class MapsActivity
     private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
 
     private AutoCompleteTextView mSearchText;
-    private ImageView ivMyLocation;
-    private ImageView ivSearch, ivDirection;
+    private ImageView ivSearch, ivDirection, ivMyLocation;
     private TextView tvDuration;
     private TextView tvDistance;
     private Snackbar snackbar;
@@ -184,10 +187,6 @@ public class MapsActivity
 
         });
 
-        ivSearch.setOnClickListener((v) -> {
-
-        });
-
         ivDirection.setOnClickListener((v) -> {
             if(!isDirectionPressed || !mSearchText.getText().toString().trim().isEmpty()) {
                 isDirectionPressed = true;
@@ -205,10 +204,41 @@ public class MapsActivity
         ivAskHelpSelectActionDialog.setOnClickListener((v ->{
             startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
+        //
         ivReportSelectActionDialog.setOnClickListener((v -> {
             Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
             startActivity(reportActivity);
         }));
+        //
+        ivDirectionDisplaySetting.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
+        cbPetrol.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        cbHospital.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        cbRestaurant.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        cbPopularTourist.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
     }
 
     private void makeDirection()
@@ -260,12 +290,12 @@ public class MapsActivity
 
         mSearchText = findViewById(R.id.input_search);
         ivMyLocation = findViewById(R.id.iwMyLocation);
-        mFloatingActionButton = findViewById(R.id.floatingActionButton);
+        mFloatingActionButton = findViewById(R.id.iv_action_button);
         ivDirection = findViewById(R.id.iwDirection);
         ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
-        fabMapType = findViewById(R.id.fab_map_type);
+        fabMapType = findViewById(R.id.iv_map_type);
 
         navigationView = findViewById(R.id.nav_view);
 
@@ -274,9 +304,9 @@ public class MapsActivity
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
         ivCloseSelectActionDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelpSelectActionDialog = dialogSelectAction.findViewById(R.id.ivAskHelp);
-        ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
 
         //Dialog info report
+        ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
         dialogInfoReport = new Dialog(this);
         dialogInfoReport.setContentView(R.layout.dialog_info_report);
         tvTitleInfoReport = dialogInfoReport.findViewById(R.id.info_report_title);
@@ -289,10 +319,19 @@ public class MapsActivity
         ivDownVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_iv_down_vote);
         tvPostedDateInfoReport = dialogInfoReport.findViewById(R.id.info_report_post_time);
 
-        //info route
+        //Dialog info route
         snackbar = Snackbar.make(mapLayout,"",Snackbar.LENGTH_LONG);
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
         snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
+
+        //Dialog direction display setting
+        ivDirectionDisplaySetting = findViewById(R.id.iv_direction_display_setting);
+        dialogDirectionDisplaySetting = new Dialog(this);
+        dialogDirectionDisplaySetting.setContentView(R.layout.dialog_direction_display_setting);
+        cbPetrol = dialogDirectionDisplaySetting.findViewById(R.id.cb_petrol);
+        cbRestaurant = dialogDirectionDisplaySetting.findViewById(R.id.cb_restaurant);
+        cbHospital = dialogDirectionDisplaySetting.findViewById(R.id.cb_hospital);
+        cbPopularTourist = dialogDirectionDisplaySetting.findViewById(R.id.cb_popular_tourist);
 
         View snackView = LayoutInflater.from(snackbar.getContext()).inflate(R.layout.snackbar_info_route, null);
         tvDuration = snackView.findViewById(R.id.sbDuration);
@@ -300,7 +339,7 @@ public class MapsActivity
 
         snackbarLayout.addView(snackView, 0);
 
-        trafficStatusButton = findViewById(R.id.trafficStatusButton);
+        trafficStatusButton = findViewById(R.id.iv_traffic_status_button);
     }
 
 
@@ -572,7 +611,7 @@ public class MapsActivity
         markerOptions.title(report.getTitle());
         markerOptions.snippet(report.getContent());
         markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.report));
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(report.getReportType().getReportIcon()));
 
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(report);

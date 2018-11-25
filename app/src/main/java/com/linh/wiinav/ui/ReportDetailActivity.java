@@ -125,106 +125,132 @@ public class ReportDetailActivity
         switch (reportedId) {
             case 1: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_moderate);
+                reportedType.setReportIcon(R.drawable.ic_report_traffic_moderate);
                 break;
             }
             case 2: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_heavy);
+                reportedType.setReportIcon(R.drawable.ic_report_traffic_heavy);
                 break;
             }
             case 3: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_stuck);
+                reportedType.setReportIcon(R.drawable.ic_report_traffic_stuck);
                 break;
             }
             case 5: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_police_visible);
+                reportedType.setReportIcon(R.drawable.ic_report_police_visible);
                 break;
             }
             case 6: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_police_hidden);
+                reportedType.setReportIcon(R.drawable.ic_report_police_hidden);
                 break;
             }
             case 8: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_major);
+                reportedType.setReportIcon(R.drawable.ic_report_crash_major);
                 break;
             }
             case 9: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_minor);
+                reportedType.setReportIcon(R.drawable.ic_report_crash_minor);
                 break;
             }
             case 11: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_flood);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_flood);
                 break;
             }
             case 12: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_pothole);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_pothole);
                 break;
             }
             case 13: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_construction);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_construction);
                 break;
             }
             case 14: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_missingsign);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_missingsign);
                 break;
             }
             case 15: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_objectonroad);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_objectonroad);
                 break;
             }
             case 16: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_brokentrafficlight);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_brokentrafficlight);
                 break;
             }
             case 17: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_stoppedvehicle);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_stoppedvehicle);
                 break;
             }
             case 18: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_animal);
+                reportedType.setReportIcon(R.drawable.ic_report_hazard_animal);
                 break;
             }
             case 20: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingroad);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_missingroad);
                 break;
             }
             case 21: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_turnnotallowed);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_turnnotallowed);
                 break;
             }
             case 22: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_speedlimit);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_speedlimit);
                 break;
             }
             case 23: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_wrongaddress);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_wrongaddress);
                 break;
             }
             case 24: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_missingexit);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_missingexit);
                 break;
             }
             case 25: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_oneway);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_oneway);
                 break;
             }
             case 26: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_mapissue_closure);
+                reportedType.setReportIcon(R.drawable.ic_report_mapissue_closure);
                 break;
             }
             case 28: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_speed);
+                reportedType.setReportIcon(R.drawable.ic_report_camera_speed);
                 break;
             }
             case 29: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_redlight);
+                reportedType.setReportIcon(R.drawable.ic_report_camera_redlight);
                 break;
             }
             case 30: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_fake);
+                reportedType.setReportIcon(R.drawable.ic_report_camera_fake);
                 break;
             }
             case 32: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_roadsidehelp);
+                reportedType.setReportIcon(R.drawable.ic_report_roadsidehelp);
                 break;
             }
             default: {
