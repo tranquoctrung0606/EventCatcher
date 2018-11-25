@@ -89,4 +89,5 @@
     </string>
     <string name="title_activity_select_action_pop">SelectActionPopActivity</string>
     <string name="mins">mins</string>
+    <string name="upload_image">Upload image*</string>
 </resources>
