@@ -18,7 +18,6 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
-import com.linh.wiinav.helpers.ValidationHelper;
 import com.linh.wiinav.models.User;
 
 import java.util.Calendar;

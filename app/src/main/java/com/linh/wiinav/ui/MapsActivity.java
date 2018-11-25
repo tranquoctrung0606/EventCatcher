@@ -74,7 +74,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 public class MapsActivity
         extends BaseActivity
         implements OnMapReadyCallback,
