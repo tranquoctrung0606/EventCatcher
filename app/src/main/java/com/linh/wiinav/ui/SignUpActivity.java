@@ -17,6 +17,10 @@ import com.linh.wiinav.models.User;
 
 import java.util.Calendar;
 
+import static com.linh.wiinav.helpers.ValidationHelper.isEmptyField;
+import static com.linh.wiinav.helpers.ValidationHelper.isValidEmail;
+import static com.linh.wiinav.helpers.ValidationHelper.isValidPassword;
+
 public class SignUpActivity
         extends BaseActivity
         implements View.OnClickListener
@@ -74,8 +78,46 @@ public class SignUpActivity
         finish();
     }
 
-    private void validateFormField(){
+    private boolean validateFormField(){
+        if(edtConfirmPassword.getText().toString().equals(edtPassword.getText().toString()))
+            return true;
+        return false;
+    }
 
+    private boolean validation()
+    {
+        String email = edtEmail.getText().toString();
+        String password = edtPassword.getText().toString();
+        String confirmpassword = edtConfirmPassword.getText().toString();
+
+        if (isEmptyField(email)) {
+            edtEmail.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+        if (isEmptyField(password)) {
+            edtPassword.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+        if (!isValidEmail(email)) {
+            edtEmail.setError(getString(R.string.error_invalid_email));
+            return false;
+        }
+
+        if (!isValidPassword(password)) {
+            edtPassword.setError(getString(R.string.error_invalid_password));
+            return false;
+        }
+
+        if(isEmptyField(confirmpassword)){
+            edtConfirmPassword.setError(getString(R.string.error_field_required));
+            return false;
+        }
+
+
+
+        return true;
     }
 
     private void signUp()
@@ -135,8 +177,13 @@ public class SignUpActivity
     {
         switch (v.getId()) {
             case R.id.btn_signupEmail: {
-                validateFormField();
-                signUp();
+               // validateFormField();
+                if(validation() && validateFormField()) {
+                    signUp();
+                }
+                else{
+                    Toast.makeText(this, "Please check your Confirm Password", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
