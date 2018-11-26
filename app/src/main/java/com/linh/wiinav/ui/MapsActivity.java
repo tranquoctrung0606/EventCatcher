@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,12 +55,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
 import com.linh.wiinav.models.Route;
+import com.linh.wiinav.models.User;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 
@@ -76,7 +80,8 @@ public class MapsActivity
         GoogleApiClient.OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
         GoogleMap.OnInfoWindowClickListener,
-        DirectionFinderListener
+        DirectionFinderListener,
+        NavigationView.OnDragListener
 {
     private static final String TAG = "MapsActivity";
 
@@ -108,6 +113,7 @@ public class MapsActivity
     private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
     private NavigationView navigationView;
 
+    private TextView tv_name, tv_email;
     //vars
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
@@ -127,7 +133,9 @@ public class MapsActivity
 
         getLocationPermission();
         addControls();
+    //    loadUserInformation();
         addEvents();
+
     }
 
     @Override
@@ -242,13 +250,41 @@ public class MapsActivity
         fab_satellitetype = findViewById(R.id.fab_satellitetype);
         fab_roadtype = findViewById(R.id.fab_roadtype);
         hideFabLayout2();
-        navigationView = findViewById(R.id.nav_view);
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
         ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
         ivReport = dialogSelectAction.findViewById(R.id.ivReport);
+
+        //navigationView controls
+        tv_name = navigationView.findViewById(R.id.tv_headerName);
+        tv_email = navigationView.findViewById(R.id.tv_headerEmail);
+        Log.e("khoi tao", "da khoi tao bien");
+    }
+
+    public void loadUserInformation()
+    {
+        String userID = LoginActivity.mAuth.getCurrentUser().getUid();
+        Log.e("Userid", userID);
+        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("users");
+
+        tv_name = findViewById(R.id.tv_headerName);
+        tv_email = findViewById(R.id.tv_headerEmail);
+        databaseReference1.child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Log.e("User name ", user.getUsername());
+                tv_name.setText(user.getUsername());
+                tv_email.setText(user.getEmail());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -720,4 +756,9 @@ public class MapsActivity
     };
 
 
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        loadUserInformation();
+        return true;
+    }
 }
