@@ -82,7 +82,7 @@ public class SignUpActivity
         edtEmail = findViewById(R.id.edt_email);
         edtPassword = findViewById(R.id.edt_password);
         edtConfirmPassword = findViewById(R.id.edt_confirmpassword);
-        edtPhoneNumber = findViewById(R.id.edt_phone_number);
+        //edtPhoneNumber = findViewById(R.id.edt_phone_number);
     }
 
     private void displayNextScreen(User newUser){
@@ -160,7 +160,7 @@ public class SignUpActivity
         writeNewUser(newUser);
 
         verifyUserEmail(user);
-        verifyUserPhoneNumber(user);
+        //verifyUserPhoneNumber(user);
 
         displayNextScreen(newUser);
     }
