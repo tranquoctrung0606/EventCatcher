@@ -1,23 +1,39 @@
 package com.linh.wiinav.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.UploadImageAdapter;
 import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.ReportType;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class ReportDetailActivity
@@ -36,6 +52,8 @@ public class ReportDetailActivity
 
     private ReportType reportedType;
 
+    private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -44,6 +62,7 @@ public class ReportDetailActivity
 
         addControls();
         addEvents();
+
     }
 
     @Override
@@ -55,6 +74,8 @@ public class ReportDetailActivity
                 hideKeyboard(v);
             }
         });
+
+        bReportSubmit.setEnabled(false);
 
         bReportSubmit.setOnClickListener(v ->
         {
@@ -69,13 +90,72 @@ public class ReportDetailActivity
             report.setUpVote(0);
             report.setRemainingTime(3600L);
             report.setTitle(tvReportDetailTitle.getText().toString());
-            report.setReporter(getUser());sendReport(report);
+            report.setReporter(getUser());
+            report.setImageName(imageNames);
+
+            sendReport(report);
 
             backToMapsScreen();
         });
         ivUploadImage.setOnClickListener(l -> {
-
+            EasyImage.configuration(this)
+                    .setAllowMultiplePickInGallery(true);
+            EasyImage.openChooserWithGallery(ReportDetailActivity.this,"Choose Image",0);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagesPicked(@NonNull List<File> list, EasyImage.ImageSource imageSource, int i) {
+                if(imageNames.size()<6 && list.size()<6-imageNames.size()) {
+                    for (int j = 0; j < list.size(); j++) {
+                        Uri path = Uri.fromFile(list.get(j));
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        try {
+                            Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(list.get(j)), null, options);
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            byte[] data = baos.toByteArray();
+                            uploadImage(list.get(j), data, path);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else
+                {
+                    showToastMessage("Allow maximum 5 pictures");
+                }
+            }
+        });
+
+    }
+
+
+    private void uploadImage(File file, byte[] data, Uri path) {
+        storageReference.child("images/"+path.getLastPathSegment())
+                .putBytes(data)
+                .addOnCompleteListener(task -> {
+                    if (getCount() < 5) {
+                        imageNames.add(file.getPath());
+                        uploadImageAdapter.notifyDataSetChanged();
+                        increaseCount();
+                    } else {
+                        bReportSubmit.setEnabled(true);
+                    }
+                });
+    }
+    private int count = 0;
+    private void increaseCount() {
+        count++;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     private void sendReport(Report report) {
@@ -105,7 +185,9 @@ public class ReportDetailActivity
         ivUploadImage = findViewById(R.id.iv_report_upload_image);
         rvUploadImage = findViewById(R.id.rv_upload_image);
         imageNames = new ArrayList<>();
-        uploadImageAdapter = new UploadImageAdapter(imageNames, this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5);
+        rvUploadImage.setLayoutManager(gridLayoutManager);
+        uploadImageAdapter = new UploadImageAdapter(imageNames);
         rvUploadImage.setAdapter(uploadImageAdapter);
     }
 

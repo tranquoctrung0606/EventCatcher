@@ -3,6 +3,7 @@ package com.linh.wiinav.models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @IgnoreExtraProperties
@@ -14,6 +15,7 @@ public class Report {
     private ReportType reportType;
     private int upVote, downVote;
     private Long remainingTime;
+    private List<String> imageName;
 
     public Report() {
     }
@@ -155,5 +157,13 @@ public class Report {
     public void setRemainingTime(final Long remainingTime)
     {
         this.remainingTime = remainingTime;
+    }
+
+    public List<String> getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(List<String> imageName) {
+        this.imageName = imageName;
     }
 }

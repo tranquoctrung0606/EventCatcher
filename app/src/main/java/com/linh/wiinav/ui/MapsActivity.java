@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -610,7 +613,10 @@ public class MapsActivity
         markerOptions.title(report.getTitle());
         markerOptions.snippet(report.getContent());
         markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(report.getReportType().getReportIcon()));
+        Drawable icon = getResources().getDrawable(report.getReportType().getReportIcon());
+        Bitmap bitmap = ((BitmapDrawable) icon).getBitmap();
+        Drawable drawable = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 24, 24, true));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((BitmapDrawable) drawable).getBitmap()));
 
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(report);

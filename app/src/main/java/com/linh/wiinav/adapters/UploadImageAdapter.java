@@ -1,25 +1,24 @@
 package com.linh.wiinav.adapters;
 
-import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.google.firebase.storage.FirebaseStorage;
 import com.linh.wiinav.R;
 
 import java.util.List;
 
 public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.UploadImageViewHolder> {
+    private static final String TAG = "UploadImageAdapter";
     private List<String> imageNames;
-    private Context context;
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
-    public UploadImageAdapter(List<String> imageNames, Context context) {
+    public UploadImageAdapter(List<String> imageNames) {
         this.imageNames = imageNames;
-        this.context = context;
     }
 
     @Override
@@ -31,9 +30,12 @@ public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.
     @Override
     public void onBindViewHolder(UploadImageViewHolder holder, int position) {
         String imageName = imageNames.get(position);
-        holder.tvImageName.setText(imageName);
-        holder.pbUploading.setProgress(0);
+        holder.ivUploadImage.setImageURI(Uri.parse(imageName));
         holder.ivRemove.setOnClickListener(l -> {
+            firebaseStorage.getReference()
+                    .child("images/"+imageNames.get(position).substring(imageNames.get(position)
+                            .lastIndexOf("/")))
+                    .delete();
             imageNames.remove(position);
             notifyItemRemoved(position);
         });
@@ -45,14 +47,14 @@ public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.
     }
 
     public class UploadImageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvImageName;
-        ProgressBar pbUploading;
+        ImageView ivUploadImage;
         ImageView ivRemove;
 
         public UploadImageViewHolder(View itemView) {
             super(itemView);
-            tvImageName = itemView.findViewById(R.id.tv_report_image_name);
-            pbUploading = itemView.findViewById(R.id.pb_report_image_loading);
+            ivUploadImage = itemView.findViewById(R.id.iv_upload_image);
+            ivUploadImage.setDrawingCacheEnabled(true);
+            ivUploadImage.buildDrawingCache();
             ivRemove = itemView.findViewById(R.id.iv_report_image_remove);
         }
     }
