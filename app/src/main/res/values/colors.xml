@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorBestPolyline">#c014a4e7</color>
+    <color name="colorNormalPolyline">#b3969595</color>
+    <color name="red">#f00</color>
 </resources>

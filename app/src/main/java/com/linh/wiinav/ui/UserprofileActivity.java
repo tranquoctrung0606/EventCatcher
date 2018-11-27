@@ -84,7 +84,7 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                 if (user.isBan()) {
                     tv_acctiveAcc.setText("Your account is ban");
                 } else {
-                    if (user.isVerify())
+                    if (user.isVerifiedEmail())
                         tv_acctiveAcc.setText("Your account has been verify ");
                     else
                         tv_acctiveAcc.setText("Active your account");

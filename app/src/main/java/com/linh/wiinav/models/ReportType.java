@@ -1,19 +1,26 @@
 package com.linh.wiinav.models;
 
-import java.io.Serializable;
+import android.graphics.drawable.Drawable;
 
-public class ReportType implements Serializable{
+import com.google.firebase.database.IgnoreExtraProperties;
 
-    private String id,name;
-    private int minute;
+@IgnoreExtraProperties
+public class ReportType
+{
+    private String id;
+    private String name;
+    private Long duration;
+    private int reportIcon;
 
-    public ReportType() {
+    public ReportType()
+    {
     }
 
-    public ReportType(String id, String name, int minute) {
+    public ReportType(String id, String name, Long duration, int reportIcon) {
         this.id = id;
         this.name = name;
-        this.minute = minute;
+        this.duration = duration;
+        this.reportIcon = reportIcon;
     }
 
     public String getId() {
@@ -32,20 +39,19 @@ public class ReportType implements Serializable{
         this.name = name;
     }
 
-    public int getMinute() {
-        return minute;
+    public Long getDuration() {
+        return duration;
     }
 
-    public void setMinute(int minute) {
-        this.minute = minute;
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 
-    @Override
-    public String toString() {
-        return "ReportType{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", minute=" + minute +
-                '}';
+    public int getReportIcon() {
+        return reportIcon;
+    }
+
+    public void setReportIcon(int reportIcon) {
+        this.reportIcon = reportIcon;
     }
 }

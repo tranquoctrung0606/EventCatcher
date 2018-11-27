@@ -8,8 +8,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.linh.wiinav.R;
-import com.linh.wiinav.models.ReportedData;
-import com.linh.wiinav.models.Route;
+import com.linh.wiinav.models.Report;
 
 public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
 
@@ -20,46 +19,37 @@ public class CustomInfoWindowGoogleMap implements GoogleMap.InfoWindowAdapter {
         this.context = context;
     }
 
-    private void init(Marker marker, View view) {
-        if (marker.getTag() instanceof Route) {
-            Route route = (Route) marker.getTag();
-            if (route != null) {
-                mWindow = LayoutInflater.from(context).inflate(R.layout.info_route, null);
-
-                TextView routeTitle = mWindow.findViewById(R.id.routeTitle);
-                TextView routeDistance = mWindow.findViewById(R.id.routeDistance);
-                TextView routeDuration = mWindow.findViewWithTag(R.id.routeDuration);
-
-                routeTitle.setText("");
-                routeDistance.setText(route.distance.text);
-                routeDuration.setText(route.duration.text);
-            }
-        }
-
-        if (marker.getTag() instanceof ReportedData) {
-            ReportedData reportedData = (ReportedData) marker.getTag();
+    private void init(Marker marker) {
+        if (marker.getTag() instanceof Report) {
+            Report reportedData = (Report) marker.getTag();
             if(reportedData != null) {
-                if ("problem".equals(reportedData.getType())) {
-                    mWindow = LayoutInflater.from(context).inflate(R.layout.info_problem_report, null);
-                    TextView tvTitle = mWindow.findViewById(R.id.title);
-                    TextView tvSnippet = mWindow.findViewById(R.id.snippet);
+                    mWindow = LayoutInflater.from(context).inflate(R.layout.dialog_info_report, null);
+                    TextView tvTitle = mWindow.findViewById(R.id.info_report_title);
+                    TextView tvDescription = mWindow.findViewById(R.id.info_report_description);
+                    TextView tvDownVote = mWindow.findViewById(R.id.info_report_down_vote);
+                    TextView tvUpVote = mWindow.findViewById(R.id.info_report_up_vote);
+                    TextView tvReporterName = mWindow.findViewById(R.id.info_report_reporter_name);
+                    TextView tvRemainingTime = mWindow.findViewById(R.id.info_report_remain_time);
 
-                    tvTitle.setText(marker.getTitle());
-                    tvSnippet.setText(marker.getSnippet());
-                }
+                    tvTitle.setText(reportedData.getTitle());
+                    tvDescription.setText(reportedData.getContent());
+                    tvReporterName.setText(reportedData.getReporter().getUsername());
+                    tvUpVote.setText(reportedData.getUpVote() + "");
+                    tvDownVote.setText(reportedData.getDownVote() + "");
+                    tvRemainingTime.setText(String.valueOf(reportedData.getRemainingTime()/3600));
             }
         }
     }
 
     @Override
     public View getInfoWindow(Marker marker) {
-        init(marker, mWindow);
+        init(marker);
         return mWindow;
     }
 
     @Override
     public View getInfoContents(Marker marker) {
-        init(marker, mWindow);
+        init(marker);
         return mWindow;
     }
 

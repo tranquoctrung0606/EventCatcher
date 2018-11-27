@@ -8,5 +8,7 @@ public enum User {
     NUMBER_ASK,
     PHONE_NUMBER,
     USERNAME,
-    IS_VERIFIED
+    IS_VERIFIED_EMAIL,
+    IS_VERIFIED_PHONE_NUMBER,
+    PASSWORD
 }

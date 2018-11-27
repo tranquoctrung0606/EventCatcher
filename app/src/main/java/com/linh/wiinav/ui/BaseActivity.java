@@ -15,6 +15,18 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.linh.wiinav.models.User;
+
+import static com.linh.wiinav.enums.User.BIRTHDAY;
+import static com.linh.wiinav.enums.User.EMAIL;
+import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
+import static com.linh.wiinav.enums.User.IS_BANNED;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_PHONE_NUMBER;
+import static com.linh.wiinav.enums.User.NUMBER_ASK;
+import static com.linh.wiinav.enums.User.PASSWORD;
+import static com.linh.wiinav.enums.User.PHONE_NUMBER;
+import static com.linh.wiinav.enums.User.USERNAME;
 
 public abstract class BaseActivity extends AppCompatActivity
 {
@@ -24,6 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
     }
 
     protected abstract void addEvents();
@@ -59,5 +72,19 @@ public abstract class BaseActivity extends AppCompatActivity
     protected void backToMapsScreen() {
         startActivity(new Intent(this, MapsActivity.class));
         finish();
+    }
+
+    public User getUser() {
+        return new User(getUid(),
+                sharedPreferences.getString(EMAIL.name(),""),
+                sharedPreferences.getString(USERNAME.name(), ""),
+                sharedPreferences.getString(PHONE_NUMBER.name(), ""),
+                sharedPreferences.getString(BIRTHDAY.name(), ""),
+                sharedPreferences.getLong(IDENTIFY_CARD.name(), 0L),
+                sharedPreferences.getBoolean(IS_VERIFIED_EMAIL.name(), false),
+                sharedPreferences.getBoolean(IS_BANNED.name(), false),
+                sharedPreferences.getBoolean(IS_VERIFIED_PHONE_NUMBER.name(), false),
+                sharedPreferences.getInt(NUMBER_ASK.name(), 1),
+                sharedPreferences.getString(PASSWORD.name(), ""));
     }
 }

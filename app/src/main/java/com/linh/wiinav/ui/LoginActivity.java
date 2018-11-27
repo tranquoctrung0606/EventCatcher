@@ -9,21 +9,28 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.linh.wiinav.enums.User.BIRTHDAY;
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
 import static com.linh.wiinav.enums.User.IS_BANNED;
-import static com.linh.wiinav.enums.User.IS_VERIFIED;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
+import static com.linh.wiinav.enums.User.IS_VERIFIED_PHONE_NUMBER;
 import static com.linh.wiinav.enums.User.NUMBER_ASK;
+import static com.linh.wiinav.enums.User.PASSWORD;
 import static com.linh.wiinav.enums.User.PHONE_NUMBER;
 import static com.linh.wiinav.enums.User.USERNAME;
 import static com.linh.wiinav.helpers.ValidationHelper.isEmptyField;
@@ -39,6 +46,7 @@ public class LoginActivity
     private static final int REQUEST_SIGN_UP_BY_EMAIL = 9001;
 
     public static FirebaseAuth mAuth;
+    private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
 
     private EditText edtEmail, edtPass;
     private Button btnSignInByEmail, btnSignUpByEmail;
@@ -60,6 +68,15 @@ public class LoginActivity
         super.onStart();
 
         if(mAuth.getCurrentUser() != null) {
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (!user.isEmailVerified()) {
+                user.reload();
+                if (user.isEmailVerified()) {
+                    Map<String, Object> updateUser = new HashMap<>();
+                    updateUser.put("verifiedEmail", true);
+                    databaseReference.child("users").child(getUid()).updateChildren(updateUser);
+                }
+            }
             displayMainActivity();
         }
     }
@@ -71,6 +88,23 @@ public class LoginActivity
 
         addControls();
         addEvents();
+        initData();
+    }
+
+    private void initData()
+    {
+        mReference.child("report_types").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
+            {
+            }
+
+            @Override
+            public void onCancelled(@NonNull final DatabaseError databaseError)
+            {
+            }
+        });
     }
 
     protected void addEvents()
@@ -96,9 +130,9 @@ public class LoginActivity
 
     private void signUpByEmail()
     {
-        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-        startActivityForResult(intent, REQUEST_SIGN_UP_BY_EMAIL);
-    }
+    Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+    startActivityForResult(intent, REQUEST_SIGN_UP_BY_EMAIL);
+}
 
     private void signIn(final String email, final String password)
     {
@@ -109,7 +143,7 @@ public class LoginActivity
                 saveUserProfile();
                 displayMainActivity();
             } else {
-                Toast.makeText(this, "Sign in failed. Please check your email and password.", Toast.LENGTH_SHORT).show();
+                showToastMessage("Sign in failed. Please check your email and password.");
             }
         });
     }
@@ -140,13 +174,15 @@ public class LoginActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean(IS_BANNED.name(), user.isBan());
-        editor.putBoolean(IS_VERIFIED.name(), user.isVerify());
+        editor.putBoolean(IS_VERIFIED_EMAIL.name(), user.isVerifiedEmail());
+        editor.putBoolean(IS_VERIFIED_PHONE_NUMBER.name(), user.isVerifiedPhoneNumber());
         editor.putString(EMAIL.name(), user.getEmail());
         editor.putString(USERNAME.name(), user.getUsername());
         editor.putString(PHONE_NUMBER.name(), user.getPhoneNumber());
         editor.putString(BIRTHDAY.name(), user.getBirthday());
         editor.putLong(IDENTIFY_CARD.name(), user.getIdentifyCard());
         editor.putInt(NUMBER_ASK.name(), user.getNumberAsk());
+        editor.putString(PASSWORD.name(), user.getPassword());
 
         editor.apply();
     }
@@ -165,7 +201,7 @@ public class LoginActivity
         if (requestCode == REQUEST_SIGN_UP_BY_EMAIL) {
             if (resultCode == RESULT_OK) {
                 if (validation()) {
-                    signIn(edtEmail.getText().toString(), edtPass.getText().toString());
+                    signIn(data.getStringExtra(EMAIL.name()),data.getStringExtra(PASSWORD.name()));
                 }
             }
         }
@@ -192,7 +228,7 @@ public class LoginActivity
         }
 
         if (!isValidPassword(password)) {
-            edtEmail.setError(getString(R.string.error_invalid_password));
+            edtPass.setError(getString(R.string.error_invalid_password));
             return false;
         }
 

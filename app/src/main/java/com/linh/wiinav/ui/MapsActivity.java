@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -14,20 +13,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,29 +50,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
+import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.Route;
-import com.linh.wiinav.models.User;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Locale;
+import java.util.Map;
 
 public class MapsActivity
         extends BaseActivity
@@ -80,8 +80,7 @@ public class MapsActivity
         GoogleApiClient.OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
         GoogleMap.OnInfoWindowClickListener,
-        DirectionFinderListener,
-        NavigationView.OnDragListener
+        DirectionFinderListener
 {
     private static final String TAG = "MapsActivity";
 
@@ -93,27 +92,46 @@ public class MapsActivity
             new LatLng(-40, -168), new LatLng(71, 136)
     );
 
-    private boolean showHide2 = false;
+
+    private boolean isTrafficOn = false;
+    private boolean mapType = false;
     private boolean isDirectionPressed = false;
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
+    private List<Route> routes = new ArrayList<>();
     private List<AskHelp> askHelps = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
     //widgets
+    private DrawerLayout mapLayout;
     private Dialog dialogSelectAction;
-    private ImageView ivCloseDialog;
-    private ImageView ivAskHelp;
-    private ImageView ivReport;
-    private AutoCompleteTextView mSearchText;
-    private ImageView ivMyLocation;
-    private ImageView ivSearch, ivDirection;
+    private Dialog dialogInfoReport;
+    private Dialog dialogDirectionDisplaySetting;
+    private ImageView ivCloseSelectActionDialog;
+    private ImageView ivAskHelpSelectActionDialog;
+    private ImageView ivReportSelectActionDialog;
+    private ImageView ivDirectionDisplaySetting;
+    private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
+    private TextView tvTitleInfoReport;
+    private TextView tvDescriptionInfoReport;
+    private TextView tvDownVoteInfoReport;
+    private TextView tvUpVoteInfoReport;
+    private TextView tvReporterNameInfoReport;
+    private TextView tvRemainingTimeInfoReport;
+    private TextView tvPostedDateInfoReport;
+    private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
 
-    private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
+    private AutoCompleteTextView mSearchText;
+    private ImageView ivSearch, ivDirection, ivMyLocation;
+    private TextView tvDuration;
+    private TextView tvDistance;
+    private Snackbar snackbar;
+    private ImageView mFloatingActionButton, trafficStatusButton;
+
+    private ImageView fabMapType;
     private NavigationView navigationView;
 
-    private TextView tv_name, tv_email;
     //vars
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
@@ -133,9 +151,7 @@ public class MapsActivity
 
         getLocationPermission();
         addControls();
-    //    loadUserInformation();
         addEvents();
-
     }
 
     @Override
@@ -150,23 +166,23 @@ public class MapsActivity
             moveToDeviceLocation();
         });
 
-        fab_maptype.setOnClickListener((v) -> {
-            if(showHide2 == false)
-                showFabLayout2();
+        fabMapType.setOnClickListener((v) -> {
+            mapType = !mapType;
+            // refresh map here
+            if(mapType == false)
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             else
-                hideFabLayout2();
-            showHide2 = !showHide2;
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         });
 
-        fab_satellitetype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        });
+        trafficStatusButton.setOnClickListener((v) -> {
+            isTrafficOn = !isTrafficOn;
+            // refresh map here
+            if(isTrafficOn == false)
+                mMap.setTrafficEnabled(false);
+            else
+                mMap.setTrafficEnabled(true);
 
-        fab_roadtype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        });
-
-        ivSearch.setOnClickListener((v) -> {
 
         });
 
@@ -181,17 +197,47 @@ public class MapsActivity
                 isDirectionPressed = false;
             }
         });
+
         //Add event for Selecting Action Dialog
-        ivCloseDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
-        ivAskHelp.setOnClickListener((v ->{
+        ivCloseSelectActionDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
+        ivAskHelpSelectActionDialog.setOnClickListener((v ->{
             startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
-        ivReport.setOnClickListener((v -> {
+        //
+        ivReportSelectActionDialog.setOnClickListener((v -> {
             Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
             startActivity(reportActivity);
         }));
+        //
+        ivDirectionDisplaySetting.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
+        cbPetrol.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
 
+            } else {
 
+            }
+        });
+        cbHospital.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        cbRestaurant.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        cbPopularTourist.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
     }
 
     private void makeDirection()
@@ -199,26 +245,26 @@ public class MapsActivity
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try {
             if (mLocationPermissionGranted) {
-                 mFusedLocationProviderClient.getLastLocation()
-                                             .addOnCompleteListener((task) -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        Log.d(TAG, "onComplete: found location");
-                        Location currentLocation = (Location) task.getResult();
-                        moveCamera(new LatLng(currentLocation.getLatitude(),
-                                              currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                   "My Location");
-                        StringBuilder origin = new StringBuilder();
-                        origin.append(currentLocation.getLatitude());
-                        origin.append(",");
-                        origin.append(currentLocation.getLongitude());
-                        String destination = mSearchText.getText().toString();
-                        sendRequest(origin.toString(), destination);
-                    } else {
-                        Log.d(TAG, "onComplete: current location is null");
-                        Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
-                             .show();
-                    }
-                });
+                mFusedLocationProviderClient.getLastLocation()
+                        .addOnCompleteListener((task) -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                Log.d(TAG, "onComplete: found location");
+                                Location currentLocation = (Location) task.getResult();
+                                moveCamera(new LatLng(currentLocation.getLatitude(),
+                                                currentLocation.getLongitude()), DEFAULT_ZOOM,
+                                        "My Location");
+                                StringBuilder origin = new StringBuilder();
+                                origin.append(currentLocation.getLatitude());
+                                origin.append(",");
+                                origin.append(currentLocation.getLongitude());
+                                String destination = mSearchText.getText().toString();
+                                sendRequest(origin.toString(), destination);
+                            } else {
+                                Log.d(TAG, "onComplete: current location is null");
+                                Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
             }
         } catch (SecurityException e) {
             Log.e(TAG, "getDeviceLocation: Sercurity Exeption" + e.getMessage());
@@ -239,52 +285,60 @@ public class MapsActivity
 
     @Override
     protected void addControls() {
+        mapLayout = findViewById(R.id.map_layout);
+
         mSearchText = findViewById(R.id.input_search);
         ivMyLocation = findViewById(R.id.iwMyLocation);
-        mFloatingActionButton = findViewById(R.id.floatingActionButton);
+        mFloatingActionButton = findViewById(R.id.iv_action_button);
         ivDirection = findViewById(R.id.iwDirection);
         ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
-        fab_maptype = findViewById(R.id.fab_maptype);
-        fab_satellitetype = findViewById(R.id.fab_satellitetype);
-        fab_roadtype = findViewById(R.id.fab_roadtype);
-        hideFabLayout2();
+        fabMapType = findViewById(R.id.iv_map_type);
+
+        navigationView = findViewById(R.id.nav_view);
+
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
-        ivCloseDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
-        ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
-        ivReport = dialogSelectAction.findViewById(R.id.ivReport);
+        ivCloseSelectActionDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
+        ivAskHelpSelectActionDialog = dialogSelectAction.findViewById(R.id.ivAskHelp);
 
-        //navigationView controls
-        tv_name = navigationView.findViewById(R.id.tv_headerName);
-        tv_email = navigationView.findViewById(R.id.tv_headerEmail);
-        Log.e("khoi tao", "da khoi tao bien");
-    }
+        //Dialog info report
+        ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
+        dialogInfoReport = new Dialog(this);
+        dialogInfoReport.setContentView(R.layout.dialog_info_report);
+        tvTitleInfoReport = dialogInfoReport.findViewById(R.id.info_report_title);
+        tvDescriptionInfoReport = dialogInfoReport.findViewById(R.id.info_report_description);
+        tvDownVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_down_vote);
+        tvUpVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_up_vote);
+        tvReporterNameInfoReport = dialogInfoReport.findViewById(R.id.info_report_reporter_name);
+        tvRemainingTimeInfoReport = dialogInfoReport.findViewById(R.id.info_report_remain_time);
+        ivUpVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_iv_up_vote);
+        ivDownVoteInfoReport = dialogInfoReport.findViewById(R.id.info_report_iv_down_vote);
+        tvPostedDateInfoReport = dialogInfoReport.findViewById(R.id.info_report_post_time);
 
-    public void loadUserInformation()
-    {
-        String userID = LoginActivity.mAuth.getCurrentUser().getUid();
-        Log.e("Userid", userID);
-        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("users");
+        //Dialog info route
+        snackbar = Snackbar.make(mapLayout,"",Snackbar.LENGTH_LONG);
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
 
-        tv_name = findViewById(R.id.tv_headerName);
-        tv_email = findViewById(R.id.tv_headerEmail);
-        databaseReference1.child(userID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                Log.e("User name ", user.getUsername());
-                tv_name.setText(user.getUsername());
-                tv_email.setText(user.getEmail());
-            }
+        //Dialog direction display setting
+        ivDirectionDisplaySetting = findViewById(R.id.iv_direction_display_setting);
+        dialogDirectionDisplaySetting = new Dialog(this);
+        dialogDirectionDisplaySetting.setContentView(R.layout.dialog_direction_display_setting);
+        cbPetrol = dialogDirectionDisplaySetting.findViewById(R.id.cb_petrol);
+        cbRestaurant = dialogDirectionDisplaySetting.findViewById(R.id.cb_restaurant);
+        cbHospital = dialogDirectionDisplaySetting.findViewById(R.id.cb_hospital);
+        cbPopularTourist = dialogDirectionDisplaySetting.findViewById(R.id.cb_popular_tourist);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        View snackView = LayoutInflater.from(snackbar.getContext()).inflate(R.layout.snackbar_info_route, null);
+        tvDuration = snackView.findViewById(R.id.sbDuration);
+        tvDistance = snackView.findViewById(R.id.sbDistance);
 
-            }
-        });
+        snackbarLayout.addView(snackView, 0);
+
+        trafficStatusButton = findViewById(R.id.iv_traffic_status_button);
     }
 
 
@@ -307,7 +361,66 @@ public class MapsActivity
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.setTrafficEnabled(true);
+            mMap.setOnInfoWindowClickListener(this);
+            mMap.setOnPolylineClickListener((polyline -> {
+                String distance = null, duration = null;
+                Route oldRoute = null;
+                if (polyline.getTag() != null) {
+                    oldRoute = (Route) polyline.getTag();
+                    distance = oldRoute.getDistance().getText();
+                    duration = oldRoute.getDuration().getText();
+                }
+                if (polyline.getColor() == getResources().getColor(R.color.colorBestPolyline)) {
+                    if (distance != null && duration != null) {
+                        tvDistance.setText(distance);
+                        tvDuration.setText(duration);
+                        snackbar.show();
+                        return;
+                    }
+                }
+                else {
+                    mMap.clear();
+                    destinationMarkers.clear();
+                    originMarkers.clear();
+                    Route routeTmp = null;
+                    for (Route route: routes) {
+                        addDirectionMaker(route);
+
+                        if (oldRoute.getDuration().compareTo(route.getDuration()) != 0
+                                && oldRoute.getDistance().compareTo(route.getDistance()) != 0) {
+                            PolylineOptions polylineOptions = new PolylineOptions()
+                                    .geodesic(true)
+                                    .color(getResources()
+                                            .getColor(R.color.colorNormalPolyline))
+                                    .width(10).clickable(true);
+
+                            polylineOptions.add(route.getStartLocation());
+                            for (int i = 0; i < route.getPoints().size(); i++)
+                                polylineOptions.add(route.getPoints().get(i));
+                            polylineOptions.add(route.getEndLocation());
+
+                            mMap.addPolyline(polylineOptions).setTag(route);
+                        }
+                        else routeTmp = route;
+
+                    }
+                    PolylineOptions polylineOptions = new PolylineOptions()
+                            .geodesic(true)
+                            .color(getResources()
+                                    .getColor(R.color.colorBestPolyline))
+                            .width(10)
+                            .clickable(true);
+
+                    polylineOptions.add(routeTmp.getStartLocation());
+                    for (int i = 0; i < routeTmp.getPoints().size(); i++)
+                        polylineOptions.add(routeTmp.getPoints().get(i));
+                    polylineOptions.add(routeTmp.getEndLocation());
+
+                    mMap.addPolyline(polylineOptions).setTag(routeTmp);
+                }
+            }));
         }
         init();
         refreshHandler = new Handler();
@@ -361,7 +474,7 @@ public class MapsActivity
             Log.d(TAG, "geoLocate: found a locaiton: " + address.toString());
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
             moveCamera(latLng, DEFAULT_ZOOM,
-                       address.getAddressLine(0));
+                    address.getAddressLine(0));
         }
     }
 
@@ -379,12 +492,12 @@ public class MapsActivity
                         saveLocation(currentLocation);
 
                         moveCamera(new LatLng(currentLocation.getLatitude(),
-                                              currentLocation.getLongitude()), DEFAULT_ZOOM,
-                                   "My Location");
+                                        currentLocation.getLongitude()), DEFAULT_ZOOM,
+                                "My Location");
                     } else {
                         Log.d(TAG, "onComplete: current location is null");
                         Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
-                             .show();
+                                .show();
                     }
                 });
             }
@@ -483,32 +596,71 @@ public class MapsActivity
         //Set attribute for marker;
         markerOptions.title(askHelp.getTitle());
         markerOptions.snippet(askHelp.getContent());
-        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongitude());
+        LatLng position = new LatLng(askHelp.getLatitude(), askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set info window for this marker
-        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-
-        mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
-
         marker.setTag(askHelp);
-        marker.showInfoWindow();
-        mMap.setOnInfoWindowClickListener(this);
+    }
+
+    private void displayReportMarker(final Report report)
+    {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(report.getTitle());
+        markerOptions.snippet(report.getContent());
+        markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(report.getReportType().getReportIcon()));
+
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.setTag(report);
     }
 
     private void reloadMap() {
         getAskHelpData();
+        getReportData();
         displayToMap();
     }
 
+    private void getReportData()
+    {
+        databaseReference.child("reports").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
+            {
+                Iterable<DataSnapshot> reportChildren = dataSnapshot.getChildren();
+
+                reports.clear();
+
+                for (DataSnapshot data: reportChildren) {
+                    Report report = data.getValue(Report.class);
+                    if (report.getRemainingTime() != 0) {
+                        reports.add(report);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull final DatabaseError databaseError)
+            {
+                Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
+    }
+
     private void displayToMap() {
-        for (AskHelp askHelp : askHelps
-                ) {
+        for (AskHelp askHelp : askHelps) {
             displayAskHelpMarker(askHelp);
         }
+
+        for (Report report : reports) {
+            displayReportMarker(report);
+        }
     }
+
+
 
     private final Runnable reloadMapRunnable = new Runnable() {
         @Override
@@ -523,15 +675,16 @@ public class MapsActivity
         databaseReference.child("askHelps").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot askHelpSnapshot = dataSnapshot;
-                Iterable<DataSnapshot> askHelpChildren = askHelpSnapshot.getChildren();
+                Iterable<DataSnapshot> askHelpChildren = dataSnapshot.getChildren();
 
                 askHelps.clear();
 
                 for (DataSnapshot ask : askHelpChildren) {
-/*                    AskHelp askHelp = ask.getValue(AskHelp.class);
+                    AskHelp askHelp = ask.getValue(AskHelp.class);
                     Log.d(TAG, "onDataChange: " + askHelp.getId());
-                    askHelps.add(askHelp);*/
+                    Log.d(TAG, "onDataChange: complete " + askHelp.isCompleted());
+                    if (!askHelp.isCompleted())
+                        askHelps.add(askHelp);
                 }
             }
 
@@ -543,60 +696,85 @@ public class MapsActivity
         });
     }
 
-    //    public void addNewMarker(GoogleMap googleMap,String type, String problem, String description, LatLng position, ReportedData reportedData) {
-//        mMap = googleMap;
-//        MarkerOptions markerOptions = new MarkerOptions().title(problem)
-//                .snippet(description).position(position).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
-//
-//        //Set reportedData --> This is temporary
-////        ReportedData reportedData = reportedData;
-//        reportedData = new ReportedData();
-//
-//        //Set type of problem
-//        reportedData.setType(type);
-//        Comment cmt1 = new Comment("cmt01",null,"Where Are U?","03-18-2018");
-//        Comment cmt2 = new Comment("cmt02",null,"Anybody help u?","03-18-2018");
-//        Comment cmt3 = new Comment("cmt03",null,"I'm on my way","03-18-2018");
-//        ArrayList<Comment> listComments = new ArrayList<>();
-//        listComments.add(cmt1);
-//        listComments.add(cmt2);
-//        listComments.add(cmt3);
-//        reportedData.setComments(listComments);
-////        reportedData.getComments().add(cmt1);
-////        reportedData.getComments().add(cmt2);
-////        reportedData.getComments().add(cmt3);
-//        //Set problem's reporter -->Teporary --> Needn't set user here if reported data already has user information
-//        User reporter = new User();
-//        reportedData.setReporter(reporter);
-//        //Set problem's information for InfoWindowData -->This is temporary (static data)
-//        reportedData.setTitle(markerOptions.getTitle());
-//        reportedData.setDescription(markerOptions.getSnippet());
-//
-//        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-//
-//        mMap.setInfoWindowAdapter(customInfoWindow);
-//        Marker marker = mMap.addMarker(markerOptions);
-//
-//        marker.setTag(reportedData);
-//        marker.showInfoWindow();
-//        mMap.setOnInfoWindowClickListener(this);
-//    }
-//
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if (marker.getTag()!=null)
+        if (marker.getTag()!= null)
         {
-            AskHelp askHelp = (AskHelp) marker.getTag();
-            Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
-            intent.putExtra("askHelp", (Serializable) askHelp);
-            startActivity(intent);
+            if (marker.getTag() instanceof AskHelp) {
+                AskHelp askHelp = (AskHelp) marker.getTag();
+                Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
+                intent.putExtra("askHelp", askHelp);
+                startActivity(intent);
+            }
+            if (marker.getTag() instanceof  Report) {
+                Report report = (Report) marker.getTag();
+                boolean isVoted = false;
+                tvTitleInfoReport.setText(report.getTitle());
+                tvDescriptionInfoReport.setText(report.getContent());
+                StringBuilder builder = new StringBuilder();
+                builder.append(report.getRemainingTime()/3600);
+                builder.append(" ");
+                builder.append(getString(R.string.mins));
+                tvRemainingTimeInfoReport.setText(builder.toString());
+                tvReporterNameInfoReport.setText(report.getReporter().getUsername());
+                tvUpVoteInfoReport.setText(String.valueOf(report.getUpVote()));
+                tvDownVoteInfoReport.setText(String.valueOf(report.getDownVote()));
+                tvPostedDateInfoReport.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(report.getPostDate()));
+                ivDownVoteInfoReport.setOnClickListener(l -> {
+                    int currentUpVote = report.getUpVote();
+                    int currentDownVote = report.getDownVote();
+                    if (ivDownVoteInfoReport.isEnabled()) {
+                        if (currentUpVote > 0) {
+                            report.setUpVote(--currentUpVote);
+                            tvUpVoteInfoReport.setText(String.valueOf(currentUpVote));
+                        }
+                        report.setDownVote(++currentDownVote);
+                        tvDownVoteInfoReport.setText(String.valueOf(currentDownVote));
+                        ivDownVoteInfoReport.setEnabled(false);
+                        ivUpVoteInfoReport.setEnabled(true);
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("downVote", currentDownVote);
+                        vote.put("upVote", currentUpVote);
+                        databaseReference.child("reports")
+                                .child(report.getId())
+                                .updateChildren(vote)
+                                .addOnCompleteListener(task -> {
+                                    showToastMessage("Vote down successfully!");
+                                });
+                    }
+                });
+                ivUpVoteInfoReport.setOnClickListener(l -> {
+                    int currentUpVote = report.getUpVote();
+                    int currentDownVote = report.getDownVote();
+                    if (ivUpVoteInfoReport.isEnabled()) {
+                        if (currentDownVote > 0) {
+                            report.setDownVote(--currentDownVote);
+                            tvDownVoteInfoReport.setText(String.valueOf(currentDownVote));
+                        }
+                        report.setUpVote(++currentUpVote);
+                        tvUpVoteInfoReport.setText(String.valueOf(currentUpVote));
+                        ivUpVoteInfoReport.setEnabled(false);
+                        ivDownVoteInfoReport.setEnabled(true);
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("downVote", currentDownVote);
+                        vote.put("upVote", currentUpVote);
+                        databaseReference.child("reports")
+                                .child(report.getId())
+                                .updateChildren(vote)
+                                .addOnCompleteListener(task -> {
+                                    showToastMessage("Vote up successfully!");
+                                });
+                    }
+                });
+                dialogInfoReport.show();
+            }
         }
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.map_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -638,20 +816,9 @@ public class MapsActivity
                 break;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.map_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void showFabLayout2()
-    {
-        fab_satellitetype.show();
-        fab_roadtype.show();
-    }
-    private void hideFabLayout2()
-    {
-        fab_satellitetype.hide();
-        fab_roadtype.hide();
     }
 
     protected void displayNextScreen(final Intent nextScreen)
@@ -673,44 +840,64 @@ public class MapsActivity
                 marker.remove();
             }
         }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths ) {
-                polyline.remove();
-            }
-        }
     }
 
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
-        polylinePaths = new ArrayList<>();
+        this.routes = routes;
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
 
+        Route bestRoute = getBestRoute(routes);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bestRoute.getStartLocation(), 16));
+
         for (Route route : routes) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
-                    .title(route.startAddress)
-                    .position(route.startLocation)));
-            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
-                    .title(route.endAddress)
-                    .position(route.endLocation)
-                                                  .snippet("Duration: ")
-            ));
+            addDirectionMaker(route);
+            if (route.compareTo(bestRoute) != 0) {
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(getResources().getColor(R.color.colorNormalPolyline)).
+                        width(10)
+                        .clickable(true);
 
-            PolylineOptions polylineOptions = new PolylineOptions().
-                    geodesic(true).
-                    color(Color.BLUE).
-                    width(10);
+                polylineOptions.add(route.getStartLocation());
+                for (int i = 0; i < route.getPoints().size(); i++)
+                    polylineOptions.add(route.getPoints().get(i));
+                polylineOptions.add(route.getEndLocation());
 
-            for (int i = 0; i < route.points.size(); i++)
-                polylineOptions.add(route.points.get(i));
-
-            polylinePaths.add(mMap.addPolyline(polylineOptions));
-            break;
+                mMap.addPolyline(polylineOptions).setTag(route);
+            }
         }
+
+        PolylineOptions polylineOptions = new PolylineOptions().
+                geodesic(true).
+                color(getResources().getColor(R.color.colorBestPolyline)).
+                width(10)
+                .clickable(true);
+
+        polylineOptions.add(bestRoute.getStartLocation());
+        for (int i = 0; i < bestRoute.getPoints().size(); i++)
+            polylineOptions.add(bestRoute.getPoints().get(i));
+        polylineOptions.add(bestRoute.getEndLocation());
+
+        mMap.addPolyline(polylineOptions).setTag(bestRoute);
+    }
+
+    private void addDirectionMaker(Route route) {
+        originMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
+                .title(route.getStartAddress())
+                .position(route.getStartLocation())));
+        destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
+                .title(route.getEndAddress())
+                .position(route.getEndLocation())
+        ));
+    }
+
+    private Route getBestRoute(List<Route> routes) {
+        Collections.sort(routes);
+        return routes.get(0);
     }
 
     AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener()
@@ -742,8 +929,8 @@ public class MapsActivity
 
                         Log.i(TAG, "Place found: " + myPlace.getName());
                         moveCamera(new LatLng(myPlace.getViewport().getCenter().latitude,
-                                              myPlace.getViewport().getCenter().longitude),
-                                   DEFAULT_ZOOM, mPlace.getName());
+                                        myPlace.getViewport().getCenter().longitude),
+                                DEFAULT_ZOOM, mPlace.getName());
                         places.release();
                     } catch (NullPointerException e) {
                         Log.e(TAG, "onItemClick: ", e);
@@ -756,9 +943,4 @@ public class MapsActivity
     };
 
 
-    @Override
-    public boolean onDrag(View v, DragEvent event) {
-        loadUserInformation();
-        return true;
-    }
 }

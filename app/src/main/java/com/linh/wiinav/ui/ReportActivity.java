@@ -28,7 +28,7 @@ public class ReportActivity extends AppCompatActivity
 
     private void init()
     {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView_ReportList);
+        RecyclerView recyclerView =  findViewById(R.id.recycleView_ReportList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
         // RecyclerView has some built in animations to it, using the DefaultItemAnimator.

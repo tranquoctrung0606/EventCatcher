@@ -51,6 +51,7 @@ public class DirectionFinder {
         sb.append(urlOrigin);
         sb.append("&destination=");
         sb.append(urlDestination);
+        sb.append("&alternatives=true");
         sb.append("&key=");
         sb.append(GOOGLE_API_KEY);
 
@@ -114,13 +115,13 @@ public class DirectionFinder {
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
 
-            route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
-            route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
-            route.endAddress = jsonLeg.getString("end_address");
-            route.startAddress = jsonLeg.getString("start_address");
-            route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
-            route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
-            route.points = decodePolyLine(overview_polylineJson.getString("points"));
+            route.setDistance(new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value")));
+            route.setDuration(new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value")));
+            route.setEndAddress(jsonLeg.getString("end_address"));
+            route.setStartAddress(jsonLeg.getString("start_address"));
+            route.setStartLocation(new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng")));;
+            route.setEndLocation(new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng")));
+            route.setPoints(decodePolyLine(overview_polylineJson.getString("points")));
 
             routes.add(route);
         }

@@ -2,153 +2,158 @@ package com.linh.wiinav.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
 @IgnoreExtraProperties
-public class Report implements Serializable{
-
-    private String id,content;
-    private User poster,inspector;
+public class Report {
+    private String id, content, title;
+    private Date postDate, closeDate;
+    private double latitude, longitude;
+    private User reporter;
     private ReportType reportType;
-    private int upVote,downVote;
-    private Date postDate,verifyDate;
-    private float longtitude, latitude;
-    private ArrayList<Image> images;
+    private int upVote, downVote;
+    private Long remainingTime;
 
     public Report() {
     }
 
-    public Report(String id, String content, User poster, User inspector, ReportType reportType,
-                  int upVote, int downVote, Date postDate, Date verifyDate, float longtitude,
-                  float latitude, ArrayList<Image> images) {
+    public Report(final String id, final String content, final String title,
+                  final Date postDate, final Date closeDate, final double latitude,
+                  final double longitude, final User reporter, final ReportType reportType,
+                  final int upVote, final int downVote, final Long remainingTime)
+    {
         this.id = id;
         this.content = content;
-        this.poster = poster;
-        this.inspector = inspector;
+        this.title = title;
+        this.postDate = postDate;
+        this.closeDate = closeDate;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.reporter = reporter;
         this.reportType = reportType;
         this.upVote = upVote;
         this.downVote = downVote;
-        this.postDate = postDate;
-        this.verifyDate = verifyDate;
-        this.longtitude = longtitude;
-        this.latitude = latitude;
-        this.images = images;
+        this.remainingTime = remainingTime;
     }
 
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id)
+    {
         this.id = id;
     }
 
-    public String getContent() {
+    public String getContent()
+    {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(final String content)
+    {
         this.content = content;
     }
 
-    public User getPoster() {
-        return poster;
+    public String getTitle()
+    {
+        return title;
     }
 
-    public void setPoster(User poster) {
-        this.poster = poster;
+    public void setTitle(final String title)
+    {
+        this.title = title;
     }
 
-    public User getInspector() {
-        return inspector;
-    }
-
-    public void setInspector(User inspector) {
-        this.inspector = inspector;
-    }
-
-    public ReportType getReportType() {
-        return reportType;
-    }
-
-    public void setReportType(ReportType reportType) {
-        this.reportType = reportType;
-    }
-
-    public int getUpVote() {
-        return upVote;
-    }
-
-    public void setUpVote(int upVote) {
-        this.upVote = upVote;
-    }
-
-    public int getDownVote() {
-        return downVote;
-    }
-
-    public void setDownVote(int downVote) {
-        this.downVote = downVote;
-    }
-
-    public Date getPostDate() {
+    public Date getPostDate()
+    {
         return postDate;
     }
 
-    public void setPostDate(Date postDate) {
+    public void setPostDate(final Date postDate)
+    {
         this.postDate = postDate;
     }
 
-    public Date getVerifyDate() {
-        return verifyDate;
+    public Date getCloseDate()
+    {
+        return closeDate;
     }
 
-    public void setVerifyDate(Date verifyDate) {
-        this.verifyDate = verifyDate;
+    public void setCloseDate(final Date closeDate)
+    {
+        this.closeDate = closeDate;
     }
 
-    public float getLongtitude() {
-        return longtitude;
-    }
-
-    public void setLongtitude(float longtitude) {
-        this.longtitude = longtitude;
-    }
-
-    public float getLatitude() {
+    public double getLatitude()
+    {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(final double latitude)
+    {
         this.latitude = latitude;
     }
 
-    public ArrayList<Image> getImages() {
-        return images;
+    public double getLongitude()
+    {
+        return longitude;
     }
 
-    public void setImages(ArrayList<Image> images) {
-        this.images = images;
+    public void setLongitude(final double longitude)
+    {
+        this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-        return "Report{" +
-                "id='" + id + '\'' +
-                ", content='" + content + '\'' +
-                ", poster=" + poster +
-                ", inspector=" + inspector +
-                ", reportType=" + reportType +
-                ", upVote=" + upVote +
-                ", downVote=" + downVote +
-                ", postDate=" + postDate +
-                ", verifyDate=" + verifyDate +
-                ", longtitude=" + longtitude +
-                ", latitude=" + latitude +
-                ", images=" + images +
-                '}';
+    public User getReporter()
+    {
+        return reporter;
+    }
+
+    public void setReporter(final User reporter)
+    {
+        this.reporter = reporter;
+    }
+
+    public ReportType getReportType()
+    {
+        return reportType;
+    }
+
+    public void setReportType(final ReportType reportType)
+    {
+        this.reportType = reportType;
+    }
+
+    public int getUpVote()
+    {
+        return upVote;
+    }
+
+    public void setUpVote(final int upVote)
+    {
+        this.upVote = upVote;
+    }
+
+    public int getDownVote()
+    {
+        return downVote;
+    }
+
+    public void setDownVote(final int downVote)
+    {
+        this.downVote = downVote;
+    }
+
+    public Long getRemainingTime()
+    {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(final Long remainingTime)
+    {
+        this.remainingTime = remainingTime;
     }
 }

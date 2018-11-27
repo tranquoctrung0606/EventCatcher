@@ -93,11 +93,11 @@
 
                     <Button
                         android:id="@+id/btn_changeName"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/edit" />
 
                 </RelativeLayout>
@@ -134,11 +134,11 @@
 
                     <Button
                         android:id="@+id/btn_changeNumber"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/edit" />
                 </RelativeLayout>
 
@@ -177,11 +177,11 @@
 
                     <Button
                         android:id="@+id/btn_changeEmail"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/edit" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -218,11 +218,11 @@
 
                     <Button
                         android:id="@+id/btn_changeFacebook"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/edit" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -273,11 +273,11 @@
 
                     <Button
                         android:id="@+id/btn_changePass"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/edit" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -331,11 +331,11 @@
 
                     <Button
                         android:id="@+id/btn_favorite"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/rightarrow" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -370,11 +370,11 @@
 
                     <Button
                         android:id="@+id/btn_reported"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/rightarrow" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -410,11 +410,11 @@
 
                     <Button
                         android:id="@+id/btn_reflected"
-                        android:layout_width="21dp"
-                        android:layout_height="19dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/rightarrow" />
                 </RelativeLayout>
             </RelativeLayout>
