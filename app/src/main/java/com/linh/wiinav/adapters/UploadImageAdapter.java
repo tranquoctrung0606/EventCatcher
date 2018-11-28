@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.linh.wiinav.R;
+import com.linh.wiinav.ui.ReportDetailActivity;
 
 import java.util.List;
 
@@ -35,9 +37,11 @@ public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.
             firebaseStorage.getReference()
                     .child("images/"+imageNames.get(position).substring(imageNames.get(position)
                             .lastIndexOf("/")))
-                    .delete();
-            imageNames.remove(position);
-            notifyItemRemoved(position);
+                    .delete().addOnCompleteListener(task -> {
+                        imageNames.remove(position);
+                        notifyDataSetChanged();
+                        ReportDetailActivity.countImage--;
+                    });
         });
     }
 

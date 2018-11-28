@@ -54,6 +54,7 @@ public class ReportDetailActivity
 
     private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
+    public static int countImage = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -75,27 +76,28 @@ public class ReportDetailActivity
             }
         });
 
-        bReportSubmit.setEnabled(false);
-
         bReportSubmit.setOnClickListener(v ->
         {
-            Report report = new Report();
-            report.setId(UUID.randomUUID().toString());
-            report.setReportType(reportedType);
-            report.setPostDate(Calendar.getInstance().getTime());
-            report.setContent(tvReportDescriptions.getText().toString());
-            report.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0.0")));
-            report.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0.0")));
-            report.setDownVote(0);
-            report.setUpVote(0);
-            report.setRemainingTime(3600L);
-            report.setTitle(tvReportDetailTitle.getText().toString());
-            report.setReporter(getUser());
-            report.setImageName(imageNames);
+            if (countImage == imageNames.size()) {
+                Report report = new Report();
+                report.setId(UUID.randomUUID().toString());
+                report.setReportType(reportedType);
+                report.setPostDate(Calendar.getInstance().getTime());
+                report.setContent(tvReportDescriptions.getText().toString());
+                report.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0.0")));
+                report.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0.0")));
+                report.setDownVote(0);
+                report.setUpVote(0);
+                report.setRemainingTime(3600L);
+                report.setTitle(tvReportDetailTitle.getText().toString());
+                report.setReporter(getUser());
+                report.setImageName(imageNames);
 
-            sendReport(report);
-
-            backToMapsScreen();
+                sendReport(report);
+                backToMapsScreen();
+            }else {
+                showToastMessage("Waiting for uploading image done.");
+            }
         });
         ivUploadImage.setOnClickListener(l -> {
             EasyImage.configuration(this)
@@ -111,6 +113,7 @@ public class ReportDetailActivity
             @Override
             public void onImagesPicked(@NonNull List<File> list, EasyImage.ImageSource imageSource, int i) {
                 if(imageNames.size()<6 && list.size()<6-imageNames.size()) {
+                    countImage = list.size();
                     for (int j = 0; j < list.size(); j++) {
                         Uri path = Uri.fromFile(list.get(j));
                         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -135,27 +138,13 @@ public class ReportDetailActivity
 
     }
 
-
     private void uploadImage(File file, byte[] data, Uri path) {
         storageReference.child("images/"+path.getLastPathSegment())
                 .putBytes(data)
                 .addOnCompleteListener(task -> {
-                    if (getCount() < 5) {
-                        imageNames.add(file.getPath());
-                        uploadImageAdapter.notifyDataSetChanged();
-                        increaseCount();
-                    } else {
-                        bReportSubmit.setEnabled(true);
-                    }
+                    imageNames.add(file.getPath());
+                    uploadImageAdapter.notifyDataSetChanged();
                 });
-    }
-    private int count = 0;
-    private void increaseCount() {
-        count++;
-    }
-
-    public int getCount() {
-        return count;
     }
 
     private void sendReport(Report report) {

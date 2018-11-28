@@ -66,10 +66,10 @@
                         android:layout_width="match_parent"
                         android:textColorHint="#aeb0a5"
                         android:layout_gravity="start|center"
-                        android:layout_height="50dp"
+                        android:layout_height="30dp"
                         android:inputType="text|textMultiLine"
                         android:gravity="top"
-                        android:background="#00000000"
+                        android:background="#14000000"
                         android:textSize="20sp"
                         android:id="@+id/reportDescriptions"/>
 
@@ -83,6 +83,13 @@
                         android:textColor="@color/red"
                         />
 
+                  <!--  <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="0"
+                        android:id="@+id/tv_report_image_number"
+                        /> -->
                     <Space
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -95,7 +102,12 @@
                         android:id="@+id/iv_report_upload_image"
                         />
                 </LinearLayout>
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Maximum 5 images"
+                    android:textStyle="italic"
+                    />
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="90dp"

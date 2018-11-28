@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,7 +20,6 @@ import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.PASSWORD;
