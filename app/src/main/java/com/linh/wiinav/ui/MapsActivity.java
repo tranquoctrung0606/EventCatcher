@@ -22,6 +22,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -59,6 +61,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
+import com.linh.wiinav.adapters.DownloadImageAdapter;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
@@ -124,6 +127,10 @@ public class MapsActivity
     private TextView tvRemainingTimeInfoReport;
     private TextView tvPostedDateInfoReport;
     private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
+
+    private RecyclerView rvDownloadImage;
+    private List<String> imageUrls;
+    private DownloadImageAdapter downloadImageAdapter;
 
     private AutoCompleteTextView mSearchText;
     private ImageView ivSearch, ivDirection, ivMyLocation;
@@ -309,7 +316,7 @@ public class MapsActivity
 
         //Dialog info report
         ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
-        dialogInfoReport = new Dialog(this);
+        dialogInfoReport = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar);
         dialogInfoReport.setContentView(R.layout.dialog_info_report);
         tvTitleInfoReport = dialogInfoReport.findViewById(R.id.info_report_title);
         tvDescriptionInfoReport = dialogInfoReport.findViewById(R.id.info_report_description);
@@ -765,6 +772,11 @@ public class MapsActivity
                                 });
                     }
                 });
+                rvDownloadImage = dialogInfoReport.findViewById(R.id.rv_download_image);
+                downloadImageAdapter = new DownloadImageAdapter(report.getImageName());
+                rvDownloadImage.setLayoutManager(new GridLayoutManager(this, 5));
+                rvDownloadImage.setAdapter(downloadImageAdapter);
+
                 dialogInfoReport.show();
             }
         }
