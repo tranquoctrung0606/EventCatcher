@@ -53,7 +53,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="sometime"
+                    android:text="@string/sometime"
                     android:layout_marginTop="2dp"
                     android:layout_marginEnd="5dp"
                     android:id="@+id/info_report_post_time"

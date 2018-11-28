@@ -1,9 +1,8 @@
 package com.linh.wiinav.ui;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.content.Context;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -14,12 +13,12 @@ import com.linh.wiinav.models.Comment;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
 public class AskHelpActivity extends BaseActivity {
     private static final String TAG = "AskHelpActivity";
-
     EditText etAskHelpTitle, etAskHelpContent;
     ImageButton btnAskHelp;
 
@@ -47,12 +46,13 @@ public class AskHelpActivity extends BaseActivity {
             askHelp.setId(UUID.randomUUID().toString());
             askHelp.setTitle(etAskHelpTitle.getText().toString());
             askHelp.setContent(etAskHelpContent.getText().toString());
-            askHelp.setPostDate(Calendar.getInstance().getTime().toString());
+            askHelp.setPostDate(Calendar.getInstance().getTime());
             askHelp.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0")));
             askHelp.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0")));
             askHelp.setCompleted(false);
-            ArrayList<Comment> comments = new ArrayList<>();
-            comments.add(new Comment("ad", getUser(), "ádasdasdasd",new Date()));
+            List<Comment> comments = new ArrayList<>();
+            String key = UUID.randomUUID().toString();
+            comments.add(new Comment(key, getUser(), "Fake Comment", new Date()));
             askHelp.setComments(comments);
 
             askHelp.setPoster(getUser());
@@ -65,11 +65,12 @@ public class AskHelpActivity extends BaseActivity {
 
             backToMapsScreen();
         });
+
     }
 
     /* This method saves asking help request to database
      *
-     * Version: 1.0
+     * Version: 1.1
      *
      * Date: 13/11/2018
      *
@@ -86,7 +87,6 @@ public class AskHelpActivity extends BaseActivity {
                     showToastMessage("Posted fail. Try later.");
                 });
     }
-
     /* This method adds controls into this activity
      *
      * Version: 1.0
@@ -96,11 +96,12 @@ public class AskHelpActivity extends BaseActivity {
      * Author: Nghiên
      */
     @Override
-    protected void addControls() {
+    protected void addControls(){
         sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         etAskHelpTitle = findViewById(R.id.etAskHelpTitle);
         etAskHelpContent = findViewById(R.id.etAskHelpContent);
+
         btnAskHelp = findViewById(R.id.btnAskHelp);
     }
 }

@@ -3,23 +3,24 @@ package com.linh.wiinav.models;
 import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class AskHelp implements Serializable {
     private String id;
     private User poster;
-    private String postDate;
+    private Date postDate;
     private String title;
     private String content;
     private boolean isCompleted;
     private double latitude, longitude;
-    private ArrayList<Comment> comments ;
+    private List<Comment> comments ;
 
     public AskHelp() {
     }
-
-    public AskHelp(String id, User poster, String postDate,
+    public AskHelp(String id, User poster, Date postDate,
                    String title, String content, boolean isCompleted,
-                   double latitude, double longitude, ArrayList<Comment> comments) {
+                   double latitude, double longitude, List<Comment> comments) {
         this.id = id;
         this.poster = poster;
         this.postDate = postDate;
@@ -46,12 +47,11 @@ public class AskHelp implements Serializable {
     public void setPoster(User poster) {
         this.poster = poster;
     }
-
-    public String getPostDate() {
+    public Date getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(String postDate) {
+    public void setPostDate(Date postDate) {
         this.postDate = postDate;
     }
 
@@ -95,11 +95,11 @@ public class AskHelp implements Serializable {
         this.longitude = longitude;
     }
 
-    public ArrayList<Comment> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<Comment> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 

@@ -52,7 +52,7 @@
             android:name=".ui.SettingActivity"
             android:label="@string/title_activity_setting"
             android:theme="@style/AppThemeActionBar" />
-        <activity android:name=".ui.InfoAskHelpActivity" />
+        <activity android:name=".ui.AskHelpDetailsActivity" />
         <activity android:name=".ui.ReportActivity" />
         <activity android:name=".ui.LoginActivity">
             <intent-filter>

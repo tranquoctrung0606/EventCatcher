@@ -172,7 +172,7 @@ public class MapsActivity
         fabMapType.setOnClickListener((v) -> {
             mapType = !mapType;
             // refresh map here
-            if(mapType == false)
+            if(!mapType)
                 mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             else
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -181,7 +181,7 @@ public class MapsActivity
         trafficStatusButton.setOnClickListener((v) -> {
             isTrafficOn = !isTrafficOn;
             // refresh map here
-            if(isTrafficOn == false)
+            if(!isTrafficOn)
                 mMap.setTrafficEnabled(false);
             else
                 mMap.setTrafficEnabled(true);
@@ -442,20 +442,15 @@ public class MapsActivity
         mSearchText.setOnItemClickListener(mAutocompleteClickListener);
 
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
-        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
-            @Override
-            public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event)
-            {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
-                        || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN
-                        || event.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    //searching
-                    geoLocate();
-                }
-                return true;
+        mSearchText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || event.getAction() == KeyEvent.ACTION_DOWN
+                    || event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                //searching
+                geoLocate();
             }
+            return true;
         });
     }
 
@@ -490,7 +485,7 @@ public class MapsActivity
                 mFusedLocationProviderClient.getLastLocation().addOnCompleteListener((task) -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Log.d(TAG, "onComplete: found location");
-                        Location currentLocation = (Location) task.getResult();
+                        Location currentLocation = task.getResult();
 
                         saveLocation(currentLocation);
 
@@ -585,7 +580,6 @@ public class MapsActivity
             }
         }
     }
-
     /*This method adds asking help marker into the map (displayToMap Marker)
      *
      * Version: 1.0
@@ -602,7 +596,6 @@ public class MapsActivity
         LatLng position = new LatLng(askHelp.getLatitude(), askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
-
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(askHelp);
     }
@@ -708,8 +701,8 @@ public class MapsActivity
         {
             if (marker.getTag() instanceof AskHelp) {
                 AskHelp askHelp = (AskHelp) marker.getTag();
-                Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
-                intent.putExtra("askHelp", askHelp);
+                Intent intent = new Intent(MapsActivity.this, AskHelpDetailsActivity.class);
+                intent.putExtra("currentAskHelp", askHelp);
                 startActivity(intent);
             }
             if (marker.getTag() instanceof  Report) {
@@ -788,7 +781,7 @@ public class MapsActivity
         }
     }
 
-    public boolean onNavigationItemSelected(MenuItem item)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         // Handle navigation view item clicks here.
         switch (item.getItemId()){
@@ -947,6 +940,4 @@ public class MapsActivity
             }));
         }
     };
-
-
 }
