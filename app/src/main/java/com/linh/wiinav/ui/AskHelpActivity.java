@@ -10,21 +10,12 @@ import android.widget.ImageButton;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.Comment;
-import com.linh.wiinav.models.User;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-import static com.linh.wiinav.enums.User.BIRTHDAY;
-import static com.linh.wiinav.enums.User.EMAIL;
-import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
-import static com.linh.wiinav.enums.User.IS_BANNED;
-import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
-import static com.linh.wiinav.enums.User.NUMBER_ASK;
-import static com.linh.wiinav.enums.User.PHONE_NUMBER;
-import static com.linh.wiinav.enums.User.USERNAME;
 
 public class AskHelpActivity extends BaseActivity {
     private static final String TAG = "AskHelpActivity";
@@ -50,32 +41,29 @@ public class AskHelpActivity extends BaseActivity {
      */
     @Override
     protected void addEvents() {
-        btnAskHelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Getting data for asking help object
-                AskHelp askHelp = new AskHelp();
-                askHelp.setId(UUID.randomUUID().toString());
-                askHelp.setTitle(etAskHelpTitle.getText().toString());
-                askHelp.setContent(etAskHelpContent.getText().toString());
-                askHelp.setPostDate(Calendar.getInstance().getTime().toString());
-                askHelp.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0")));
-                askHelp.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0")));
-                askHelp.setCompleted(false);
-                ArrayList<Comment> comments = new ArrayList<>();
-                comments.add(new Comment("ad", getUser(), "ádasdasdasd",new Date()));
-                askHelp.setComments(comments);
+        btnAskHelp.setOnClickListener(v -> {
+            //Getting data for asking help object
+            AskHelp askHelp = new AskHelp();
+            askHelp.setId(UUID.randomUUID().toString());
+            askHelp.setTitle(etAskHelpTitle.getText().toString());
+            askHelp.setContent(etAskHelpContent.getText().toString());
+            askHelp.setPostDate(Calendar.getInstance().getTime().toString());
+            askHelp.setLatitude(Double.parseDouble(sharedPreferences.getString("LAT", "0")));
+            askHelp.setLongitude(Double.parseDouble(sharedPreferences.getString("LONG", "0")));
+            askHelp.setCompleted(false);
+            ArrayList<Comment> comments = new ArrayList<>();
+            comments.add(new Comment("ad", getUser(), "ádasdasdasd",new Date()));
+            askHelp.setComments(comments);
 
-                askHelp.setPoster(getUser());
-                //Generate id for asking help object
-                //Set poster for asking help object
-                //Get current location and set it for asking help object
+            askHelp.setPoster(getUser());
+            //Generate id for asking help object
+            //Set poster for asking help object
+            //Get current location and set it for asking help object
 
-                //
-                sendAskHelp(askHelp);
+            //
+            sendAskHelp(askHelp);
 
-                backToMapsScreen();
-            }
+            backToMapsScreen();
         });
     }
 

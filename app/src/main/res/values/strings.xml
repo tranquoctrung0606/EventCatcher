@@ -90,4 +90,9 @@
     <string name="title_activity_select_action_pop">SelectActionPopActivity</string>
     <string name="mins">mins</string>
     <string name="upload_image">Upload image*</string>
+    <string name="description">Description</string>
+    <string name="ask_help">Ask Help</string>
+    <string name="report">Report</string>
+    <string name="display">Display</string>
+    <string name="report">Report</string>
 </resources>
