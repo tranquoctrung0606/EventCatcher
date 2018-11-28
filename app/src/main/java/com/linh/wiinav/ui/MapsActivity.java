@@ -6,25 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -50,28 +49,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
 import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
+import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.Route;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class MapsActivity
-        extends AppCompatActivity
+        extends BaseActivity
         implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         NavigationView.OnNavigationItemSelectedListener,
@@ -88,14 +88,19 @@ public class MapsActivity
             new LatLng(-40, -168), new LatLng(71, 136)
     );
 
-    private boolean showHide2 = false;
+
+    private boolean isTrafficOn = false;
+    private boolean mapType = false;
     private boolean isDirectionPressed = false;
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
+    private List<Route> routes = new ArrayList<>();
+    private List<AskHelp> askHelps = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
     //widgets
+    private DrawerLayout mapLayout;
     private Dialog dialogSelectAction;
     private ImageView ivCloseDialog;
     private ImageView ivAskHelp;
@@ -103,8 +108,12 @@ public class MapsActivity
     private AutoCompleteTextView mSearchText;
     private ImageView ivMyLocation;
     private ImageView ivSearch, ivDirection;
+    private TextView tvDuration;
+    private TextView tvDistance;
+    private Snackbar snackbar;
+    private ImageView mFloatingActionButton, trafficStatusButton;
 
-    private FloatingActionButton mFloatingActionButton, fab_maptype, fab_satellitetype, fab_roadtype ;
+    private ImageView fabMapType;
     private NavigationView navigationView;
 
     //vars
@@ -114,24 +123,23 @@ public class MapsActivity
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
-    private SharedPreferences mPreferences;
 
     private PlaceInfo mPlace;
-
+    private Handler refreshHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
         getLocationPermission();
         addControls();
         addEvents();
     }
 
-    private void addEvents() {
+    @Override
+    protected void addEvents() {
         navigationView.setNavigationItemSelectedListener(this);
         ivMyLocation.setOnClickListener((v) ->{
             moveToDeviceLocation();
@@ -139,22 +147,27 @@ public class MapsActivity
 
         mFloatingActionButton.setOnClickListener((v) -> {
             dialogSelectAction.show();
+            moveToDeviceLocation();
         });
 
-        fab_maptype.setOnClickListener((v) -> {
-            if(showHide2 == false)
-                showFabLayout2();
+        fabMapType.setOnClickListener((v) -> {
+            mapType = !mapType;
+            // refresh map here
+            if(mapType == false)
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
             else
-                hideFabLayout2();
-            showHide2 = !showHide2;
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         });
 
-        fab_satellitetype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        });
+        trafficStatusButton.setOnClickListener((v) -> {
+            isTrafficOn = !isTrafficOn;
+            // refresh map here
+            if(isTrafficOn == false)
+                mMap.setTrafficEnabled(false);
+            else
+                mMap.setTrafficEnabled(true);
 
-        fab_roadtype.setOnClickListener((v) -> {
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
         });
 
         ivSearch.setOnClickListener((v) -> {
@@ -175,12 +188,14 @@ public class MapsActivity
         //Add event for Selecting Action Dialog
         ivCloseDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
         ivAskHelp.setOnClickListener((v ->{
-
+            startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
         ivReport.setOnClickListener((v -> {
-            Intent intent = new Intent(MapsActivity.this, ReportActivity.class);
-            startActivity(intent);
+            Intent reportActivity = new Intent(MapsActivity.this, ReportActivity.class);
+            startActivity(reportActivity);
         }));
+
+
     }
 
     private void makeDirection()
@@ -192,7 +207,7 @@ public class MapsActivity
                                              .addOnCompleteListener((task) -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Log.d(TAG, "onComplete: found location");
-                        Location currentLocation = (Location) task.getResult();
+                        Location currentLocation = task.getResult();
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
                                    "My Location");
@@ -226,7 +241,10 @@ public class MapsActivity
         }
     }
 
-    private void addControls() {
+    @Override
+    protected void addControls() {
+        mapLayout = findViewById(R.id.map_layout);
+
         mSearchText = findViewById(R.id.input_search);
         ivMyLocation = findViewById(R.id.iwMyLocation);
         mFloatingActionButton = findViewById(R.id.floatingActionButton);
@@ -234,10 +252,8 @@ public class MapsActivity
         ivSearch = findViewById(R.id.iwSearch);
         navigationView = findViewById(R.id.nav_view);
 
-        fab_maptype = findViewById(R.id.fab_maptype);
-        fab_satellitetype = findViewById(R.id.fab_satellitetype);
-        fab_roadtype = findViewById(R.id.fab_roadtype);
-        hideFabLayout2();
+        fabMapType = findViewById(R.id.fab_maptype);
+
         navigationView = findViewById(R.id.nav_view);
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
@@ -246,6 +262,18 @@ public class MapsActivity
         ivAskHelp = dialogSelectAction.findViewById(R.id.ivAskHelp);
         ivReport = dialogSelectAction.findViewById(R.id.ivReport);
 
+        //info route
+        snackbar = Snackbar.make(mapLayout,"",Snackbar.LENGTH_LONG);
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
+
+        View snackView = LayoutInflater.from(snackbar.getContext()).inflate(R.layout.snackbar_info_route, null);
+        tvDuration = snackView.findViewById(R.id.sbDuration);
+        tvDistance = snackView.findViewById(R.id.sbDistance);
+
+        snackbarLayout.addView(snackView, 0);
+
+        trafficStatusButton = findViewById(R.id.trafficStatusButton);
     }
 
 
@@ -268,12 +296,77 @@ public class MapsActivity
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setMapToolbarEnabled(false);
             mMap.setTrafficEnabled(true);
+
+
+            //Set info window for this marker
+            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
+            mMap.setInfoWindowAdapter(customInfoWindow);
+
+            mMap.setOnInfoWindowClickListener(this);
+
+            mMap.setOnPolylineClickListener((polyline -> {
+                String distance = null, duration = null;
+                Route oldRoute = null;
+                if (polyline.getTag() != null) {
+                     oldRoute = (Route) polyline.getTag();
+                     distance = oldRoute.getDistance().getText();
+                     duration = oldRoute.getDuration().getText();
+                }
+                if (polyline.getColor() == getResources().getColor(R.color.colorBestPolyline)) {
+                    if (distance != null && duration != null) {
+                        tvDistance.setText(distance);
+                        tvDuration.setText(duration);
+                        snackbar.show();
+                        return;
+                    }
+                }
+                else {
+                    mMap.clear();
+                    destinationMarkers.clear();
+                    originMarkers.clear();
+                    Route routeTmp = null;
+                    for (Route route: routes) {
+                        addDirectionMaker(route);
+
+                        if (oldRoute.getDuration().compareTo(route.getDuration()) != 0
+                                && oldRoute.getDistance().compareTo(route.getDistance()) != 0) {
+                            PolylineOptions polylineOptions = new PolylineOptions()
+                                    .geodesic(true)
+                                    .color(getResources()
+                                            .getColor(R.color.colorNormalPolyline))
+                                    .width(10).clickable(true);
+
+                            polylineOptions.add(route.getStartLocation());
+                            for (int i = 0; i < route.getPoints().size(); i++)
+                                polylineOptions.add(route.getPoints().get(i));
+                            polylineOptions.add(route.getEndLocation());
+
+                            mMap.addPolyline(polylineOptions).setTag(route);
+                        }
+                        else routeTmp = route;
+
+                    }
+                    PolylineOptions polylineOptions = new PolylineOptions()
+                            .geodesic(true)
+                            .color(getResources()
+                                    .getColor(R.color.colorBestPolyline))
+                            .width(10)
+                            .clickable(true);
+
+                    polylineOptions.add(routeTmp.getStartLocation());
+                    for (int i = 0; i < routeTmp.getPoints().size(); i++)
+                        polylineOptions.add(routeTmp.getPoints().get(i));
+                    polylineOptions.add(routeTmp.getEndLocation());
+
+                    mMap.addPolyline(polylineOptions).setTag(routeTmp);
+                }
+            }));
         }
-        //addNewMarker(mMap, "problem", "Hư xe", "Tôi bị hư xe", marker1, null);
-        //addNewMarker(mMap, "problem", "Hết xăng", "Tôi bị gãy chân, không có xe", marker2, null);
-        //addNewMarker(mMap, "problem", "Cần quá giang", "Tôi bị lủng lốp", marker3, null);
         init();
+        refreshHandler = new Handler();
+        refreshHandler.postDelayed(reloadMapRunnable, 5000);
     }
 
     private void init() {
@@ -298,10 +391,6 @@ public class MapsActivity
             }
             return true;
         });
-    }
-
-    private void hideKeyboard() {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void geoLocate() {
@@ -335,13 +424,9 @@ public class MapsActivity
                 mFusedLocationProviderClient.getLastLocation().addOnCompleteListener((task) -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Log.d(TAG, "onComplete: found location");
-                        Location currentLocation = (Location) task.getResult();
+                        Location currentLocation = task.getResult();
 
-                        SharedPreferences.Editor editor = mPreferences.edit();
-                        editor.putString("LAT", String.valueOf(currentLocation.getLatitude()));
-                        Log.i(TAG, "moveToDeviceLocation: " + currentLocation.getLatitude() );
-                        editor.putString("LONG", String.valueOf(currentLocation.getLongitude()));
-                        editor.commit();
+                        saveLocation(currentLocation);
 
                         moveCamera(new LatLng(currentLocation.getLatitude(),
                                               currentLocation.getLongitude()), DEFAULT_ZOOM,
@@ -356,6 +441,14 @@ public class MapsActivity
         } catch (SecurityException e) {
             Log.e(TAG, "getDeviceLocation: Sercurity Exeption" + e.getMessage());
         }
+    }
+
+    private void saveLocation(Location currentLocation) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("LAT", String.valueOf(currentLocation.getLatitude()));
+        Log.i(TAG, "moveToDeviceLocation: " + currentLocation.getLatitude() );
+        editor.putString("LONG", String.valueOf(currentLocation.getLongitude()));
+        editor.apply();
     }
 
     private void moveCamera(LatLng latLng, float zoom, String name) {
@@ -426,10 +519,7 @@ public class MapsActivity
             }
         }
     }
-
-
-
-    /*This method adds asking help marker into the map (display Marker)
+    /*This method adds asking help marker into the map (displayToMap Marker)
      *
      * Version: 1.0
      *
@@ -442,37 +532,124 @@ public class MapsActivity
         //Set attribute for marker;
         markerOptions.title(askHelp.getTitle());
         markerOptions.snippet(askHelp.getContent());
-        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongtitude());
+        LatLng position = new LatLng(askHelp.getLatitude(),askHelp.getLongitude());
         markerOptions.position(position);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_problem));
 
-        //Set info window for this marker
-        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(this);
-
-        mMap.setInfoWindowAdapter(customInfoWindow);
         Marker marker = mMap.addMarker(markerOptions);
 
         marker.setTag(askHelp);
         marker.showInfoWindow();
-        mMap.setOnInfoWindowClickListener(this);
+    }
 
+    private void displayReportMarker(final Report report)
+    {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(new LatLng(report.getLatitude(), report.getLongitude()));
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.report));
+
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.setTag(report);
+        marker.showInfoWindow();
+    }
+
+    private void reloadMap() {
+        getAskHelpData();
+        getReportData();
+        displayToMap();
+    }
+
+    private void getReportData()
+    {
+        databaseReference.child("reports").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
+            {
+                Iterable<DataSnapshot> reportChildren = dataSnapshot.getChildren();
+
+                reports.clear();
+
+                for (DataSnapshot data: reportChildren) {
+                    Report report = data.getValue(Report.class);
+                    if (report.getRemainingTime() != 0) {
+                        reports.add(report);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull final DatabaseError databaseError)
+            {
+                Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
+    }
+
+    private void displayToMap() {
+        for (AskHelp askHelp : askHelps) {
+            displayAskHelpMarker(askHelp);
+        }
+
+        for (Report report : reports) {
+            displayReportMarker(report);
+        }
+    }
+
+
+
+    private final Runnable reloadMapRunnable = new Runnable() {
+        @Override
+        public void run() {
+            reloadMap();
+
+            refreshHandler.postDelayed(reloadMapRunnable, 5000);
+        }
+    };
+
+    private void getAskHelpData() {
+        databaseReference.child("askHelps").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> askHelpChildren = dataSnapshot.getChildren();
+
+                askHelps.clear();
+
+                for (DataSnapshot ask : askHelpChildren) {
+                    AskHelp askHelp = ask.getValue(AskHelp.class);
+                    Log.d(TAG, "onDataChange: " + askHelp.getId());
+                    Log.d(TAG, "onDataChange: complete " + askHelp.isCompleted());
+                    if (!askHelp.isCompleted())
+                        askHelps.add(askHelp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
+                Log.e(TAG, "onCancelled: ", databaseError.toException());
+            }
+        });
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if (marker.getTag()!=null)
+        if (marker.getTag()!= null)
         {
-            AskHelp askHelp = (AskHelp) marker.getTag();
-            Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
-            intent.putExtra("askHelp", (Serializable) askHelp);
-            startActivity(intent);
+            if (marker.getTag() instanceof AskHelp) {
+                AskHelp askHelp = (AskHelp) marker.getTag();
+                Intent intent = new Intent(MapsActivity.this, InfoAskHelpActivity.class);
+                intent.putExtra("askHelp", askHelp);
+                startActivity(intent);
+            }
         }
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.map_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -480,7 +657,7 @@ public class MapsActivity
         }
     }
 
-    public boolean onNavigationItemSelected(MenuItem item)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         // Handle navigation view item clicks here.
         switch (item.getItemId()){
@@ -514,20 +691,9 @@ public class MapsActivity
                 break;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.map_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void showFabLayout2()
-    {
-        fab_satellitetype.show();
-        fab_roadtype.show();
-    }
-    private void hideFabLayout2()
-    {
-        fab_satellitetype.hide();
-        fab_roadtype.hide();
     }
 
     protected void displayNextScreen(final Intent nextScreen)
@@ -549,43 +715,64 @@ public class MapsActivity
                 marker.remove();
             }
         }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths ) {
-                polyline.remove();
-            }
-        }
     }
 
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
-        polylinePaths = new ArrayList<>();
+        this.routes = routes;
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
 
+        Route bestRoute = getBestRoute(routes);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bestRoute.getStartLocation(), 16));
+
         for (Route route : routes) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
-            originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
-                    .title(route.startAddress)
-                    .position(route.startLocation)));
-            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
-                    .title(route.endAddress)
-                    .position(route.endLocation).snippet("Duration: ")
-            ));
+            addDirectionMaker(route);
+            if (route.compareTo(bestRoute) != 0) {
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(getResources().getColor(R.color.colorNormalPolyline)).
+                        width(10)
+                        .clickable(true);
 
-            PolylineOptions polylineOptions = new PolylineOptions().
-                    geodesic(true).
-                    color(Color.BLUE).
-                    width(10);
+                polylineOptions.add(route.getStartLocation());
+                for (int i = 0; i < route.getPoints().size(); i++)
+                    polylineOptions.add(route.getPoints().get(i));
+                polylineOptions.add(route.getEndLocation());
 
-            for (int i = 0; i < route.points.size(); i++)
-                polylineOptions.add(route.points.get(i));
-
-            polylinePaths.add(mMap.addPolyline(polylineOptions));
-            break;
+                mMap.addPolyline(polylineOptions).setTag(route);
+            }
         }
+
+        PolylineOptions polylineOptions = new PolylineOptions().
+                geodesic(true).
+                color(getResources().getColor(R.color.colorBestPolyline)).
+                width(10)
+                .clickable(true);
+
+        polylineOptions.add(bestRoute.getStartLocation());
+        for (int i = 0; i < bestRoute.getPoints().size(); i++)
+            polylineOptions.add(bestRoute.getPoints().get(i));
+        polylineOptions.add(bestRoute.getEndLocation());
+
+        mMap.addPolyline(polylineOptions).setTag(bestRoute);
+    }
+
+    private void addDirectionMaker(Route route) {
+        originMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_start))
+                .title(route.getStartAddress())
+                .position(route.getStartLocation())));
+        destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder_end))
+                .title(route.getEndAddress())
+                .position(route.getEndLocation())
+        ));
+    }
+
+    private Route getBestRoute(List<Route> routes) {
+        Collections.sort(routes);
+        return routes.get(0);
     }
 
     AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener()
@@ -593,7 +780,7 @@ public class MapsActivity
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
         {
-            hideKeyboard();
+            hideKeyboard(view);
 
             final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
             final String placeId = item.getPlaceId();
@@ -629,6 +816,4 @@ public class MapsActivity
             }));
         }
     };
-
-
 }

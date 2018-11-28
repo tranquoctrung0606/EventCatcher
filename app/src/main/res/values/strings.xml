@@ -96,4 +96,8 @@
     <string name="username">Username</string>
     <string name="user_avatar">User Avatar</string>
     <string name="direction">Direction</string>
+    <string name="mins">mins</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

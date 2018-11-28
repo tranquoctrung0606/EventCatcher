@@ -1,29 +1,36 @@
 package com.linh.wiinav.models;
 
+import android.support.annotation.NonNull;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AskHelp {
+public class AskHelp implements Serializable {
     private String id;
-    private String posterId;
+
+
+
+    private User poster;
     private String postDate;
     private String title;
     private String content;
     private boolean isCompleted;
-    private double latitude, longtitude;
-    private ArrayList<Comment> comments;
+    private double latitude, longitude;
+    private ArrayList<Comment> comments ;
 
     public AskHelp() {
     }
-
-    public AskHelp(String id, String posterId, String postDate, String title, String content, boolean isCompleted, double latitude, double longtitude, ArrayList<Comment> comments) {
+    public AskHelp(String id, User poster, String postDate,
+                   String title, String content, boolean isCompleted,
+                   double latitude, double longitude, ArrayList<Comment> comments) {
         this.id = id;
-        this.posterId = posterId;
+        this.poster = poster;
         this.postDate = postDate;
         this.title = title;
         this.content = content;
         this.isCompleted = isCompleted;
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longitude;
         this.comments = comments;
     }
 
@@ -35,14 +42,13 @@ public class AskHelp {
         this.id = id;
     }
 
-    public String getPosterId() {
-        return posterId;
+    public User getPoster() {
+        return poster;
     }
 
-    public void setPosterId(String posterId) {
-        this.posterId = posterId;
+    public void setPoster(User poster) {
+        this.poster = poster;
     }
-
     public String getPostDate() {
         return postDate;
     }
@@ -83,18 +89,35 @@ public class AskHelp {
         this.latitude = latitude;
     }
 
-    public double getLongtitude() {
-        return longtitude;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLongtitude(double longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
+
     public ArrayList<Comment> getComments() {
         return comments;
     }
 
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "AskHelp{" +
+                "id='" + id + '\'' +
+                ", poster=" + poster +
+                ", postDate='" + postDate + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", isCompleted=" + isCompleted +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", comments=" + comments +
+                '}';
     }
 }

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.InfoAskHelpActivity">
+    tools:context=".ui.InfoAskHelpActivity"
+    >
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -20,7 +21,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imvUserAvatar" />
 
     <TextView
-        android:id="@+id/snippet"
+        android:id="@+id/tv_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -32,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <LinearLayout
         android:id="@+id/linearLayoutFunctionButtons"
@@ -45,7 +46,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/divider"
-        android:gravity="center">
+        android:gravity="start">
 
 
         <Button
@@ -88,13 +89,10 @@
             tools:ignore="ButtonStyle,MissingConstraints,RtlSymmetry"
             tools:layout_editor_absoluteY="157dp"
             />
-
-
     </LinearLayout>
 
-
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/comments"
+        android:id="@+id/rcvComments"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -123,17 +121,17 @@
 
     <View
         android:id="@+id/divider"
-        android:layout_width="368dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
-        android:background="@android:color/black"
+        android:background="?android:attr/listDivider"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/snippet" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_comment" />
 
     <View
         android:id="@+id/divider2"
@@ -163,17 +161,26 @@
     <TextView
         android:id="@+id/tvUserName"
         android:layout_width="wrap_content"
-        android:layout_height="37dp"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:gravity="center_vertical"
         android:text="@string/username"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.012"
+        app:layout_constraintHorizontal_bias="0.004"
         app:layout_constraintStart_toEndOf="@+id/imvUserAvatar"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/phone_number"
+        app:layout_constraintStart_toEndOf="@+id/imvUserAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/tvUserName" />
 
 </android.support.constraint.ConstraintLayout>

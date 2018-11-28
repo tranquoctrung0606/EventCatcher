@@ -1,20 +1,21 @@
 package com.linh.wiinav.models;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Comment implements Serializable{
     private String commentId;
     private User commentator;
-    private String comment;
-    private String commentDate;
+    private String content;
+    private Date commentDate;
 
     public Comment() {
     }
 
-    public Comment(String commentId, User commentator, String comment, String commentDate) {
+    public Comment(String commentId, User commentator, String content, Date commentDate) {
         this.commentId = commentId;
         this.commentator = commentator;
-        this.comment = comment;
+        this.content = content;
         this.commentDate = commentDate;
     }
 
@@ -34,19 +35,19 @@ public class Comment implements Serializable{
         this.commentator = commentator;
     }
 
-    public String getComment() {
-        return comment;
+    public String getContent() {
+        return content;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getCommentDate() {
+    public Date getCommentDate() {
         return commentDate;
     }
 
-    public void setCommentDate(String commentDate) {
+    public void setCommentDate(Date commentDate) {
         this.commentDate = commentDate;
     }
 }

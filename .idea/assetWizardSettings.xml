@@ -71,7 +71,11 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
+<<<<<<< HEAD
                                       <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/editor/ic_mode_comment_black_24dp.xml" />
+=======
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_person_black_24dp.xml" />
+>>>>>>> 2379bdadac8bed9bd60721ab1d7d320bfdd96d73
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -81,8 +85,13 @@
                         </option>
                         <option name="values">
                           <map>
+<<<<<<< HEAD
                             <entry key="outputName" value="edit_text_rounded_corners" />
                             <entry key="overrideSize" value="true" />
+=======
+                            <entry key="color" value="0020ac" />
+                            <entry key="outputName" value="ic_person_black_24dp" />
+>>>>>>> 2379bdadac8bed9bd60721ab1d7d320bfdd96d73
                             <entry key="sourceFile" value="C:\Users\linhn" />
                           </map>
                         </option>
