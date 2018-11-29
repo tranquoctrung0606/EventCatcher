@@ -40,6 +40,7 @@ public class AskHelpDetailsActivity extends BaseActivity {
     private Button btnCall;
     private EditText edtAskHelpCommentText;
     private Button btnComment;
+    private Button btnDirection;
     private TextView tvTitle;
     private TextView tvContent;
 
@@ -75,6 +76,12 @@ public class AskHelpDetailsActivity extends BaseActivity {
             if (isPermissionGranted()) {
                 callAction();
             }
+        });
+
+        btnDirection.setOnClickListener(v -> {
+            Intent mapsActivity = new Intent(this, MapsActivity.class);
+            mapsActivity.putExtra("ASK_HELP_DIRECTION", currentAskHelp);
+            startActivity(mapsActivity);
         });
 
         /* This method sends a comment which user type
@@ -191,6 +198,7 @@ public class AskHelpDetailsActivity extends BaseActivity {
     protected void addControls() {
         btnComment = findViewById(R.id.btn_comment);
         btnCall = findViewById(R.id.btn_call);
+        btnDirection = findViewById(R.id.btn_direction);
         edtAskHelpCommentText = findViewById(R.id.et_comment_text);
         //Get information from ask help infoWindow
         currentAskHelp = (AskHelp) getIntent().getSerializableExtra("currentAskHelp");

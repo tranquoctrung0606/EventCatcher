@@ -74,6 +74,10 @@ public abstract class BaseActivity extends AppCompatActivity
         finish();
     }
 
+    protected void saveCheckSetting(String key, boolean value) {
+        sharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
     public User getUser() {
         return new User(getUid(),
                 sharedPreferences.getString(EMAIL.name(),""),

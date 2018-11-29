@@ -34,6 +34,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +60,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.Repo;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.DownloadImageAdapter;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
@@ -98,7 +102,6 @@ public class MapsActivity
             new LatLng(-40, -168), new LatLng(71, 136)
     );
 
-
     private boolean isTrafficOn = false;
     private boolean mapType = false;
     private boolean isDirectionPressed = false;
@@ -117,6 +120,8 @@ public class MapsActivity
     private ImageView ivCloseSelectActionDialog;
     private ImageView ivAskHelpSelectActionDialog;
     private ImageView ivReportSelectActionDialog;
+    private Switch swReport, swAskHelp;
+
     private ImageView ivDirectionDisplaySetting;
     private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
     private TextView tvTitleInfoReport;
@@ -129,7 +134,6 @@ public class MapsActivity
     private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
 
     private RecyclerView rvDownloadImage;
-    private List<String> imageUrls;
     private DownloadImageAdapter downloadImageAdapter;
 
     private AutoCompleteTextView mSearchText;
@@ -149,6 +153,7 @@ public class MapsActivity
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
     private PlaceInfo mPlace;
     private Handler refreshHandler;
@@ -159,9 +164,9 @@ public class MapsActivity
         setContentView(R.layout.activity_map);
         sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
+        getLocationPermission();
         addControls();
         addEvents();
-        getLocationPermission();
     }
 
     @Override
@@ -220,6 +225,60 @@ public class MapsActivity
         }));
         //
         ivDirectionDisplaySetting.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
+        dialogSelectAction.setOnShowListener(dialog -> {
+            if (swAskHelp.isChecked()) getAskHelpData();
+            if (swReport.isChecked()) getReportData();
+        });
+
+        //switch ask help
+        if (swAskHelp.isChecked()) {
+            getAskHelpData();
+        }
+        swAskHelp.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                getAskHelpData();
+                saveCheckSetting("IS_ASK_HELP", isChecked);
+            } else {
+                mMap.clear();
+                saveCheckSetting("IS_ASK_HELP", isChecked);
+            }
+        });
+        //switch report
+        if (swReport.isChecked()) {
+            getReportData();
+        }
+        swReport.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                getReportData();
+                saveCheckSetting("IS_REPORT", isChecked);
+            } else {
+                mMap.clear();
+                saveCheckSetting("IS_ASK_HELP", isChecked);
+            }
+        });
+
+        //ask help direction
+        if (getIntent().hasExtra("ASK_HELP_DIRECTION")) {
+            AskHelp askHelp = (AskHelp) getIntent().getSerializableExtra("ASK_HELP_DIRECTION");
+            makeDirectionToAskHelp(askHelp);
+        }
+    }
+
+    private void makeDirectionToAskHelp(AskHelp askHelp) {
+       // LatLng currentLocation = new LatLng(Double.parseDouble(sharedPreferences.getString("LAT", "0")),
+      //          Double.parseDouble(sharedPreferences.getString("LONG", "0")));
+        StringBuilder location = new StringBuilder();
+        location.append(sharedPreferences.getString("LAT", "0"));
+        location.append(",");
+        location.append(sharedPreferences.getString("LONG", "0"));
+        String origin = location.toString();
+        location.delete(0, location.length());
+        location.append(askHelp.getLatitude());
+        location.append(",");
+        location.append(askHelp.getLongitude());
+        String destination = location.toString();
+        location.delete(0, location.length());
+        sendRequest(origin, destination);
     }
 
     private void makeDirection()
@@ -285,6 +344,10 @@ public class MapsActivity
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
         ivCloseSelectActionDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelpSelectActionDialog = dialogSelectAction.findViewById(R.id.ivAskHelp);
+        swReport = dialogSelectAction.findViewById(R.id.switch_report);
+        swReport.setChecked(sharedPreferences.getBoolean("IS_REPORT", false));
+        swAskHelp = dialogSelectAction.findViewById(R.id.switch_ask_help);
+        swAskHelp.setChecked(sharedPreferences.getBoolean("IS_ASK_HELP", false));
 
         //Dialog info report
         ivReportSelectActionDialog = dialogSelectAction.findViewById(R.id.ivReport);
@@ -412,8 +475,6 @@ public class MapsActivity
             }));
         }
         init();
-        refreshHandler = new Handler();
-        refreshHandler.postDelayed(reloadMapRunnable, 5000);
     }
 
     private void init() {
@@ -601,12 +662,6 @@ public class MapsActivity
         marker.setTag(report);
     }
 
-    private void reloadMap() {
-        getAskHelpData();
-        getReportData();
-        displayToMap();
-    }
-
     private void getReportData()
     {
         databaseReference.child("reports").addValueEventListener(new ValueEventListener()
@@ -618,12 +673,13 @@ public class MapsActivity
 
                 reports.clear();
 
-                for (DataSnapshot data: reportChildren) {
+                for (DataSnapshot data : reportChildren) {
                     Report report = data.getValue(Report.class);
                     if (report.getRemainingTime() != 0) {
                         reports.add(report);
-                    }
+                        }
                 }
+                displayReportToMap();
             }
 
             @Override
@@ -631,52 +687,44 @@ public class MapsActivity
             {
                 Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
                 Log.e(TAG, "onCancelled: ", databaseError.toException());
+                showToastMessage("Please check your connection");
             }
         });
     }
 
-    private void displayToMap() {
-        for (AskHelp askHelp : askHelps) {
-            displayAskHelpMarker(askHelp);
-        }
-
+    private void displayReportToMap() {
         for (Report report : reports) {
             displayReportMarker(report);
         }
     }
 
-
-
-    private final Runnable reloadMapRunnable = new Runnable() {
-        @Override
-        public void run() {
-            reloadMap();
-
-            refreshHandler.postDelayed(reloadMapRunnable, 5000);
+    private void displayAskHelpToMap() {
+        for (AskHelp askHelp : askHelps) {
+            displayAskHelpMarker(askHelp);
         }
-    };
+    }
 
     private void getAskHelpData() {
         databaseReference.child("askHelps").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> askHelpChildren = dataSnapshot.getChildren();
-
                 askHelps.clear();
-
                 for (DataSnapshot ask : askHelpChildren) {
                     AskHelp askHelp = ask.getValue(AskHelp.class);
                     Log.d(TAG, "onDataChange: " + askHelp.getId());
                     Log.d(TAG, "onDataChange: complete " + askHelp.isCompleted());
                     if (!askHelp.isCompleted())
                         askHelps.add(askHelp);
-                }
+                    }
+                    displayAskHelpToMap();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG, "onCancelled: get ask help fail " + databaseError.getMessage());
                 Log.e(TAG, "onCancelled: ", databaseError.toException());
+                showToastMessage("Please check your connection");
             }
         });
     }

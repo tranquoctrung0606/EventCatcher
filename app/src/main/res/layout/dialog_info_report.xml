@@ -143,6 +143,12 @@
                 android:id="@+id/info_report_down_vote"
         />
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status images"
+        android:textStyle="italic"
+        />
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
