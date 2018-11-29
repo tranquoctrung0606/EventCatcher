@@ -1,5 +1,6 @@
 package com.linh.wiinav.adapters;
 
+import android.app.Dialog;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,15 +17,38 @@ import com.linh.wiinav.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdapter.DownloadImageViewHolder>{
     private static final String TAG = "DownloadImageAdapter";   
-    List<String> imageUrl;
+    private List<String> imageUrl = new ArrayList<>();
     StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+    private List<Uri> uris = new ArrayList<>();
+
+    public DownloadImageAdapter() {
+    }
 
     public DownloadImageAdapter(List<String> imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<String> getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(List<String> imageUrl) {
+        this.imageUrl = imageUrl;
+        for (String url: imageUrl) {
+            mStorageReference
+                    .child("images/" + url.substring(url.lastIndexOf("/")))
+                    .getDownloadUrl()
+                    .addOnSuccessListener(uri -> {
+                        Log.i(TAG, "setImageUrl: " + uri);
+                        uris.add(uri);
+                        notifyItemInserted(uris.size());
+                    }).addOnFailureListener(e -> Log.e(TAG, "onBindViewHolder: ", e));
+        }
     }
 
     @Override
@@ -35,26 +59,29 @@ public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdap
 
     @Override
     public void onBindViewHolder(DownloadImageViewHolder holder, int position) {
-        String imageName = imageUrl.get(position);
-        mStorageReference
-                .child("images/" + imageName.substring(imageName.lastIndexOf("/")))
-                .getDownloadUrl()
-                .addOnSuccessListener(uri -> {
-                    Picasso.get().load(uri).into(holder.ivDownloadImage);
-                }).addOnFailureListener(e -> Log.e(TAG, "onBindViewHolder: ", e));
+        Log.d(TAG, "onBindViewHolder: " + position);
+        Picasso.get().load(uris.get(position)).into(holder.ivDownloadImage);
+        holder.ivDownloadImage.setOnClickListener(v -> {
+            Picasso.get().load(uris.get(position)).into(((ImageView)holder.ivImageViewDialog.findViewById(R.id.iv_report_image_view)));
+            holder.ivImageViewDialog.show();
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return uris.size();
     }
 
     public class DownloadImageViewHolder extends RecyclerView.ViewHolder{
         ImageView ivDownloadImage;
+        Dialog ivImageViewDialog;
 
         public DownloadImageViewHolder(View itemView) {
             super(itemView);
             ivDownloadImage = itemView.findViewById(R.id.iv_report_download_image);
+            ivImageViewDialog = new Dialog(itemView.getContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+            ivImageViewDialog.setContentView(R.layout.dialog_image_view);
+            ivImageViewDialog.findViewById(R.id.tv_report_exit_image_view).setOnClickListener(v -> ivImageViewDialog.dismiss());
         }
     }
 }

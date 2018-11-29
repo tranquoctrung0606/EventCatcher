@@ -48,13 +48,12 @@
         app:layout_constraintTop_toTopOf="@+id/divider"
         android:gravity="start">
 
-
         <Button
             android:id="@+id/btn_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/colorAskHelp"
-            android:drawableStart="@drawable/ic_mode_comment_black_24dp"
+            android:drawableStart="@drawable/ic_remove_black_24dp"
             android:padding="10dp"
             android:text="@string/comment"
             android:layout_marginStart="8dp"

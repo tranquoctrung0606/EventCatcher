@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class AskHelpDetailsActivity extends BaseActivity {
 
     private Button btnCall;
     private EditText edtAskHelpCommentText;
-//    private Button btnComment;
+    private Button btnComment;
     private TextView tvTitle;
     private TextView tvContent;
 
@@ -46,10 +47,11 @@ public class AskHelpDetailsActivity extends BaseActivity {
 
     private List<Comment> comments;
     private CommentsAdapter commentsAdapter;
-    private RecyclerView rcvComments;
+    private RecyclerView rvComments;
 
     //Ask Help variable
     private AskHelp currentAskHelp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,7 +189,7 @@ public class AskHelpDetailsActivity extends BaseActivity {
     }
     @Override
     protected void addControls() {
-//        btnComment = findViewById(R.id.btn_comment);
+        btnComment = findViewById(R.id.btn_comment);
         btnCall = findViewById(R.id.btn_call);
         edtAskHelpCommentText = findViewById(R.id.et_comment_text);
         //Get information from ask help infoWindow
@@ -197,19 +199,19 @@ public class AskHelpDetailsActivity extends BaseActivity {
         tvContent = findViewById(R.id.tv_content);
         tvContent.setText(currentAskHelp.getContent());
 
-        rcvComments = findViewById(R.id.rcvComments);
-        rcvComments.setHasFixedSize(true);
+        rvComments = findViewById(R.id.rcvComments);
+        rvComments.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rcvComments.setLayoutManager(linearLayoutManager);
-        rcvComments.setItemAnimator(new DefaultItemAnimator());
+        rvComments.setLayoutManager(linearLayoutManager);
+        rvComments.setItemAnimator(new DefaultItemAnimator());
 
         comments = currentAskHelp.getComments();
 
         commentsAdapter = new CommentsAdapter(comments, this, currentAskHelp);
 
-        rcvComments.setAdapter(commentsAdapter);
+        rvComments.setAdapter(commentsAdapter);
     }
 
     @Override

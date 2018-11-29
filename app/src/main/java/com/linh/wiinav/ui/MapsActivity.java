@@ -159,9 +159,9 @@ public class MapsActivity
         setContentView(R.layout.activity_map);
         sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
-        getLocationPermission();
         addControls();
         addEvents();
+        getLocationPermission();
     }
 
     @Override
@@ -220,34 +220,6 @@ public class MapsActivity
         }));
         //
         ivDirectionDisplaySetting.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
-        cbPetrol.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-
-            } else {
-
-            }
-        });
-        cbHospital.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-
-            } else {
-
-            }
-        });
-        cbRestaurant.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-
-            } else {
-
-            }
-        });
-        cbPopularTourist.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-
-            } else {
-
-            }
-        });
     }
 
     private void makeDirection()
@@ -349,6 +321,13 @@ public class MapsActivity
         snackbarLayout.addView(snackView, 0);
 
         trafficStatusButton = findViewById(R.id.iv_traffic_status_button);
+
+        //download image
+        rvDownloadImage = dialogInfoReport.findViewById(R.id.rv_download_image);
+        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 5);
+        rvDownloadImage.setLayoutManager(gridLayoutManager);
+        downloadImageAdapter = new DownloadImageAdapter();
+        rvDownloadImage.setAdapter(downloadImageAdapter);
     }
 
 
@@ -772,11 +751,8 @@ public class MapsActivity
                                 });
                     }
                 });
-                rvDownloadImage = dialogInfoReport.findViewById(R.id.rv_download_image);
-                downloadImageAdapter = new DownloadImageAdapter(report.getImageName());
-                rvDownloadImage.setLayoutManager(new GridLayoutManager(this, 5));
-                rvDownloadImage.setAdapter(downloadImageAdapter);
-
+                downloadImageAdapter.setImageUrl(report.getImageName());
+                downloadImageAdapter.notifyDataSetChanged();
                 dialogInfoReport.show();
             }
         }
