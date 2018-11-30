@@ -15,9 +15,10 @@
         android:textColor="#fff"
         android:id="@+id/tv_report_exit_image_view"
         />
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/iv_report_image_view"
+        android:scaleType="centerCrop"
         />
 </LinearLayout>

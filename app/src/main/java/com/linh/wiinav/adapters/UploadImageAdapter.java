@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.linh.wiinav.R;
 import com.linh.wiinav.ui.ReportDetailActivity;
@@ -58,7 +59,7 @@ public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.
     public class UploadImageViewHolder extends RecyclerView.ViewHolder {
         ImageView ivUploadImage;
         ImageView ivRemove;
-        ImageView ivImageView;
+        PhotoView ivImageView;
         TextView tvExit;
         Dialog dialogImageView;
 

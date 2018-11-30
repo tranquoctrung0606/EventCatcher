@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.linh.wiinav.R;
@@ -62,7 +63,7 @@ public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdap
         Log.d(TAG, "onBindViewHolder: " + position);
         Picasso.get().load(uris.get(position)).into(holder.ivDownloadImage);
         holder.ivDownloadImage.setOnClickListener(v -> {
-            Picasso.get().load(uris.get(position)).into(((ImageView)holder.ivImageViewDialog.findViewById(R.id.iv_report_image_view)));
+            Picasso.get().load(uris.get(position)).into(((PhotoView)holder.ivImageViewDialog.findViewById(R.id.iv_report_image_view)));
             holder.ivImageViewDialog.show();
         });
     }
