@@ -117,12 +117,11 @@ public class MapsActivity
     private Dialog dialogSelectAction;
     private Dialog dialogInfoReport;
     private Dialog dialogDirectionDisplaySetting;
-    private ImageView ivCloseSelectActionDialog;
     private ImageView ivAskHelpSelectActionDialog;
     private ImageView ivReportSelectActionDialog;
     private Switch swReport, swAskHelp;
 
-    private ImageView ivDirectionDisplaySetting;
+    private ImageView ivDirectionDisplayFilter;
     private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
     private TextView tvTitleInfoReport;
     private TextView tvDescriptionInfoReport;
@@ -214,7 +213,6 @@ public class MapsActivity
         });
 
         //Add event for Selecting Action Dialog
-        ivCloseSelectActionDialog.setOnClickListener((v -> dialogSelectAction.dismiss()));
         ivAskHelpSelectActionDialog.setOnClickListener((v ->{
             startActivity(new Intent(MapsActivity.this, AskHelpActivity.class));
         }));
@@ -224,7 +222,7 @@ public class MapsActivity
             startActivity(reportActivity);
         }));
         //
-        ivDirectionDisplaySetting.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
+        ivDirectionDisplayFilter.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
         dialogSelectAction.setOnShowListener(dialog -> {
             if (swAskHelp.isChecked()) getAskHelpData();
             if (swReport.isChecked()) getReportData();
@@ -342,7 +340,6 @@ public class MapsActivity
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
         dialogSelectAction.setContentView(R.layout.dialog_select_action);
-        ivCloseSelectActionDialog = dialogSelectAction.findViewById(R.id.ivCloseDialog);
         ivAskHelpSelectActionDialog = dialogSelectAction.findViewById(R.id.ivAskHelp);
         swReport = dialogSelectAction.findViewById(R.id.switch_report);
         swReport.setChecked(sharedPreferences.getBoolean("IS_REPORT", false));
@@ -369,7 +366,7 @@ public class MapsActivity
         snackbarLayout.findViewById(android.support.design.R.id.snackbar_text).setVisibility(View.INVISIBLE);
 
         //Dialog direction display setting
-        ivDirectionDisplaySetting = findViewById(R.id.iv_direction_display_setting);
+        ivDirectionDisplayFilter = findViewById(R.id.iv_direction_display_filter);
         dialogDirectionDisplaySetting = new Dialog(this);
         dialogDirectionDisplaySetting.setContentView(R.layout.dialog_direction_display_setting);
         cbPetrol = dialogDirectionDisplaySetting.findViewById(R.id.cb_petrol);
