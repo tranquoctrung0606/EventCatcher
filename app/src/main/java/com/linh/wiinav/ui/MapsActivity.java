@@ -796,6 +796,7 @@ public class MapsActivity
                                 });
                     }
                 });
+                Log.e("size of report image: ",report.getImageName().size()+"");
                 downloadImageAdapter.setImageUrl(report.getImageName());
                 downloadImageAdapter.notifyDataSetChanged();
                 dialogInfoReport.show();
