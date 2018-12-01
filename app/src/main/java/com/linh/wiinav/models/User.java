@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @IgnoreExtraProperties
 public class User implements Serializable {
-    private String id, email, username, phoneNumber, birthday, password;
+    private String id, email, username, phoneNumber, birthday, password, imageName;
     private Long identifyCard;
     private boolean verifiedEmail, ban, verifiedPhoneNumber;
     private int numberAsk;
@@ -18,7 +18,7 @@ public class User implements Serializable {
     public User(String id, String email, String username,
                 String phoneNumber, String birthday, Long identifyCard,
                 boolean verifiedEmail, boolean ban, boolean verifiedPhoneNumber,
-                int numberAsk, String password) {
+                int numberAsk, String password, String imageName) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -30,6 +30,7 @@ public class User implements Serializable {
         this.verifiedPhoneNumber = verifiedPhoneNumber;
         this.numberAsk = numberAsk;
         this.password = password;
+        this.imageName = imageName;
     }
 
     public String getPassword() {
@@ -120,6 +121,14 @@ public class User implements Serializable {
         this.numberAsk = numberAsk;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -129,6 +138,7 @@ public class User implements Serializable {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", birthday='" + birthday + '\'' +
                 ", password='" + password + '\'' +
+                ", imageName='" + imageName + '\'' +
                 ", identifyCard=" + identifyCard +
                 ", verifiedEmail=" + verifiedEmail +
                 ", ban=" + ban +

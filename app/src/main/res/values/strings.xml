@@ -105,4 +105,5 @@
     <string name="delete">Delete</string>
     <string name="description">Description</string>
     <string name="sometime">Sometime</string>
+    <string name="hide">Hide</string>
 </resources>
