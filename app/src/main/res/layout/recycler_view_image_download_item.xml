@@ -6,5 +6,6 @@
     android:layout_width="100dp"
     android:layout_height="100dp"
     android:id="@+id/iv_report_download_image"
+    android:layout_margin="10dp"
     />
 </LinearLayout>

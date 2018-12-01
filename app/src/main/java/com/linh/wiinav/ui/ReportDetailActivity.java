@@ -117,7 +117,7 @@ public class ReportDetailActivity
                         try {
                             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(list.get(j)), null, options);
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                             byte[] data = baos.toByteArray();
                             uploadImage(list.get(j), data, path);
                         } catch (FileNotFoundException e) {
@@ -131,14 +131,13 @@ public class ReportDetailActivity
                 }
             }
         });
-
     }
 
     private void uploadImage(File file, byte[] data, Uri path) {
         storageReference.child("images/"+path.getLastPathSegment())
                 .putBytes(data)
                 .addOnCompleteListener(task -> {
-                    imageNames.add(file.getPath());
+                    imageNames.add(path.getPath());
                     uploadImageAdapter.notifyDataSetChanged();
                 });
     }

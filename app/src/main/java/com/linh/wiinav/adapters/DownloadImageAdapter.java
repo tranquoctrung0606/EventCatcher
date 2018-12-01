@@ -8,15 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.linh.wiinav.R;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +36,7 @@ public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdap
     }
 
     public void setImageUrl(List<String> imageUrl) {
+        this.imageUrl.clear();
         this.imageUrl = imageUrl;
         for (String url: imageUrl) {
             mStorageReference
@@ -61,9 +59,17 @@ public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdap
     @Override
     public void onBindViewHolder(DownloadImageViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: " + position);
-        Picasso.get().load(uris.get(position)).into(holder.ivDownloadImage);
+        Picasso.get()
+                .load(uris.get(position))
+                .fit()
+                .centerCrop()
+                .into(holder.ivDownloadImage);
         holder.ivDownloadImage.setOnClickListener(v -> {
-            Picasso.get().load(uris.get(position)).into(((PhotoView)holder.ivImageViewDialog.findViewById(R.id.iv_report_image_view)));
+            Picasso.get()
+                    .load(uris.get(position))
+                    .fit()
+                    .centerCrop()
+                    .into(((PhotoView)holder.ivImageViewDialog.findViewById(R.id.iv_report_image_view)));
             holder.ivImageViewDialog.show();
         });
     }

@@ -41,8 +41,7 @@ public class UploadImageAdapter extends RecyclerView.Adapter<UploadImageAdapter.
         });
         holder.ivRemove.setOnClickListener(l -> {
             firebaseStorage.getReference()
-                    .child("images/"+imageNames.get(position).substring(imageNames.get(position)
-                            .lastIndexOf("/")))
+                    .child("images/"+imageNames.get(position))
                     .delete().addOnCompleteListener(task -> {
                         imageNames.remove(position);
                         notifyDataSetChanged();
