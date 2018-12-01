@@ -20,6 +20,7 @@ import com.linh.wiinav.models.User;
 import static com.linh.wiinav.enums.User.BIRTHDAY;
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
+import static com.linh.wiinav.enums.User.IMAGE;
 import static com.linh.wiinav.enums.User.IS_BANNED;
 import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
 import static com.linh.wiinav.enums.User.IS_VERIFIED_PHONE_NUMBER;
@@ -89,6 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity
                 sharedPreferences.getBoolean(IS_BANNED.name(), false),
                 sharedPreferences.getBoolean(IS_VERIFIED_PHONE_NUMBER.name(), false),
                 sharedPreferences.getInt(NUMBER_ASK.name(), 1),
-                sharedPreferences.getString(PASSWORD.name(), ""));
+                sharedPreferences.getString(PASSWORD.name(), ""),
+                sharedPreferences.getString(IMAGE.name(),""));
     }
 }
