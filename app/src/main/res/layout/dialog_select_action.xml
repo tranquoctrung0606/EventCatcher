@@ -1,107 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="350dp"
-    android:layout_height="350dp"
-    android:background="#7500ff00"
-    android:padding="5dp" android:layout_gravity="center"
-    >
-
-    <ImageView
-        android:id="@+id/ivCloseDialog"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="1dp"
-        app:srcCompat="@drawable/ic_close"
-        android:layout_gravity="end"
-        tools:ignore="ContentDescription" />
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="350dp"
+              android:layout_height="300dp"
+              android:background="#ffffff"
+              android:padding="5dp" android:layout_gravity="center"
+>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center" android:layout_marginTop="10dp" android:layout_margin="10dp">
 
         <LinearLayout
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
-            <ImageView
-                android:id="@+id/ivAskHelp"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@mipmap/ic_problem"
-                android:layout_gravity="center"
-                tools:ignore="ContentDescription" />
-            <TextView
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ask_help"
-                android:textSize="20sp"/>
+                android:orientation="vertical"
+                tools:ignore="UseCompoundDrawables">
+            <ImageView
+                    android:id="@+id/ivAskHelp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_report_roadsidehelp"
+                    android:layout_gravity="center"
+                    tools:ignore="ContentDescription" android:layout_margin="15dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ask_help"
+                    android:textSize="20sp"/>
         </LinearLayout>
 
         <LinearLayout
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
-            <ImageView
-                android:id="@+id/ivReport"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_baseline_report_problem_24px"
-                tools:ignore="ContentDescription" />
-            <TextView
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/report"
-                android:textSize="20sp"/>
+                android:orientation="vertical"
+                tools:ignore="UseCompoundDrawables">
+            <ImageView
+                    android:id="@+id/ivReport"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_baseline_report_problem_24px"
+                    tools:ignore="ContentDescription" android:layout_margin="15dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/report"
+                    android:textSize="20sp"/>
         </LinearLayout>
     </LinearLayout>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/display"
-        android:textSize="20sp" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ask_help"
-            android:textSize="16sp"/>
-
-        <Switch
-            android:id="@+id/switch_ask_help"
+            android:layout_gravity="center"
+            android:text="@string/display"
+            android:textSize="24sp" android:layout_marginTop="20dp" android:textStyle="bold"/>
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-         />
+            android:orientation="horizontal" android:layout_marginLeft="20dp" android:layout_marginRight="20dp">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ask_help"
+                android:textSize="18sp"/>
+
+        <Switch
+                android:id="@+id/switch_ask_help"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        />
 
     </LinearLayout>
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/report"
-            android:textSize="16sp"/>
-
-        <Switch
-            android:id="@+id/switch_report"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:orientation="horizontal" android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+    >
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report"
+                android:textSize="18sp"/>
+
+        <Switch
+                android:id="@+id/switch_report"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        />
 
     </LinearLayout>
 </LinearLayout>

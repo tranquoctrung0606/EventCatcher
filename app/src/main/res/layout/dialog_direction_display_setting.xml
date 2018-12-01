@@ -7,19 +7,19 @@
     android:layout_margin="10dp"
     >
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="Display"
-        android:layout_gravity="center"
-        />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="Filter"
+            android:layout_gravity="center"
+    />
     <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Petrol"
-        android:textSize="20sp"
-        android:id="@+id/cb_petrol"
-        />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gas Station"
+            android:textSize="20sp"
+            android:id="@+id/cb_petrol"
+    />
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

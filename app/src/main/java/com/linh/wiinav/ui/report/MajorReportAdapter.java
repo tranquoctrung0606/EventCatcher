@@ -43,8 +43,8 @@ public class MajorReportAdapter extends ExpandableRecyclerViewAdapter<MajorRepor
     public void onBindChildViewHolder(final MinorReportViewHolder holder, final int flatPosition,
                                       final ExpandableGroup group, int childIndex) {
 
-        final MinorReport artist = ((MajorReport) group).getItems().get(childIndex);
-        holder.getChildTextView().setText(artist.getName());
+        final MinorReport minorrep = ((MajorReport) group).getItems().get(childIndex);
+        holder.getChildTextView().setText(minorrep.getName());
 
         holder.itemView.setOnClickListener(new View.OnClickListener()
         {
@@ -53,7 +53,7 @@ public class MajorReportAdapter extends ExpandableRecyclerViewAdapter<MajorRepor
             {
                 Intent intent = new Intent(context, ReportDetailActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("REPORT_TYPE",artist.getName());
+                intent.putExtra("REPORT_TYPE",minorrep.getName());
                 intent.putExtra("REPORT_ID", flatPosition);
                 context.startActivity(intent);
             }
