@@ -72,6 +72,7 @@ import com.linh.wiinav.models.AskHelp;
 import com.linh.wiinav.models.PlaceInfo;
 import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.Route;
+import com.linh.wiinav.models.User;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 import com.linh.wiinav.modules.PlacesFinder;
@@ -353,10 +354,20 @@ public class MapsActivity
         tv_headerName = headerView.findViewById(R.id.tv_headerName);
         tv_headerEmail = headerView.findViewById(R.id.tv_headerEmail);
         //Set text here @tai
-        tv_headerName.setText("abc");
-        tv_headerEmail.setText("xyz");
+        String uId = mAuth.getCurrentUser().getUid();
+        mDatabaseReference.child("users").child(uId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                tv_headerEmail.setText(user.getEmail());
+                tv_headerName.setText(user.getUsername());
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
 
 
 

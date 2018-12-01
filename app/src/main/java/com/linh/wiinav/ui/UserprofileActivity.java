@@ -1,6 +1,9 @@
 package com.linh.wiinav.ui;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +28,15 @@ import com.google.firebase.storage.StorageReference;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.List;
+
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class UserprofileActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -88,13 +101,17 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                 tv_email.setText(user.getEmail());
 
                 if(user.getImageName() != "") {
-                    storageReference.child("images/" + user.getImageName())
+                    storageReference.child("images/" + user.getImageName().substring(user.getImageName().lastIndexOf("/")))
                             .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             Picasso.get().load(uri).fit().centerCrop().into(imgV_avatar);
                         }
                     });
+                }
+                else
+                {
+                    imgV_avatar.setImageResource(R.drawable.user);
                 }
                 if (user.isBan()) {
                     tv_acctiveAcc.setText("Your account is ban");
@@ -119,6 +136,7 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
         btn_changePass.setOnClickListener(this);
         btn_changeEmail.setOnClickListener(this);
         btn_changeNumber.setOnClickListener(this);
+        imgV_avatar.setOnClickListener(this);
     }
 
 
@@ -166,6 +184,30 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                     }
                 });
                 break;
+            case R.id.imgV_avatar:
+                LinearLayout linearLayout = new LinearLayout(this);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                Button btnUploadImage = new Button(this);
+                btnUploadImage.setText("Upload avatar");
+                Button btnViewImage = new Button(this);
+                btnViewImage.setText("View avatar");
+                linearLayout.addView(btnUploadImage);
+                linearLayout.addView(btnViewImage);
+                builder.setView(linearLayout);
+                btnUploadImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EasyImage.configuration(v.getContext()).setAllowMultiplePickInGallery(false);
+                        EasyImage.openChooserWithGallery(UserprofileActivity.this,"Choose Image",0);
+                    }
+                });
+                btnViewImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imgV_avatar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        imgV_avatar.setAdjustViewBounds(true);
+                    }
+                });
         }
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -175,9 +217,35 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
         });
 
         builder.show();
-        /*userF.setUsername(tv_name.getText().toString());
-        userF.setEmail(tv_email.getText().toString());
-        userF.setPhoneNumber(tv_phoneNumber.getText().toString());
-        databaseReference.child(userId).setValue(userF);*/
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagesPicked(@NonNull List<File> list, EasyImage.ImageSource imageSource, int i) {
+                Uri uri  = Uri.fromFile(list.get(0));
+                imgV_avatar.setImageURI(uri);
+                userF.setImageName(uri.getPath());
+                databaseReference.child(userF.getId()).setValue(userF);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(list.get(00)), null, options);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+                    byte[] data = baos.toByteArray();
+                    storageReference.child("images/"+uri.getLastPathSegment())
+                            .putBytes(data);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
 }
