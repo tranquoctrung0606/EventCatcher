@@ -117,7 +117,7 @@ public class ReportDetailActivity
                         try {
                             Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(list.get(j)), null, options);
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
                             byte[] data = baos.toByteArray();
                             uploadImage(list.get(j), data, path);
                         } catch (FileNotFoundException e) {

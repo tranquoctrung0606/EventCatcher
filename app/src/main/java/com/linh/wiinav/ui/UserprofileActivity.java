@@ -1,6 +1,7 @@
 package com.linh.wiinav.ui;
 
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -11,14 +12,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
+import com.squareup.picasso.Picasso;
 
 public class UserprofileActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -27,6 +32,7 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
     private Button btn_changeName, btn_changeNumber, btn_changeEmail, btn_changeFacebook,
             btn_changePass, btn_favorite, btn_reported, btn_refleted;
     private DatabaseReference databaseReference;
+    private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     private FirebaseAuth firebaseAuth;
     private AlertDialog.Builder builder;
     private User userF;
@@ -81,6 +87,15 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                 tv_repName.setText(user.getUsername());
                 tv_email.setText(user.getEmail());
 
+                if(user.getImageName() != "") {
+                    storageReference.child("images/" + user.getImageName())
+                            .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Picasso.get().load(uri).fit().centerCrop().into(imgV_avatar);
+                        }
+                    });
+                }
                 if (user.isBan()) {
                     tv_acctiveAcc.setText("Your account is ban");
                 } else {
