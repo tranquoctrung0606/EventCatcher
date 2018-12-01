@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionFinder {
+    private static final String TAG = "DirectionFinder";
     private static final String GOOGLE_DIRECTION_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyCTWFhXTvgVhGw-kHjV-wDWPTMsFENGzdg";
     private DirectionFinderListener listener;
@@ -110,10 +111,28 @@ public class DirectionFinder {
             JSONObject overviewPolylineJson = jsonRoute.getJSONObject("overview_polyline");
             JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
             JSONObject jsonLeg = jsonLegs.getJSONObject(0);
+
+            JSONArray jsonSteps = jsonLeg.getJSONArray("steps");
+            List<LatLng> intersectionCoordinates = new ArrayList<>();
+            for (int j = 0; j < jsonSteps.length(); j++) {
+                JSONObject jsonStep = jsonSteps.getJSONObject(j);
+                JSONObject jsonInteractionCoordinate = jsonStep.getJSONObject("start_location");
+                intersectionCoordinates.add(new LatLng(jsonInteractionCoordinate.getDouble("lat"),
+                        jsonInteractionCoordinate.getDouble("lng")));
+                Log.i(TAG, "parseJSon: " + jsonInteractionCoordinate.toString());
+            }
+            JSONObject jsonStep = jsonSteps.getJSONObject(jsonSteps.length() - 1);
+            JSONObject jsonInteractionCoordinate = jsonStep.getJSONObject("end_location");
+            intersectionCoordinates.add(new LatLng(jsonInteractionCoordinate.getDouble("lat"),
+                    jsonInteractionCoordinate.getDouble("lng")));
+            Log.i(TAG, "parseJSon: " + jsonInteractionCoordinate.toString());
+            route.setIntersectionCoordinate(intersectionCoordinates);
+
             JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
             JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
-            JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
+            JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
+
 
             route.setDistance(new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value")));
             route.setDuration(new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value")));
