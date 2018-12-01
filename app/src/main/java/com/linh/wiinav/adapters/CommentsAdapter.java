@@ -1,15 +1,21 @@
 package com.linh.wiinav.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.linh.wiinav.R;
@@ -33,22 +39,44 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         this.currentAskHelp = currentAskHelp;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(CommentsViewHolder holder, int position) {
         Comment comment = comments.get(position);
-        holder.tvContent.setText(comment.getContent());
-        holder.tvContent.setOnLongClickListener(v -> {
+        holder.tvUsername.setText(comment.getCommentator().getUsername());
+        //Caculate comment time
+        holder.tvCommentTime.setText(Utils.getTiming(comment.getCommentDate()));
+        holder.etContent.setText(comment.getContent());
+        holder.etContent.setOnLongClickListener(v -> {
             //Display option menu
-            PopupMenu popupMenu = new PopupMenu(context, holder.tvContent);
-            popupMenu.inflate(R.menu.menu_comment_action);
+            PopupMenu popupMenu = new PopupMenu(context, holder.etContent);
+            //Get current user
+            String currentUserId = FirebaseAuth.getInstance().getUid();
+            assert currentUserId != null;
+            if (currentUserId.equals(currentAskHelp.getPoster().getId()))
+                popupMenu.inflate(R.menu.menu_comment_action_for_poster);
+            if (currentUserId.equals(comment.getCommentator().getId()))
+                popupMenu.inflate(R.menu.menu_comment_action_for_commentator);
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()){
-                    case R.id.item_comment_edit:
-                        Toast.makeText(context,"Editing",Toast.LENGTH_SHORT);
-                        editComment(comment, position);
+                    case R.id.item_comment_hide:
+                        hideComment(comment, position);
                         break;
+                    case R.id.item_comment_edit:
+                        holder.etContent.setFocusable(true);
+                        holder.etContent.setCursorVisible(true);
+                        holder.etContent.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_send,0);
+                        holder.etContent.setOnTouchListener((v1, event) -> {
+                            final int DRAWABLE_RIGHT = 2;
+                            if (event.getAction() == MotionEvent.ACTION_UP) {
+                                if (event.getRawX() >= (holder.etContent.getRight() - holder.etContent.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                                    editComment(comment, position);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        });
                     case R.id.item_comment_delete:
-                        Toast.makeText(context,"Deleting",Toast.LENGTH_SHORT);
                         removeComment(comment, position);
                         break;
                     default:
@@ -59,9 +87,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             popupMenu.show();
             return false;
         });
-        holder.tvUsername.setText(comment.getCommentator().getUsername());
-        //Caculate comment time
-        holder.tvCommentTime.setText(Utils.getTiming(comment.getCommentDate()));
+    }
+
+    private void hideComment(Comment comment, int position) {
+        Toast.makeText(context,"This feature is not available",Toast.LENGTH_SHORT).show();
     }
 
     private void editComment(Comment comment, int position) {
@@ -88,17 +117,36 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     }
 
     private void removeComment(Comment comment, int position) {
-        mDatabaseReference.child("askHelps").child(currentAskHelp.getId()).child("comments").child(String.valueOf(position))
-                .removeValue().addOnCompleteListener(task -> {
-                    if (task.isComplete()) {
-                        comments.remove(position);
-                        notifyItemRemoved(position);
-                        Toast.makeText(context, "Delete successful.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, "Can not delete this comment. Please check your connection.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        mDatabaseReference.child("comments").child(comment.getCommentId()).removeValue();
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    mDatabaseReference.child("askHelps")
+                                        .child(currentAskHelp.getId())
+                                        .child("comments")
+                                        .child(String.valueOf(position)).removeValue()
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isComplete()) {
+                                                comments.remove(position);
+                                                notifyItemRemoved(position);
+                                                Toast.makeText(context, "Delete successful.", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(context, "Can not delete this comment. Please check your connection.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                    mDatabaseReference.child("comments").child(comment.getCommentId()).removeValue();
+                    dialog.dismiss();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    dialog.dismiss();
+                    break;
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure to delete this comment?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     @Override
@@ -106,15 +154,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
         return comments.size();
     }
 
-    public class CommentsViewHolder extends RecyclerView.ViewHolder{
+    class CommentsViewHolder extends RecyclerView.ViewHolder{
         TextView tvUsername;
-        TextView tvContent;
+        EditText etContent;
         TextView tvCommentTime;
         ImageView imvCommentatorAvatar;
 
-        public CommentsViewHolder(View itemView) {
+        CommentsViewHolder(View itemView) {
             super(itemView);
-            tvContent = itemView.findViewById(R.id.tv_content);
+            etContent = itemView.findViewById(R.id.et_content);
+            etContent.setFocusable(false);
+            etContent.setCursorVisible(false);
             tvUsername = itemView.findViewById(R.id.tv_comment_user_name);
             imvCommentatorAvatar = itemView.findViewById(R.id.imv_commentator_avatar);
             tvCommentTime = itemView.findViewById(R.id.tv_comment_time);
