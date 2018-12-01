@@ -940,7 +940,7 @@ public class MapsActivity
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
         {
-            hideKeyboard(view);
+                hideKeyboard(view);
 
             final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
             final String placeId = item.getPlaceId();
