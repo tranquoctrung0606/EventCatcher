@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -43,7 +42,8 @@ public class AskHelpDetailsActivity extends BaseActivity {
     private Button btnDirection;
     private TextView tvTitle;
     private TextView tvContent;
-
+    private TextView tvPosterName;
+    private TextView tvPosterPhoneNumber;
     private DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
     private List<Comment> comments;
@@ -64,6 +64,16 @@ public class AskHelpDetailsActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void addEvents() {
+        /* This method set focus on comment edit text
+         *
+         * Version: 1.0
+         *
+         * Date: 1/12/2018
+         *
+         * Author: Nghiên
+         */
+        btnComment.setOnClickListener(v ->{
+        });
         /* This method makes a phone call
          *
          * Version: 1.0
@@ -196,15 +206,24 @@ public class AskHelpDetailsActivity extends BaseActivity {
     }
     @Override
     protected void addControls() {
+
         btnComment = findViewById(R.id.btn_comment);
         btnCall = findViewById(R.id.btn_call);
         btnDirection = findViewById(R.id.btn_direction);
         edtAskHelpCommentText = findViewById(R.id.et_comment_text);
         //Get information from ask help infoWindow
         currentAskHelp = (AskHelp) getIntent().getSerializableExtra("currentAskHelp");
+
+        tvPosterName = findViewById(R.id.tv_poster_name);
+        tvPosterName.setText(currentAskHelp.getPoster().getUsername());
+
+        tvPosterPhoneNumber = findViewById(R.id.tv_poster_phone_number);
+        tvPosterPhoneNumber.setText(currentAskHelp.getPoster().getPhoneNumber());
+
         tvTitle = findViewById(R.id.tv_title);
         tvTitle.setText(currentAskHelp.getTitle());
-        tvContent = findViewById(R.id.tv_content);
+
+        tvContent = findViewById(R.id.et_content);
         tvContent.setText(currentAskHelp.getContent());
 
         rvComments = findViewById(R.id.rcvComments);
@@ -218,7 +237,6 @@ public class AskHelpDetailsActivity extends BaseActivity {
         comments = currentAskHelp.getComments();
 
         commentsAdapter = new CommentsAdapter(comments, this, currentAskHelp);
-
         rvComments.setAdapter(commentsAdapter);
     }
 
