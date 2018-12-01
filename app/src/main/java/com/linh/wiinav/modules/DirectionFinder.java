@@ -39,6 +39,7 @@ public class DirectionFinder {
 
     public void execute() throws UnsupportedEncodingException {
         listener.onDirectionFinderStart();
+        Log.i(TAG, "execute: " + createUrl());
         new DownloadRawData().execute(createUrl());
     }
 
@@ -119,13 +120,11 @@ public class DirectionFinder {
                 JSONObject jsonInteractionCoordinate = jsonStep.getJSONObject("start_location");
                 intersectionCoordinates.add(new LatLng(jsonInteractionCoordinate.getDouble("lat"),
                         jsonInteractionCoordinate.getDouble("lng")));
-                Log.i(TAG, "parseJSon: " + jsonInteractionCoordinate.toString());
             }
             JSONObject jsonStep = jsonSteps.getJSONObject(jsonSteps.length() - 1);
             JSONObject jsonInteractionCoordinate = jsonStep.getJSONObject("end_location");
             intersectionCoordinates.add(new LatLng(jsonInteractionCoordinate.getDouble("lat"),
                     jsonInteractionCoordinate.getDouble("lng")));
-            Log.i(TAG, "parseJSon: " + jsonInteractionCoordinate.toString());
             route.setIntersectionCoordinate(intersectionCoordinates);
 
             JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
@@ -146,7 +145,7 @@ public class DirectionFinder {
         }
 
         listener.onDirectionFinderSuccess(routes);
-    }
+}
 
     private List<LatLng> decodePolyLine(final String poly) {
         int len = poly.length();
