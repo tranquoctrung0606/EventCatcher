@@ -14,7 +14,6 @@ public class MinorReportViewHolder extends ChildViewHolder
     }
 
     private TextView childTextView;
-    private ImageView icon;
 
     public MinorReportViewHolder(final View itemView)
     {

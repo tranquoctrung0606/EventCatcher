@@ -194,41 +194,49 @@ public class ReportDetailActivity
             case 1: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_moderate);
                 reportedType.setReportIcon(R.drawable.ic_report_traffic_moderate);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 2: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_heavy);
                 reportedType.setReportIcon(R.drawable.ic_report_traffic_heavy);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 3: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_traffic_stuck);
                 reportedType.setReportIcon(R.drawable.ic_report_traffic_stuck);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 5: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_police_visible);
                 reportedType.setReportIcon(R.drawable.ic_report_police_visible);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 6: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_police_hidden);
                 reportedType.setReportIcon(R.drawable.ic_report_police_hidden);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 8: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_major);
                 reportedType.setReportIcon(R.drawable.ic_report_crash_major);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 9: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_crash_minor);
                 reportedType.setReportIcon(R.drawable.ic_report_crash_minor);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 11: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_hazard_flood);
                 reportedType.setReportIcon(R.drawable.ic_report_hazard_flood);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 12: {
@@ -309,16 +317,13 @@ public class ReportDetailActivity
             case 29: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_redlight);
                 reportedType.setReportIcon(R.drawable.ic_report_camera_redlight);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             case 30: {
                 ivViewReportThumbnail.setImageResource(R.drawable.ic_report_camera_fake);
                 reportedType.setReportIcon(R.drawable.ic_report_camera_fake);
-                break;
-            }
-            case 32: {
-                ivViewReportThumbnail.setImageResource(R.drawable.ic_report_roadsidehelp);
-                reportedType.setReportIcon(R.drawable.ic_report_roadsidehelp);
+                Log.i(TAG, String.valueOf(reportedId));
                 break;
             }
             default: {
