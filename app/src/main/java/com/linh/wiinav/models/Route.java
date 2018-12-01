@@ -13,13 +13,14 @@ public class Route implements Comparable<Route>{
     private LatLng startLocation;
 
     private List<LatLng> points;
+    private List<LatLng> intersectionCoordinate;
 
     public Route() {
     }
 
     public Route(Distance distance, Duration duration,
                  String endAddress, LatLng endLocation, String startAddress,
-                 LatLng startLocation, List<LatLng> points) {
+                 LatLng startLocation, List<LatLng> points, List<LatLng> intersectionCoordinate) {
         this.distance = distance;
         this.duration = duration;
         this.endAddress = endAddress;
@@ -27,6 +28,7 @@ public class Route implements Comparable<Route>{
         this.startAddress = startAddress;
         this.startLocation = startLocation;
         this.points = points;
+        this.intersectionCoordinate = intersectionCoordinate;
     }
 
     @Override
@@ -96,6 +98,14 @@ public class Route implements Comparable<Route>{
 
     public void setPoints(List<LatLng> points) {
         this.points = points;
+    }
+
+    public List<LatLng> getIntersectionCoordinate() {
+        return intersectionCoordinate;
+    }
+
+    public void setIntersectionCoordinate(List<LatLng> intersectionCoordinate) {
+        this.intersectionCoordinate = intersectionCoordinate;
     }
 
     @Override

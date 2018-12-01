@@ -63,7 +63,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Repo;
 import com.linh.wiinav.R;
 import com.linh.wiinav.adapters.DownloadImageAdapter;
 import com.linh.wiinav.adapters.PlaceAutocompleteAdapter;
@@ -73,6 +72,8 @@ import com.linh.wiinav.models.Report;
 import com.linh.wiinav.models.Route;
 import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
+import com.linh.wiinav.modules.PlacesFinder;
+import com.linh.wiinav.modules.PlacesFinderListenter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -276,7 +277,7 @@ public class MapsActivity
         location.append(askHelp.getLongitude());
         String destination = location.toString();
         location.delete(0, location.length());
-        sendRequest(origin, destination);
+        sendDirectionDataRequest(origin, destination);
     }
 
     private void makeDirection()
@@ -297,7 +298,8 @@ public class MapsActivity
                                 origin.append(",");
                                 origin.append(currentLocation.getLongitude());
                                 String destination = mSearchText.getText().toString();
-                                sendRequest(origin.toString(), destination);
+                                sendDirectionDataRequest(origin.toString(), destination);
+                                Log.i(TAG, "makeDirection: origin " + origin.toString() + " destination " + destination);
                             } else {
                                 Log.d(TAG, "onComplete: current location is null");
                                 Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT)
@@ -310,8 +312,8 @@ public class MapsActivity
         }
     }
 
-    private void sendRequest(final String origin, final String destination) {
-        Log.d(TAG, "sendRequest: sending...............");
+    private void sendDirectionDataRequest(final String origin, final String destination) {
+        Log.d(TAG, "sendDirectionDataRequest: sending...............");
         if(destination.isEmpty()) {
             return;
         }
@@ -898,6 +900,13 @@ public class MapsActivity
                 polylineOptions.add(route.getEndLocation());
 
                 mMap.addPolyline(polylineOptions).setTag(route);
+
+                for (LatLng intersectionCoordinate: route.getIntersectionCoordinate()) {
+                    Log.i(TAG, "onDirectionFinderSuccess: " + intersectionCoordinate.toString());
+                    mMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.email))
+                            .position(intersectionCoordinate));
+                }
             }
         }
 
@@ -913,6 +922,12 @@ public class MapsActivity
         polylineOptions.add(bestRoute.getEndLocation());
 
         mMap.addPolyline(polylineOptions).setTag(bestRoute);
+
+        for (LatLng intersectionCoordinate: bestRoute.getIntersectionCoordinate()) {
+            mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.email))
+                    .position(intersectionCoordinate));
+        }
     }
 
     private void addDirectionMaker(Route route) {
@@ -937,7 +952,7 @@ public class MapsActivity
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
         {
-                hideKeyboard(view);
+            hideKeyboard(view);
 
             final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
             final String placeId = item.getPlaceId();
