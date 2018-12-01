@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -120,6 +122,7 @@ public class MapsActivity
     private ImageView ivAskHelpSelectActionDialog;
     private ImageView ivReportSelectActionDialog;
     private Switch swReport, swAskHelp;
+    private TextView tv_headerName, tv_headerEmail;
 
     private ImageView ivDirectionDisplayFilter;
     private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
@@ -170,12 +173,15 @@ public class MapsActivity
 
     @Override
     protected void addEvents() {
+
+
         navigationView.setNavigationItemSelectedListener(this);
         ivMyLocation.setOnClickListener((v) ->{
             moveToDeviceLocation();
         });
 
         mFloatingActionButton.setOnClickListener((v) -> {
+            dialogSelectAction.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialogSelectAction.show();
             moveToDeviceLocation();
         });
@@ -192,10 +198,10 @@ public class MapsActivity
         trafficStatusButton.setOnClickListener((v) -> {
             isTrafficOn = !isTrafficOn;
             // refresh map here
-            if(!isTrafficOn)
-                mMap.setTrafficEnabled(false);
-            else
+            if(isTrafficOn)
                 mMap.setTrafficEnabled(true);
+            else
+                mMap.setTrafficEnabled(false);
 
 
         });
@@ -222,7 +228,12 @@ public class MapsActivity
             startActivity(reportActivity);
         }));
         //
-        ivDirectionDisplayFilter.setOnClickListener(v -> dialogDirectionDisplaySetting.show());
+        ivDirectionDisplayFilter.setOnClickListener((v) -> {
+            dialogDirectionDisplaySetting.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogDirectionDisplaySetting.show();
+
+        });
+
         dialogSelectAction.setOnShowListener(dialog -> {
             if (swAskHelp.isChecked()) getAskHelpData();
             if (swReport.isChecked()) getReportData();
@@ -331,11 +342,21 @@ public class MapsActivity
         mFloatingActionButton = findViewById(R.id.iv_action_button);
         ivDirection = findViewById(R.id.iwDirection);
         ivSearch = findViewById(R.id.iwSearch);
-        navigationView = findViewById(R.id.nav_view);
+
 
         fabMapType = findViewById(R.id.iv_map_type);
-
+        //binding the navigation menu header
         navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        tv_headerName = headerView.findViewById(R.id.tv_headerName);
+        tv_headerEmail = headerView.findViewById(R.id.tv_headerEmail);
+        //Set text here @tai
+        tv_headerName.setText("abc");
+        tv_headerEmail.setText("xyz");
+
+
+
+
 
         //Dialog Select Action
         dialogSelectAction = new Dialog(this);
@@ -411,7 +432,7 @@ public class MapsActivity
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             mMap.getUiSettings().setMapToolbarEnabled(false);
-            mMap.setTrafficEnabled(true);
+            mMap.setTrafficEnabled(false);
             mMap.setOnInfoWindowClickListener(this);
             mMap.setOnPolylineClickListener((polyline -> {
                 String distance = null, duration = null;
@@ -937,7 +958,7 @@ public class MapsActivity
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id)
         {
-                hideKeyboard(view);
+            hideKeyboard(view);
 
             final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
             final String placeId = item.getPlaceId();
