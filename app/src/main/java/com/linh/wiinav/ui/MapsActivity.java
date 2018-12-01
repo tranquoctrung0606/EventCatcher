@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -74,6 +75,7 @@ import com.linh.wiinav.modules.DirectionFinder;
 import com.linh.wiinav.modules.DirectionFinderListener;
 import com.linh.wiinav.modules.PlacesFinder;
 import com.linh.wiinav.modules.PlacesFinderListenter;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -112,7 +114,7 @@ public class MapsActivity
     private List<Route> routes = new ArrayList<>();
     private List<AskHelp> askHelps = new ArrayList<>();
     private List<Report> reports = new ArrayList<>();
-
+    private List<String> types = new ArrayList<>();
     //widgets
     private DrawerLayout mapLayout;
     private Dialog dialogSelectAction;
@@ -123,7 +125,7 @@ public class MapsActivity
     private Switch swReport, swAskHelp;
 
     private ImageView ivDirectionDisplayFilter;
-    private CheckBox cbPetrol, cbRestaurant, cbHospital, cbPopularTourist;
+    private CheckBox cbGasStation, cbRestaurant, cbHospital, cbPopularTourist;
     private TextView tvTitleInfoReport;
     private TextView tvDescriptionInfoReport;
     private TextView tvDownVoteInfoReport;
@@ -132,6 +134,7 @@ public class MapsActivity
     private TextView tvRemainingTimeInfoReport;
     private TextView tvPostedDateInfoReport;
     private ImageView ivUpVoteInfoReport, ivDownVoteInfoReport;
+    private Button btnConfirmFilter;
 
     private RecyclerView rvDownloadImage;
     private DownloadImageAdapter downloadImageAdapter;
@@ -234,12 +237,11 @@ public class MapsActivity
             getAskHelpData();
         }
         swAskHelp.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saveCheckSetting("IS_ASK_HELP", isChecked);
             if (isChecked) {
                 getAskHelpData();
-                saveCheckSetting("IS_ASK_HELP", isChecked);
             } else {
                 mMap.clear();
-                saveCheckSetting("IS_ASK_HELP", isChecked);
             }
         });
         //switch report
@@ -247,12 +249,11 @@ public class MapsActivity
             getReportData();
         }
         swReport.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saveCheckSetting("IS_REPORT", isChecked);
             if (isChecked) {
                 getReportData();
-                saveCheckSetting("IS_REPORT", isChecked);
             } else {
                 mMap.clear();
-                saveCheckSetting("IS_ASK_HELP", isChecked);
             }
         });
 
@@ -261,11 +262,50 @@ public class MapsActivity
             AskHelp askHelp = (AskHelp) getIntent().getSerializableExtra("ASK_HELP_DIRECTION");
             makeDirectionToAskHelp(askHelp);
         }
+        //checkbox gas station
+        cbGasStation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saveCheckSetting("IS_GAS_STATION", isChecked);
+            if (isChecked) {
+                types.add("gas_station");
+            } else {
+                if (types.contains("gas_station")) types.remove("gas_station");
+            }
+        });
+        //checkbox restaurant
+        cbRestaurant.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            saveCheckSetting("IS_RESTAURANT", isChecked);
+            if (isChecked) {
+                types.add("restaurant");
+            } else {
+                if (types.contains("restaurant")) types.remove("restaurant");
+            }
+        });
+        //checkbox hospital
+        cbHospital.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saveCheckSetting("IS_HOSPITAL", isChecked);
+            if (isChecked) {
+                types.add("hospital");
+            } else {
+                if (types.contains("hospital")) types.remove("hospital");
+            }
+        });
+        //checkbox tourist
+        cbPopularTourist.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saveCheckSetting("IS_POPULAR_TOURIST", isChecked);
+            if (isChecked) {
+
+            } else {
+
+            }
+        });
+        btnConfirmFilter.setOnClickListener(v -> {
+            ivDirection.performClick();
+            dialogDirectionDisplaySetting.dismiss();
+        });
     }
 
     private void makeDirectionToAskHelp(AskHelp askHelp) {
-       // LatLng currentLocation = new LatLng(Double.parseDouble(sharedPreferences.getString("LAT", "0")),
-      //          Double.parseDouble(sharedPreferences.getString("LONG", "0")));
         StringBuilder location = new StringBuilder();
         location.append(sharedPreferences.getString("LAT", "0"));
         location.append(",");
@@ -371,11 +411,29 @@ public class MapsActivity
         ivDirectionDisplayFilter = findViewById(R.id.iv_direction_display_filter);
         dialogDirectionDisplaySetting = new Dialog(this);
         dialogDirectionDisplaySetting.setContentView(R.layout.dialog_direction_display_setting);
-        cbPetrol = dialogDirectionDisplaySetting.findViewById(R.id.cb_petrol);
-        cbRestaurant = dialogDirectionDisplaySetting.findViewById(R.id.cb_restaurant);
-        cbHospital = dialogDirectionDisplaySetting.findViewById(R.id.cb_hospital);
-        cbPopularTourist = dialogDirectionDisplaySetting.findViewById(R.id.cb_popular_tourist);
+        dialogSelectAction.setCanceledOnTouchOutside(true);
+        btnConfirmFilter = dialogDirectionDisplaySetting.findViewById(R.id.btn_confirm_filter);
 
+        //cb gas station
+        cbGasStation = dialogDirectionDisplaySetting.findViewById(R.id.cb_petrol);
+        cbGasStation.setChecked(sharedPreferences.getBoolean("IS_GAS_STATION", false));
+        if (cbGasStation.isChecked()) types.add("gas_station");
+        else if (containType("gas_station")) removeType("gas_station");
+        //cb
+        cbRestaurant = dialogDirectionDisplaySetting.findViewById(R.id.cb_restaurant);
+        cbRestaurant.setChecked(sharedPreferences.getBoolean("IS_RESTAURANT", false));
+        if (cbRestaurant.isChecked()) types.add("restaurant");
+        else if (containType("restaurant")) removeType("restaurant");
+        //cb
+        cbHospital = dialogDirectionDisplaySetting.findViewById(R.id.cb_hospital);
+        cbHospital.setChecked(sharedPreferences.getBoolean("IS_HOSPITAL", false));
+        if (cbHospital.isChecked()) types.add("hospital");
+        else if (containType("hospital")) removeType("hospital");
+        //cb
+        cbPopularTourist = dialogDirectionDisplaySetting.findViewById(R.id.cb_popular_tourist);
+        cbPopularTourist.setChecked(sharedPreferences.getBoolean("IS_POPULAR_TOURIST", false));
+
+        //Snack bar
         View snackView = LayoutInflater.from(snackbar.getContext()).inflate(R.layout.snackbar_info_route, null);
         tvDuration = snackView.findViewById(R.id.sbDuration);
         tvDistance = snackView.findViewById(R.id.sbDistance);
@@ -390,6 +448,21 @@ public class MapsActivity
         rvDownloadImage.setLayoutManager(gridLayoutManager);
         downloadImageAdapter = new DownloadImageAdapter();
         rvDownloadImage.setAdapter(downloadImageAdapter);
+    }
+
+    private void removeType(String typeName) {
+        for (int i = 0; i < types.size(); i++) {
+            if (types.get(i).equals(typeName)) {
+                types.remove(i);
+            }
+        }
+    }
+
+    private boolean containType(String typeName) {
+        for (String type: types) {
+            if (type.equals(typeName)) return true;
+        }
+        return false;
     }
 
 
@@ -455,7 +528,12 @@ public class MapsActivity
                             mMap.addPolyline(polylineOptions).setTag(route);
                         }
                         else routeTmp = route;
-
+                        addCustomMarkerAlongDirection(types, route);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     PolylineOptions polylineOptions = new PolylineOptions()
                             .geodesic(true)
@@ -883,39 +961,30 @@ public class MapsActivity
         destinationMarkers = new ArrayList<>();
 
         Route bestRoute = getBestRoute(routes);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bestRoute.getStartLocation(), 16));
 
         for (Route route : routes) {
             addDirectionMaker(route);
             if (route.compareTo(bestRoute) != 0) {
-                PolylineOptions polylineOptions = new PolylineOptions().
-                        geodesic(true).
-                        color(getResources().getColor(R.color.colorNormalPolyline)).
-                        width(10)
+                PolylineOptions polylineOptions = new PolylineOptions()
+                        .geodesic(true)
+                        .color(getResources().getColor(R.color.colorNormalPolyline))
+                        .width(10)
                         .clickable(true);
-
                 polylineOptions.add(route.getStartLocation());
                 for (int i = 0; i < route.getPoints().size(); i++)
                     polylineOptions.add(route.getPoints().get(i));
                 polylineOptions.add(route.getEndLocation());
 
                 mMap.addPolyline(polylineOptions).setTag(route);
-
-                for (LatLng intersectionCoordinate: route.getIntersectionCoordinate()) {
-                    Log.i(TAG, "onDirectionFinderSuccess: " + intersectionCoordinate.toString());
-                    mMap.addMarker(new MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.email))
-                            .position(intersectionCoordinate));
-                }
+                addCustomMarkerAlongDirection(types, route);
             }
         }
 
-        PolylineOptions polylineOptions = new PolylineOptions().
-                geodesic(true).
-                color(getResources().getColor(R.color.colorBestPolyline)).
-                width(10)
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .geodesic(true)
+                .color(getResources().getColor(R.color.colorBestPolyline))
+                .width(10)
                 .clickable(true);
-
         polylineOptions.add(bestRoute.getStartLocation());
         for (int i = 0; i < bestRoute.getPoints().size(); i++)
             polylineOptions.add(bestRoute.getPoints().get(i));
@@ -923,10 +992,50 @@ public class MapsActivity
 
         mMap.addPolyline(polylineOptions).setTag(bestRoute);
 
-        for (LatLng intersectionCoordinate: bestRoute.getIntersectionCoordinate()) {
-            mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.email))
-                    .position(intersectionCoordinate));
+        addCustomMarkerAlongDirection(types, bestRoute);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bestRoute.getStartLocation(), 16));
+    }
+
+    private void addCustomMarkerAlongDirection(List<String> types, Route route) {
+        if (types.size() != 0) {
+            for (LatLng intersectionCoordinate : route.getIntersectionCoordinate()) {
+                new PlacesFinder(new PlacesFinderListenter() {
+                    @Override
+                    public void onPlacesFinderStart() {
+
+                    }
+
+                    @Override
+                    public void onPlacesFinderSuccess(Map<String, com.linh.wiinav.models.Place> placeMap) {
+                        for (Map.Entry<String, com.linh.wiinav.models.Place> place : placeMap.entrySet()) {
+                            if (place.getValue().getTypes().contains("gas_station")) {
+                                mMap.addMarker(new MarkerOptions()
+                                        .icon(getMarkerIconFromDrawable(getDrawable(R.drawable.ic_local_gas_station_24dp)))
+                                        .position(place.getValue().getLocation()))
+                                        .setTitle(place.getValue().getName());
+                            }
+                            if (place.getValue().getTypes().contains("restaurant")) {
+                                mMap.addMarker(new MarkerOptions()
+                                        .icon(getMarkerIconFromDrawable(getDrawable(R.drawable.ic_restaurant_24dp)))
+                                        .position(place.getValue().getLocation()))
+                                        .setTitle(place.getValue().getName());
+                            }
+                            if (place.getValue().getTypes().contains("hospital")) {
+                                mMap.addMarker(new MarkerOptions()
+                                        .icon(getMarkerIconFromDrawable(getDrawable(R.drawable.ic_local_hospital_24dp)))
+                                        .position(place.getValue().getLocation()))
+                                        .setTitle(place.getValue().getName());
+                            }
+                        }
+                    }
+                }, types, intersectionCoordinate).execute();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
