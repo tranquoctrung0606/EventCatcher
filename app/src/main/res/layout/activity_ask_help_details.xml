@@ -110,7 +110,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:drawableEnd="@drawable/ic_send"
         android:hint="@string/type_to_comment"
         android:importantForAutofill="no"
         android:inputType="text"
@@ -165,12 +164,14 @@
         android:id="@+id/tv_poster_name"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:text="@string/username"
         android:textSize="20sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="68dp"
-        tools:layout_editor_absoluteY="8dp" />
+        app:layout_constraintStart_toEndOf="@+id/imv_user_avatar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_poster_phone_number"
