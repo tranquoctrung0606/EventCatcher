@@ -3,6 +3,7 @@ package com.linh.wiinav.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -17,6 +19,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 
@@ -26,6 +30,7 @@ import java.util.Map;
 import static com.linh.wiinav.enums.User.BIRTHDAY;
 import static com.linh.wiinav.enums.User.EMAIL;
 import static com.linh.wiinav.enums.User.IDENTIFY_CARD;
+import static com.linh.wiinav.enums.User.IMAGE;
 import static com.linh.wiinav.enums.User.IS_BANNED;
 import static com.linh.wiinav.enums.User.IS_VERIFIED_EMAIL;
 import static com.linh.wiinav.enums.User.IS_VERIFIED_PHONE_NUMBER;
@@ -47,6 +52,7 @@ public class LoginActivity
 
     public static FirebaseAuth mAuth;
     private DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+    StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
 
     private EditText edtEmail, edtPass;
     private Button btnSignInByEmail, btnSignUpByEmail;
@@ -171,6 +177,7 @@ public class LoginActivity
     }
 
     private void writeUserDataToPreference(User user) {
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean(IS_BANNED.name(), user.isBan());
@@ -183,6 +190,7 @@ public class LoginActivity
         editor.putLong(IDENTIFY_CARD.name(), user.getIdentifyCard());
         editor.putInt(NUMBER_ASK.name(), user.getNumberAsk());
         editor.putString(PASSWORD.name(), user.getPassword());
+        editor.putString(IMAGE.name(),user.getImageName());
 
         editor.apply();
     }
