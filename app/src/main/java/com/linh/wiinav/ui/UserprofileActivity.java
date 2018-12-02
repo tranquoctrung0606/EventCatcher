@@ -100,12 +100,12 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                 tv_repName.setText(user.getUsername());
                 tv_email.setText(user.getEmail());
 
-                if(user.getImageName() != "") {
+                if(user.getImageName().compareTo("user.png")!=0) {
                     storageReference.child("images/" + user.getImageName().substring(user.getImageName().lastIndexOf("/")))
                             .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Picasso.get().load(uri).fit().centerCrop().into(imgV_avatar);
+                            Picasso.get().load(uri).fit()..centerCrop().into(imgV_avatar);
                         }
                     });
                 }
@@ -227,7 +227,7 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onImagesPicked(@NonNull List<File> list, EasyImage.ImageSource imageSource, int i) {
                 Uri uri  = Uri.fromFile(list.get(0));
-                imgV_avatar.setImageURI(uri);
+                Picasso.get().load(uri).fit().centerCrop().into(imgV_avatar);
                 userF.setImageName(uri.getPath());
                 databaseReference.child(userF.getId()).setValue(userF);
 
