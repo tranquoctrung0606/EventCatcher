@@ -105,7 +105,7 @@ public class UserprofileActivity extends AppCompatActivity implements View.OnCli
                             .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Picasso.get().load(uri).fit()..centerCrop().into(imgV_avatar);
+                            Picasso.get().load(uri).fit().centerCrop().into(imgV_avatar);
                         }
                     });
                 }
