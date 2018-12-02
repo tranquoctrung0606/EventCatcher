@@ -212,7 +212,6 @@ public class MapsActivity
             if(!isDirectionPressed || !mSearchText.getText().toString().trim().isEmpty()) {
                 isDirectionPressed = true;
                 makeDirection();
-                dialogLoading.show();
             }
             else {
                 mMap.clear();
@@ -368,6 +367,7 @@ public class MapsActivity
             return;
         }
         try {
+            dialogLoading.show();
             new DirectionFinder(this, origin, destination).execute();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -495,7 +495,6 @@ public class MapsActivity
         }
         return false;
     }
-
 
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
@@ -1024,6 +1023,7 @@ public class MapsActivity
 
         mMap.addPolyline(polylineOptions).setTag(bestRoute);
 
+        if (types.isEmpty()) dialogLoading.dismiss();
         addCustomMarkerAlongDirection(types, bestRoute);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bestRoute.getStartLocation(), 16));
