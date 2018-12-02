@@ -441,6 +441,7 @@ public class MapsActivity
         ivDirectionDisplayFilter = findViewById(R.id.iv_direction_display_filter);
         dialogDirectionDisplaySetting = new Dialog(this);
         dialogDirectionDisplaySetting.setContentView(R.layout.dialog_direction_display_setting);
+        dialogLoading.setCanceledOnTouchOutside(false);
         dialogSelectAction.setCanceledOnTouchOutside(true);
         btnConfirmFilter = dialogDirectionDisplaySetting.findViewById(R.id.btn_confirm_filter);
 
