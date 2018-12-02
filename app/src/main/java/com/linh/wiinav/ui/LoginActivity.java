@@ -1,5 +1,6 @@
 package com.linh.wiinav.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -94,23 +95,6 @@ public class LoginActivity
 
         addControls();
         addEvents();
-        initData();
-    }
-
-    private void initData()
-    {
-        mReference.child("report_types").addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
-            {
-            }
-
-            @Override
-            public void onCancelled(@NonNull final DatabaseError databaseError)
-            {
-            }
-        });
     }
 
     protected void addEvents()
@@ -125,6 +109,7 @@ public class LoginActivity
         switch (v.getId()) {
             case R.id.btn_signin:
                 if (validation()) {
+                    dialogLoading.show();
                     signIn(edtEmail.getText().toString(), edtPass.getText().toString());
                 }
                 break;
@@ -148,6 +133,7 @@ public class LoginActivity
             if (authResultTask.isSuccessful()) {
                 saveUserProfile();
                 displayMainActivity();
+                dialogLoading.dismiss();
             } else {
                 showToastMessage("Sign in failed. Please check your email and password.");
             }
@@ -208,6 +194,7 @@ public class LoginActivity
     {
         if (requestCode == REQUEST_SIGN_UP_BY_EMAIL) {
             if (resultCode == RESULT_OK) {
+                dialogLoading.show();
                 if (validation()) {
                     signIn(data.getStringExtra(EMAIL.name()),data.getStringExtra(PASSWORD.name()));
                 }

@@ -163,7 +163,6 @@ public class MapsActivity
     private DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
     private PlaceInfo mPlace;
-    private Handler refreshHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -207,14 +206,13 @@ public class MapsActivity
                 mMap.setTrafficEnabled(true);
             else
                 mMap.setTrafficEnabled(false);
-
-
         });
 
         ivDirection.setOnClickListener((v) -> {
             if(!isDirectionPressed || !mSearchText.getText().toString().trim().isEmpty()) {
                 isDirectionPressed = true;
                 makeDirection();
+                dialogLoading.show();
             }
             else {
                 mMap.clear();
@@ -562,7 +560,7 @@ public class MapsActivity
                         else routeTmp = route;
                         addCustomMarkerAlongDirection(types, route);
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -1061,10 +1059,11 @@ public class MapsActivity
                                         .setTitle(place.getValue().getName());
                             }
                         }
+                        dialogLoading.dismiss();
                     }
                 }, types, intersectionCoordinate).execute();
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(250);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
