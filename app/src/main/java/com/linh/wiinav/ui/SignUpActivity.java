@@ -211,7 +211,7 @@ public class SignUpActivity
     private User createNewUser(final String uid, final String email, final String username) {
         return new User(uid, email, username, "0",
                 Calendar.getInstance().getTime().toString(),
-                0L, false, false, false, 1, edtPassword.getText().toString());
+                0L, false, false, false, 1, edtPassword.getText().toString(),"");
     }
 
     private String usernameFromEmail(final String email)

@@ -13,8 +13,7 @@ public class MajorReportDataFactory
                              makeReportCrash(),
                              makeReportHazard(),
                              makeReportMapIssue(),
-                             makeReportCamera(),
-                             makeReportRoadsideHelp());
+                             makeReportCamera());
     }
 
     private static MajorReport makeReportMapIssue()
@@ -68,17 +67,6 @@ public class MajorReportDataFactory
         return Arrays.asList(flood, pothole, construction, missingsign, objectonroad, brokentrafficlight, stoppedvehicle, animal);
     }
 
-    private static MajorReport makeReportRoadsideHelp()
-    {
-        return new MajorReport("Roadside Help", makeMinorReportRoadsideHelp(), R.drawable.ic_report_roadsidehelp);
-    }
-
-    private static List<MinorReport> makeMinorReportRoadsideHelp()
-    {
-        MinorReport sendHelp = new MinorReport("Send Help", R.mipmap.ic_launcher);
-
-        return Arrays.asList(sendHelp);
-    }
 
     private static MajorReport makeReportCrash()
     {

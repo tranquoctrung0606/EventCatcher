@@ -70,7 +70,7 @@ public class AskHelpActivity extends BaseActivity {
 
     /* This method saves asking help request to database
      *
-     * Version: 1.1
+     * Version: 1.2
      *
      * Date: 13/11/2018
      *
@@ -80,7 +80,7 @@ public class AskHelpActivity extends BaseActivity {
         databaseReference.child("askHelps").child(askHelp.getId()).setValue(askHelp)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "onClick: insert a new ask help successfully");
-                    showToastMessage("Posted");
+                    showToastMessage("Your request is sent. It will be displayed after 5s on your map.");
                 })
                 .addOnFailureListener(e -> {
                     Log.d(TAG, "onClick: insert a new ask help failure");

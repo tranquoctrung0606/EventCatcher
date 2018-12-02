@@ -36,17 +36,24 @@ public class DownloadImageAdapter extends RecyclerView.Adapter<DownloadImageAdap
     }
 
     public void setImageUrl(List<String> imageUrl) {
-        this.imageUrl.clear();
+        Log.e("image url size: ", imageUrl.size() + "");
+        this.uris.clear();
         this.imageUrl = imageUrl;
-        for (String url: imageUrl) {
-            mStorageReference
-                    .child("images/" + url.substring(url.lastIndexOf("/")))
-                    .getDownloadUrl()
-                    .addOnSuccessListener(uri -> {
-                        Log.i(TAG, "setImageUrl: " + uri);
-                        uris.add(uri);
-                        notifyItemInserted(uris.size());
-                    }).addOnFailureListener(e -> Log.e(TAG, "onBindViewHolder: ", e));
+        Log.e("image url size: ", imageUrl.size() + "");
+        for (int i = 0; i < imageUrl.size(); i++) {
+            Log.i("Log ", "vong lap nay co chay " + i);
+            Log.i("size image url: ", imageUrl.size() + "");
+            for (String url : imageUrl) {
+                Log.e("url: ", url);
+                mStorageReference
+                        .child("images/" + url.substring(url.lastIndexOf("/")))
+                        .getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            Log.i(TAG, "setImageUrl: " + uri);
+                            uris.add(uri);
+                            notifyItemInserted(uris.size());
+                        }).addOnFailureListener(e -> Log.e(TAG, "onBindViewHolder: ", e));
+            }
         }
     }
 
