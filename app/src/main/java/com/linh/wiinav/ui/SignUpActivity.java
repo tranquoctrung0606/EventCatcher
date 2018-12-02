@@ -141,6 +141,7 @@ public class SignUpActivity
 
                  if(task.isSuccessful()) {
                      onAuthSuccess(task.getResult().getUser());
+                     dialogLoading.dismiss();
                  } else {
                      Toast.makeText(this, "Sign Up failed", Toast.LENGTH_SHORT).show();
                  }
@@ -227,7 +228,7 @@ public class SignUpActivity
     {
         switch (v.getId()) {
             case R.id.btn_signupEmail: {
-               // validateFormField();
+                dialogLoading.show();
                 if(validation() && validateFormField()) {
                     signUp();
                 }

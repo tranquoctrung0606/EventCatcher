@@ -1,6 +1,7 @@
 package com.linh.wiinav.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.linh.wiinav.R;
 import com.linh.wiinav.models.User;
 
 import static com.linh.wiinav.enums.User.BIRTHDAY;
@@ -37,11 +39,16 @@ public abstract class BaseActivity extends AppCompatActivity
 {
     protected DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     protected SharedPreferences sharedPreferences;
+    protected Dialog dialogLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+
+        dialogLoading = new Dialog(this);
+        dialogLoading.setContentView(R.layout.dialog_loading);
+        dialogLoading.setCanceledOnTouchOutside(false);
     }
 
     protected abstract void addEvents();
